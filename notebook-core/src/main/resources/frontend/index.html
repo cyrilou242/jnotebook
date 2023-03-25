@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Notebook</title>
+    <link rel="stylesheet" href="./index.css"/>
+</head>
+<body>
+<div id="notebook"></div>
+<div id="helper">Save a file in your notebooks folder to make your notebook appear…</div>
+<script>
+    function connect() {
+        var socket = new WebSocket("ws://localhost:5002/websocket");
+
+        socket.onclose = function(event) {
+            console.log("Websocket connection closed or unable to connect; " +
+                "starting reconnect timeout");
+            socket = null;
+            setTimeout(function() {connect();}, 5000)
+        }
+
+        socket.onmessage = function(event) {
+            if (event.data.startsWith("reload")) {
+                // 1000 = "Normal closure" and the second parameter is a
+                // human-readable reason.
+                socket.close(1000, "Reloading page after receiving reload");
+                console.log("Reloading page after receiving reload");
+                location.reload(true);
+            } else if (event.data.startsWith("close")) {
+                close();
+            } else {
+                // assume it's an update
+                document.getElementById("helper").style.display = 'none';
+                document.getElementById("notebook").innerHTML = event.data;
+            }
+        }
+    }
+    connect();
+</script>
+</body>
+</html>

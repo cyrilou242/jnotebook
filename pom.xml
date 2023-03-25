@@ -17,7 +17,72 @@
   </developers>
   <modules>
     <module>notebook-core</module>
+    <module>notebook-distribution</module>
   </modules>
+
+  <properties>
+    <project.version>1.0-SNAPSHOT</project.version>
+    <maven.compiler.source>16</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <undertow.version>2.3.4.Final</undertow.version>
+
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>ai.catheu</groupId>
+        <artifactId>notebook-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>diff_match_patch</groupId>
+        <artifactId>diff_match_patch</artifactId>
+        <version>current</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.undertow</groupId>
+        <artifactId>undertow-core</artifactId>
+        <version>${undertow.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.undertow</groupId>
+        <artifactId>undertow-servlet</artifactId>
+        <version>${undertow.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.undertow</groupId>
+        <artifactId>undertow-websockets-jsr</artifactId>
+        <version>${undertow.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.reactivex.rxjava3</groupId>
+        <artifactId>rxjava</artifactId>
+        <version>3.1.6</version>
+      </dependency>
+
+      <dependency>
+        <groupId>info.picocli</groupId>
+        <artifactId>picocli</artifactId>
+        <version>4.7.1</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.j2html</groupId>
+        <artifactId>j2html</artifactId>
+        <version>1.6.0</version>
+      </dependency>
+
+    </dependencies>
+  </dependencyManagement>
+
 
   <repositories>
     <repository>
@@ -29,36 +94,5 @@
       <url>https://maven.repository.redhat.com/ga/</url>
     </repository>
   </repositories>
-
-  <properties>
-    <maven.compiler.source>11</maven.compiler.source>
-    <maven.compiler.target>11</maven.compiler.target>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-    <jetty.version>11.0.14</jetty.version>
-  </properties>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>diff_match_patch</groupId>
-        <artifactId>diff_match_patch</artifactId>
-        <version>current</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.eclipse.jetty.websocket</groupId>
-        <artifactId>websocket-jetty-api</artifactId>
-        <version>${jetty.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.eclipse.jetty.websocket</groupId>
-        <artifactId>websocket-jetty-server</artifactId>
-        <version>${jetty.version}</version>
-      </dependency>
-
-    </dependencies>
-  </dependencyManagement>
 
 </project>

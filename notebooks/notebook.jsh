@@ -1,16 +1,28 @@
 import java.util.List;
 
-List<Integer> l = List.of(4);
+/*a multiline
+* comment
+* */
+int x = 3;
 
-int lol = 3;
+// a comment d e
+// multiline
+int y = 3;
+// a single comment
 
-//is this even a koke;
+// lol re haha ss s l ze ll re no wya
+int z = 2;
 
-//no way I ca't beloeve tjis
+// single line comment s y l et oui
+// this one is more interesting
+/* s
+* then multiline r r  r r l
+* */
 
-// haha now
-// we're talking right
-// this is awesome aint it?
-// here it's me again!
+double p2(int x) {
+  return x*x;
+}
 
-// do you liek it
+int r = 4;
+
+incompl
