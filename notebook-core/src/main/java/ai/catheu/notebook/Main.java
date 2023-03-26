@@ -1,10 +1,14 @@
 package ai.catheu.notebook;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 
 import java.io.IOException;
 
 public class Main {
+
+  private static final Logger LOG = LoggerFactory.getLogger(Main.class);
 
   public static void main(String[] args) {
     CommandLine commandLine = new CommandLine(new InteractiveCommand());
@@ -29,9 +33,9 @@ public class Main {
         try {
           notebook.stop();
         } catch (IOException ex) {
-          System.out.println("An error happened:" + ex);
+          LOG.error(ex.getMessage());
         } finally {
-          System.out.println("An error happened:" + e);
+          LOG.error(e.getMessage());
         }
       }
     }

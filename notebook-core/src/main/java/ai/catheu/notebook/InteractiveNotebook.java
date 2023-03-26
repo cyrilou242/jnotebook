@@ -7,6 +7,8 @@ import ai.catheu.notebook.render.Renderer;
 import ai.catheu.notebook.server.ReloadServer;
 import io.methvin.watcher.DirectoryChangeEvent;
 import io.reactivex.rxjava3.core.Observable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -14,6 +16,8 @@ import java.nio.file.Paths;
 import static io.methvin.watcher.DirectoryChangeEvent.EventType.DELETE;
 
 public class InteractiveNotebook {
+
+  private static final Logger LOG = LoggerFactory.getLogger(InteractiveNotebook.class);
 
   private final Main.InteractiveConfiguration configuration;
   private static final String JSHELL_SUFFIX = ".jsh";
@@ -39,7 +43,7 @@ public class InteractiveNotebook {
     final var deletes = notebookEvents.filter(e -> e.eventType().equals(DELETE));
     //.subscribe(s -> server.sendReload()); to subscribe on a side scheduler
 
-    System.out.println("Notebook server started successfully on http://localhost:5002");
+    LOG.info("Notebook server started successfully on http://localhost:5002");
 
     notebookEvents.filter(e -> !e.eventType().equals(DELETE))
                   .doOnError(InteractiveNotebook::logError)
@@ -53,7 +57,7 @@ public class InteractiveNotebook {
   }
 
   private static void logError(Throwable e) {
-    System.out.println("An error happened: " + e);
+    LOG.error(e.getMessage());
   }
 
 

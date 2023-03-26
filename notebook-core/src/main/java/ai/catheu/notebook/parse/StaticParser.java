@@ -6,6 +6,8 @@ import io.reactivex.rxjava3.annotations.NonNull;
 import jdk.jshell.JShell;
 import jdk.jshell.SourceCodeAnalysis.Completeness;
 import jdk.jshell.SourceCodeAnalysis.CompletionInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -21,6 +23,8 @@ import static io.methvin.watcher.DirectoryChangeEvent.EventType.*;
 import static jdk.jshell.SourceCodeAnalysis.Completeness.EMPTY;
 
 public class StaticParser {
+
+  private static final Logger LOG = LoggerFactory.getLogger(StaticParser.class);
 
   final Map<Path, String> fileToCurrentText = new HashMap<>();
   final Map<Path, JShell> fileToShell = new HashMap<>();
@@ -46,7 +50,7 @@ public class StaticParser {
         throw new IllegalStateException("Unknown file event kind: " + type.name());
       }
     } catch (Exception e) {
-      System.out.println("ERROR: " + e);
+      LOG.error(e.getMessage());
       return new StaticParsing(null, null, null);
     }
   }

@@ -1,5 +1,6 @@
 package ai.catheu.notebook.server;
 
+import ai.catheu.notebook.Main;
 import io.undertow.Handlers;
 import io.undertow.Undertow;
 import io.undertow.server.RoutingHandler;
@@ -10,6 +11,8 @@ import io.undertow.websockets.WebSocketProtocolHandshakeHandler;
 import io.undertow.websockets.core.WebSocketChannel;
 import io.undertow.websockets.core.WebSockets;
 import io.undertow.websockets.spi.WebSocketHttpExchange;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnio.OptionMap;
 import org.xnio.Options;
 import org.xnio.Xnio;
@@ -22,6 +25,9 @@ import java.io.IOException;
 // not sure how to insert between ids yet - maybe a linked list, or a notion of preceding node
 // but preceding is annoying at delete time - maybe soft delete by emptying
 public class ReloadServer {
+
+  private static final Logger LOG = LoggerFactory.getLogger(Main.class);
+
   private Undertow server;
   private WebSocketChannel webSocketChannel;
   XnioWorker worker;
@@ -70,8 +76,7 @@ public class ReloadServer {
     if (webSocketChannel != null && webSocketChannel.isOpen()) {
       WebSockets.sendText(message, webSocketChannel, null);
     } else {
-      System.out.println(
-              "ERROR: sending updates but no client is opened. Go to http://localhost:5002");
+      LOG.error("ERROR: trying to send updates but no client is opened. Go to http://localhost:5002");
     }
   }
 
