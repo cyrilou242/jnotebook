@@ -5,14 +5,13 @@ import ai.catheu.notebook.file.PathObservables;
 import ai.catheu.notebook.parse.StaticParser;
 import ai.catheu.notebook.render.Renderer;
 import ai.catheu.notebook.server.ReloadServer;
+import io.methvin.watcher.DirectoryChangeEvent;
 import io.reactivex.rxjava3.core.Observable;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.WatchEvent;
 
-import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
+import static io.methvin.watcher.DirectoryChangeEvent.EventType.DELETE;
 
 public class InteractiveNotebook {
 
@@ -33,33 +32,28 @@ public class InteractiveNotebook {
 
   public void run() throws IOException {
     server.start();
+    final Observable<DirectoryChangeEvent> notebookEvents =
+            PathObservables.of(Paths.get(configuration.notebookPath))
+                           .filter(e -> e.path().toString().endsWith(JSHELL_SUFFIX));
 
-    final Observable<WatchEvent<Path>> notebookEvents =
-            PathObservables.watchRecursive(Paths.get(configuration.notebookPath))
-                           .filter(e -> e.context().toString().endsWith(JSHELL_SUFFIX))
-            // add some mechanism to control multiple events
-            ;
-
-    final var deletes = notebookEvents.filter(e -> e.kind().equals(ENTRY_DELETE));
+    final var deletes = notebookEvents.filter(e -> e.eventType().equals(DELETE));
     //.subscribe(s -> server.sendReload()); to subscribe on a side scheduler
 
     System.out.println("Notebook server started successfully on http://localhost:5002");
 
-    notebookEvents.filter(e -> !e.kind().equals(ENTRY_DELETE))
-                                      .doOnError(InteractiveNotebook::logError)
-                                      .map(staticParser::staticSnippets)
-                                      .doOnError(InteractiveNotebook::logError)
-                                      .map(interpreter::interpret)
-                                      .doOnError(InteractiveNotebook::logError)
-                                      .map(renderer::render)
-                                      .doOnError(InteractiveNotebook::logError)
-                                      .subscribe(server::sendUpdate,
-                                                 InteractiveNotebook::logError);
+    notebookEvents.filter(e -> !e.eventType().equals(DELETE))
+                  .doOnError(InteractiveNotebook::logError)
+                  .map(staticParser::staticSnippets)
+                  .doOnError(InteractiveNotebook::logError)
+                  .map(interpreter::interpret)
+                  .doOnError(InteractiveNotebook::logError)
+                  .map(renderer::render)
+                  .doOnError(InteractiveNotebook::logError)
+                  .subscribe(server::sendUpdate, InteractiveNotebook::logError);
   }
 
   private static void logError(Throwable e) {
-    System.out.println(
-            "An eror happened: " + e);
+    System.out.println("An error happened: " + e);
   }
 
 

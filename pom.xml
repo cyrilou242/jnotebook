@@ -1,98 +1,117 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-  <groupId>ai.catheu</groupId>
-  <artifactId>notebook</artifactId>
-  <version>1.0-SNAPSHOT</version>
-  <packaging>pom</packaging>
-  <description>Notebooks for Java</description>
-  <developers>
-    <developer>
-      <name>Cyril de Catheu</name>
-      <email>cdecatheu@hey.com</email>
-    </developer>
-  </developers>
-  <modules>
-    <module>notebook-core</module>
-    <module>notebook-distribution</module>
-  </modules>
+    <groupId>ai.catheu</groupId>
+    <artifactId>notebook</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <description>Notebooks for Java</description>
+    <developers>
+        <developer>
+            <name>Cyril de Catheu</name>
+            <email>cdecatheu@hey.com</email>
+        </developer>
+    </developers>
+    <modules>
+        <module>notebook-core</module>
+        <module>notebook-distribution</module>
+    </modules>
 
-  <properties>
-    <project.version>1.0-SNAPSHOT</project.version>
-    <maven.compiler.source>16</maven.compiler.source>
-    <maven.compiler.target>11</maven.compiler.target>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <properties>
+        <project.version>1.0-SNAPSHOT</project.version>
+        <maven.compiler.source>16</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <undertow.version>2.3.4.Final</undertow.version>
+        <undertow.version>2.3.4.Final</undertow.version>
 
-  </properties>
+    </properties>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>ai.catheu</groupId>
-        <artifactId>notebook-core</artifactId>
-        <version>${project.version}</version>
-      </dependency>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>ai.catheu</groupId>
+                <artifactId>notebook-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
-      <dependency>
-        <groupId>diff_match_patch</groupId>
-        <artifactId>diff_match_patch</artifactId>
-        <version>current</version>
-      </dependency>
+            <dependency>
+                <groupId>io.methvin</groupId>
+                <artifactId>directory-watcher</artifactId>
+                <version>0.18.0</version>
+            </dependency>
 
-      <dependency>
-        <groupId>io.undertow</groupId>
-        <artifactId>undertow-core</artifactId>
-        <version>${undertow.version}</version>
-      </dependency>
+            <!-- FIXME CYRIL not used for the moment-->
+            <dependency>
+                <groupId>diff_match_patch</groupId>
+                <artifactId>diff_match_patch</artifactId>
+                <version>current</version>
+            </dependency>
 
-      <dependency>
-        <groupId>io.undertow</groupId>
-        <artifactId>undertow-servlet</artifactId>
-        <version>${undertow.version}</version>
-      </dependency>
+            <dependency>
+                <groupId>io.undertow</groupId>
+                <artifactId>undertow-core</artifactId>
+                <version>${undertow.version}</version>
+            </dependency>
 
-      <dependency>
-        <groupId>io.undertow</groupId>
-        <artifactId>undertow-websockets-jsr</artifactId>
-        <version>${undertow.version}</version>
-      </dependency>
+            <dependency>
+                <groupId>io.undertow</groupId>
+                <artifactId>undertow-servlet</artifactId>
+                <version>${undertow.version}</version>
+            </dependency>
 
-      <dependency>
-        <groupId>io.reactivex.rxjava3</groupId>
-        <artifactId>rxjava</artifactId>
-        <version>3.1.6</version>
-      </dependency>
+            <dependency>
+                <groupId>io.undertow</groupId>
+                <artifactId>undertow-websockets-jsr</artifactId>
+                <version>${undertow.version}</version>
+            </dependency>
 
-      <dependency>
-        <groupId>info.picocli</groupId>
-        <artifactId>picocli</artifactId>
-        <version>4.7.1</version>
-      </dependency>
+            <dependency>
+                <groupId>io.reactivex.rxjava3</groupId>
+                <artifactId>rxjava</artifactId>
+                <version>3.1.6</version>
+            </dependency>
 
-      <dependency>
-        <groupId>com.j2html</groupId>
-        <artifactId>j2html</artifactId>
-        <version>1.6.0</version>
-      </dependency>
+            <dependency>
+                <groupId>info.picocli</groupId>
+                <artifactId>picocli</artifactId>
+                <version>4.7.1</version>
+            </dependency>
 
-    </dependencies>
-  </dependencyManagement>
+            <dependency>
+                <groupId>com.j2html</groupId>
+                <artifactId>j2html</artifactId>
+                <version>1.6.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>2.0.7</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-simple</artifactId>
+                <version>2.0.7</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
 
 
-  <repositories>
-    <repository>
-      <id>atlassian-public</id>
-      <url>https://packages.atlassian.com/maven/repository/public</url>
-    </repository>
-    <repository>
-      <id>redhat-maven</id>
-      <url>https://maven.repository.redhat.com/ga/</url>
-    </repository>
-  </repositories>
+    <repositories>
+        <repository>
+            <id>atlassian-public</id>
+            <url>https://packages.atlassian.com/maven/repository/public</url>
+        </repository>
+        <repository>
+            <id>redhat-maven</id>
+            <url>https://maven.repository.redhat.com/ga/</url>
+        </repository>
+    </repositories>
 
 </project>

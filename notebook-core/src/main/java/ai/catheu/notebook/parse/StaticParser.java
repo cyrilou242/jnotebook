@@ -1,6 +1,7 @@
 package ai.catheu.notebook.parse;
 
 import ai.catheu.notebook.parse.StaticSnippet.Type;
+import io.methvin.watcher.DirectoryChangeEvent;
 import io.reactivex.rxjava3.annotations.NonNull;
 import jdk.jshell.JShell;
 import jdk.jshell.SourceCodeAnalysis.Completeness;
@@ -9,8 +10,6 @@ import jdk.jshell.SourceCodeAnalysis.CompletionInfo;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.WatchEvent;
-import java.nio.file.WatchEvent.Kind;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +17,7 @@ import java.util.Map;
 
 import static ai.catheu.notebook.parse.StaticSnippet.Type.COMMENT;
 import static ai.catheu.notebook.parse.StaticSnippet.Type.JAVA;
-import static java.nio.file.StandardWatchEventKinds.*;
+import static io.methvin.watcher.DirectoryChangeEvent.EventType.*;
 import static jdk.jshell.SourceCodeAnalysis.Completeness.EMPTY;
 
 public class StaticParser {
@@ -28,23 +27,23 @@ public class StaticParser {
 
   final JShell analysisShell = newJShell();
 
-  public StaticParsing staticSnippets(@NonNull final WatchEvent<Path> event) {
+  public StaticParsing staticSnippets(@NonNull final DirectoryChangeEvent event) {
     try {
-      final Kind<?> kind = event.kind();
-      final Path filePath = event.context();
-      if (kind.equals(ENTRY_CREATE)) {
+      final DirectoryChangeEvent.EventType type = event.eventType();
+      final Path filePath = event.path();
+      if (type.equals(CREATE)) {
         return snippetsOf(filePath);
-      } else if (kind.equals(ENTRY_DELETE)) {
+      } else if (type.equals(DELETE)) {
         // delete in mem entries and clean everything
         // TODO CYRIL implement
         return new StaticParsing(filePath, null, null);
-      } else if (kind.equals(ENTRY_MODIFY)) {
+      } else if (type.equals(MODIFY)) {
         return snippetsOf(filePath);
-      } else if (kind.equals(OVERFLOW)) {
+      } else if (type.equals(OVERFLOW)) {
         // try to recover with a full reload
         return snippetsOf(filePath);
       } else {
-        throw new IllegalStateException("Unknown file event kind: " + kind.name());
+        throw new IllegalStateException("Unknown file event kind: " + type.name());
       }
     } catch (Exception e) {
       System.out.println("ERROR: " + e);
