@@ -43,8 +43,7 @@ public class ReloadServer {
                                             .get("/", resourceHandler)
                                             .get("/{path}", resourceHandler)
                                             .get("/websocket",
-                                                 new WebSocketProtocolHandshakeHandler((WebSocketConnectionCallback) (webSocketHttpExchange, channel) ->
-                                                         webSocketChannel = channel));
+                                                 new WebSocketProtocolHandshakeHandler(new ConnectionCallback()));
 
     // Create the Undertow server and start it
     server = Undertow.builder()
@@ -95,8 +94,8 @@ public class ReloadServer {
   private class ConnectionCallback implements WebSocketConnectionCallback {
     @Override
     public void onConnect(WebSocketHttpExchange webSocketHttpExchange, WebSocketChannel channel) {
-      // last connection opened takes precedence
-      // would be nice to instruct the previous one to close itself
+      // send close signal to previous connection
+      sendMessage("close");
       webSocketChannel = channel;
     }
   }

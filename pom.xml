@@ -27,6 +27,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <undertow.version>2.3.4.Final</undertow.version>
+        <antlr.version>4.12.0</antlr.version>
 
     </properties>
 
@@ -37,18 +38,16 @@
                 <artifactId>notebook-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>ai.catheu</groupId>
+                <artifactId>notebook-jshell</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>io.methvin</groupId>
                 <artifactId>directory-watcher</artifactId>
                 <version>0.18.0</version>
-            </dependency>
-
-            <!-- FIXME CYRIL not used for the moment-->
-            <dependency>
-                <groupId>diff_match_patch</groupId>
-                <artifactId>diff_match_patch</artifactId>
-                <version>current</version>
             </dependency>
 
             <dependency>
@@ -88,6 +87,18 @@
             </dependency>
 
             <dependency>
+                <groupId>fr.inria.gforge.spoon</groupId>
+                <artifactId>spoon-core</artifactId>
+                <version>10.3.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>31.0.1-jre</version>
+            </dependency>
+
+            <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>2.0.7</version>
@@ -102,15 +113,14 @@
         </dependencies>
     </dependencyManagement>
 
-
     <repositories>
+        <repository>
+            <id>eclipse</id>
+            <url>https://repo1.maven.org/maven2/</url>
+        </repository>
         <repository>
             <id>atlassian-public</id>
             <url>https://packages.atlassian.com/maven/repository/public</url>
-        </repository>
-        <repository>
-            <id>redhat-maven</id>
-            <url>https://maven.repository.redhat.com/ga/</url>
         </repository>
     </repositories>
 

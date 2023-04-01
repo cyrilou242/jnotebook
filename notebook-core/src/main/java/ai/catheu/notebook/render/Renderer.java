@@ -7,21 +7,18 @@ import j2html.tags.DomContent;
 import java.util.List;
 
 import static j2html.TagCreator.*;
+import static j2html.TagCreator.div;
 
-// todo use https://j2html.com/
-// replace null by success
-// add some
-// generate markdown correctly
 public class Renderer {
 
-  // should be some snippets for partial update but
-  // let's say we update everything for the moment;
   public final String render(Interpreted interpreted) {
     final LineAwareRenderer renderer = new LineAwareRenderer(interpreted.lines());
-    final DomContent content = div(each(interpreted.interpretedSnippets(),
-                                renderer::render)).withId("generated");
+    final DomContent content = each(interpreted.interpretedSnippets(), renderer::render);
 
     return content.render();
+  }
+
+  public void stop() {
   }
 
   private static class LineAwareRenderer {
@@ -50,10 +47,12 @@ public class Renderer {
     }
 
     private DomContent renderJava(final InterpretedSnippet s) {
-      return div(code(each(lines.subList(s.staticSnippet().start(),
-                                         s.staticSnippet().end()),
-                           l -> div(l).with(br()))),
-                 p(each(s.events(), e -> div(e.value()).with(br()))));
+      return join(div(each(lines.subList(s.staticSnippet().start(),
+                                        s.staticSnippet().end()),
+                          l -> div(l).with(br()))).withClasses(
+                         "viewer", "viewer-code", "w-full", "max-w-wide"),
+                 div(each(s.events(), e -> div(e.value()).with(br()))).withClasses(
+                         "viewer", "viewer-result", "w-full", "max-w-prose", "px-8"));
     }
   }
 }

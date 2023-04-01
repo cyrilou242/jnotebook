@@ -1,6 +1,7 @@
 package ai.catheu.notebook;
 
 import ai.catheu.notebook.evaluate.Interpreter;
+import ai.catheu.notebook.evaluate.GreedyInterpreter;
 import ai.catheu.notebook.file.PathObservables;
 import ai.catheu.notebook.parse.StaticParser;
 import ai.catheu.notebook.render.Renderer;
@@ -29,7 +30,7 @@ public class InteractiveNotebook {
   public InteractiveNotebook(final Main.InteractiveConfiguration configuration) {
     this.configuration = configuration;
     this.staticParser = new StaticParser();
-    this.interpreter = new Interpreter();
+    this.interpreter = new GreedyInterpreter();
     this.renderer = new Renderer();
     this.server = new ReloadServer();
   }
@@ -63,6 +64,8 @@ public class InteractiveNotebook {
 
   public void stop() throws IOException {
     server.stop();
-    // todo dispose of all the reactive stream
+    staticParser.stop();
+    interpreter.stop();
+    renderer.stop();
   }
 }

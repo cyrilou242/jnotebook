@@ -13,9 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static ai.catheu.notebook.parse.StaticSnippet.Type.COMMENT;
 import static ai.catheu.notebook.parse.StaticSnippet.Type.JAVA;
@@ -25,10 +23,6 @@ import static jdk.jshell.SourceCodeAnalysis.Completeness.EMPTY;
 public class StaticParser {
 
   private static final Logger LOG = LoggerFactory.getLogger(StaticParser.class);
-
-  final Map<Path, String> fileToCurrentText = new HashMap<>();
-  final Map<Path, JShell> fileToShell = new HashMap<>();
-
   final JShell analysisShell = newJShell();
 
   public StaticParsing staticSnippets(@NonNull final DirectoryChangeEvent event) {
@@ -148,8 +142,7 @@ public class StaticParser {
   }
 
 
-  private void tearDown() {
-    fileToShell.values().forEach(JShell::close);
-    fileToShell.keySet().forEach(fileToShell::remove);
+  public void stop() {
+    analysisShell.close();
   }
 }

@@ -1,28 +1,40 @@
 import java.util.List;
-
-/*a multiline
-* comment
-* */
 int x = 3;
+3;
+double y = x;
+int r = x + 4;
 
-// a comment d e
-// multiline
-int y = 3;
-// a single comment
-
-// lol re haha ss s l ze ll re no wya
-int z = 2;
-
-// single line comment s y l et oui
-// this one is more interesting
-/* s
-* then multiline r r  r r l
-* */
-
+// haha
 double p2(int x) {
-  return x*x;
+return x*x;
 }
 
-int r = 4;
+import java.util.HashMap;
 
-incompl
+// hahaha
+double perR(int x) {
+  return x*r;
+}
+
+int z = p2(2) + perR(4);
+
+class MyObj {
+  int lol = 3;
+}
+
+System.out.println(x);
+
+MyObj obj = new MyObj();
+List<?> noway = List.of(3);
+
+for (int i=0; i<4; i++;) {
+  int x = i +1;
+  System.out.println(x + r);
+}
+
+x;
+MyObj.class;
+Stream.of(x, 3, 4, 5);
+
+// haha haha hahaha
+int haha = obj.lol + 4;
