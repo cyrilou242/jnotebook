@@ -95,7 +95,9 @@ public class ReloadServer {
     @Override
     public void onConnect(WebSocketHttpExchange webSocketHttpExchange, WebSocketChannel channel) {
       // send close signal to previous connection
-      sendMessage("close");
+      if (webSocketChannel != null) {
+        sendMessage("close");
+      }
       webSocketChannel = channel;
     }
   }
