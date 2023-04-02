@@ -1,12 +1,10 @@
 package ai.catheu.notebook.jshell;
 
-import jdk.jshell.JShell;
-import jdk.jshell.Snippet;
-import jdk.jshell.SnippetEvent;
-import jdk.jshell.SourceCodeAnalysis;
+import jdk.jshell.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,13 +29,21 @@ public class PowerJShell {
 
   public EvalResult eval(String input) throws IllegalStateException {
     final List<SnippetEvent> eval = delegate.eval(input);
+    List<List<Diag>> diagnostics = new ArrayList<>();
+    List<List<String>> unresolvedDeps = new ArrayList<>();
+    for (final SnippetEvent se: eval) {
+      final Snippet snippet = se.snippet();
+      diagnostics.add(delegate.diagnostics(snippet).toList());
+      if (snippet instanceof DeclarationSnippet ds) {
+        unresolvedDeps.add(delegate.unresolvedDependencies(ds).toList());
+      }
+
+    }
     return new EvalResult(eval,
                           popOut(),
                           popErr(),
-                          eval.stream()
-                              .map(SnippetEvent::snippet)
-                              .map(s -> delegate.diagnostics(s).toList())
-                              .toList());
+                          diagnostics,
+                          unresolvedDeps);
   }
 
   public void close() {

@@ -2,7 +2,7 @@ System.out.println("<code>THIS IS CODE</code>");
 
 "<code>THIS IS NEW CODE</code>";
 
-throw new UnsupportedOp"Louise has to sleep");
+throw new UnsupportedOperationException("Louise has to sleep");
 
 import java.util.List;
 import java.util.Map;
@@ -20,10 +20,10 @@ a^2+b^2=c^2
 
 */
 
-//hey youuu hehe hoho
+//hey youuu hehe hoho hehe hoho
 int errored(int lol) {
     int valid = 3;
-    var x = AnErrorOf(int lol);
+    var x = AnErrorOf(lol);
     return x;
 }
 

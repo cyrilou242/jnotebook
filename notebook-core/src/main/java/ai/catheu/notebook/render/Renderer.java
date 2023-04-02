@@ -152,18 +152,24 @@ public class Renderer {
       final List<Diag> diagnostics = Optional.ofNullable(evalResult.diagnostics())
                                              .map(l -> l.get(0))
                                              .orElse(Collections.emptyList());
-      if (diagnostics.isEmpty()) {
-        return "Invalid snippet. Could not diagnose the issue error";
+      if (!diagnostics.isEmpty()) {
+        StringBuilder s = new StringBuilder();
+        for (Diag d : diagnostics) {
+          final String errorMessage = d.getMessage(Locale.ENGLISH);
+          final String source = evalResult.events().get(0).snippet().source();
+          int startPosition = (int) d.getStartPosition();
+          int endPosition = (int) d.getEndPosition();
+          s.append(buildErrorMessage(errorMessage, source, startPosition, endPosition));
+        }
+        return s.toString();
       }
-      StringBuilder s = new StringBuilder();
-      for (Diag d : diagnostics) {
-        final String errorMessage = d.getMessage(Locale.ENGLISH);
-        final String source = evalResult.events().get(0).snippet().source();
-        int startPosition = (int) d.getStartPosition();
-        int endPosition = (int) d.getEndPosition();
-        s.append(buildErrorMessage(errorMessage, source, startPosition, endPosition));
+      if (!evalResult.unresolvedDeps().isEmpty()) {
+        final StringBuilder s = new StringBuilder("Unresolved dependencies: \n");
+        evalResult.unresolvedDeps().forEach( deps -> deps.forEach(d -> s.append(d).append("\n")));
+        return s.toString();
       }
-      return s.toString();
+
+      return "Invalid snippet. Could not diagnose the issue error";
     }
 
     private static StringBuilder buildErrorMessage(String errorMessage, String source, int startPosition, int endPosition) {
