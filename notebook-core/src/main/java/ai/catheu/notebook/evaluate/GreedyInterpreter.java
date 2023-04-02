@@ -205,7 +205,7 @@ public class GreedyInterpreter implements Interpreter {
                 spoonCompatibleSource.append(methodVariableWrap(i, snippetString));
               }
             } else {
-              LOG.error("unmanaged case when parsing: " + preAnalysis.kind());
+              LOG.debug("unmanaged case when parsing: " + preAnalysis.kind());
             }
             break;
           default:

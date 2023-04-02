@@ -1,5 +1,6 @@
 package ai.catheu.notebook.render;
 
+import ai.catheu.notebook.InteractiveNotebook;
 import ai.catheu.notebook.evaluate.Interpreted;
 import ai.catheu.notebook.evaluate.InterpretedSnippet;
 import ai.catheu.notebook.jshell.EvalResult;
@@ -13,36 +14,50 @@ import com.vladsch.flexmark.util.data.MutableDataSet;
 import j2html.tags.DomContent;
 import j2html.tags.UnescapedText;
 import j2html.tags.specialized.DivTag;
+import jdk.jshell.Diag;
+import jdk.jshell.Snippet;
+import jdk.jshell.SnippetEvent;
+import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static j2html.TagCreator.*;
 
 public class Renderer {
 
-  public static final String VIEWER = "viewer";
-  public static final String VIEWER_CODE = "viewer-code";
-  public static final String W_FULL = "w-full";
+  private static final Logger LOG = LoggerFactory.getLogger(InteractiveNotebook.class);
+
+  public static final String CM_CONTENT = "cm-content";
+  public static final String CM_EDITOR = "cm-editor";
+  public static final String CM_FAILURE = "cm-failure";
+  public static final String CM_SCROLLER = "cm-scroller";
+  public static final String CM_SUCCESS = "cm-success";
   public static final String MAX_W_WIDE = "max-w-wide";
   public static final String MAX_W_PROSE = "max-w-prose";
-  public static final String PX_8 = "px-8";
-  public static final String CM_EDITOR = "cm-editor";
-  public static final String CM_SCROLLER = "cm-scroller";
-  public static final String CM_CONTENT = "cm-content";
-  public static final String WHITESPACE_PRE = "whitespace-pre";
-  public static final String CM_LINE = "cm-line";
   public static final String OVERFLOW_Y_HIDDEN = "overflow-y-hidden";
+  public static final String PX_8 = "px-8";
+  public static final String RELATIVE = "relative";
+  public static final String VIEWER = "viewer";
+  public static final String VIEWER_CODE = "viewer-code";
   public static final String VIEWER_HTML = "viewer-html-";
+  public static final String VIEWER_MARKDOWN = "viewer-markdown";
+  public static final String VIEWER_RESULT = "viewer-result";
+  public static final String W_FULL = "w-full";
+  public static final String WHITESPACE_PRE = "whitespace-pre";
 
   private static final Parser parser;
   private static final HtmlRenderer renderer;
+  public static final String RESULT_ERROR = "result-error";
 
   static {
     MutableDataSet options = new MutableDataSet();
     // uncomment to set optional extensions
-    options.set(Parser.EXTENSIONS, Arrays.asList(TablesExtension.create(), GitLabExtension.create(),
-                                                 FootnoteExtension.create()));
+    options.set(Parser.EXTENSIONS,
+                Arrays.asList(TablesExtension.create(),
+                              GitLabExtension.create(),
+                              FootnoteExtension.create()));
     // uncomment to convert soft-breaks to hard breaks
     options.set(HtmlRenderer.SOFT_BREAK, "<br />\n");
     parser = Parser.builder(options).build();
@@ -60,8 +75,6 @@ public class Renderer {
   }
 
   private static class LineAwareRenderer {
-
-    public static final String VIEWER_RESULT = "viewer-result";
     private final List<String> lines;
 
     public LineAwareRenderer(List<String> lines) {
@@ -77,7 +90,8 @@ public class Renderer {
     }
 
     private DomContent renderComment(final InterpretedSnippet s) {
-      final String text = extractComment(lines.subList(s.staticSnippet().start(), s.staticSnippet().end()));
+      final String text = extractComment(lines.subList(s.staticSnippet().start(),
+                                                       s.staticSnippet().end()));
       final UnescapedText markdown = rawHtml(markdownToHtml(text));
       return htmlViewer(markdown);
     }
@@ -87,35 +101,118 @@ public class Renderer {
     }
 
     private DomContent renderJava(final InterpretedSnippet s) {
-      final String codeLines = String.join("\n", lines.subList(s.staticSnippet().start(),
-                                                             s.staticSnippet().end()));
-      final DivTag code = codeViewer(codeLines);
-      // FIXME CYRIL make results look better
-      final EvalResult evalResult = s.evalResult();
-      final DomContent resultLines = each(evalResult.events(), e -> div(e.value()).with(br()));
-      final DivTag result = resultViewer(resultLines);
-
+      final String codeLines = String.join("\n",
+                                           lines.subList(s.staticSnippet().start(),
+                                                         s.staticSnippet().end()));
+      final OutAndErrResults results = getResults(s.evalResult());
+      final DivTag code = codeViewer(codeLines, results.errors.isEmpty());
+      if (results.out.isEmpty() && results.errors.isEmpty()) {
+        return code;
+      }
+      final UnescapedText htmlResults =
+              join(join(results.out.toArray()), join(results.errors.toArray()));
+      final DivTag result = resultViewer(htmlResults, results.errors.isEmpty());
       return join(code, result);
     }
 
-    private static DivTag codeViewer(String codeLines) {
-      final DivTag content = div(codeLines).withClasses(CM_CONTENT, WHITESPACE_PRE);
+    private static OutAndErrResults getResults(final EvalResult evalResult) {
+      final List<Object> out = new ArrayList<>();
+      final List<Object> errors = new ArrayList<>();
+      if (!evalResult.events().isEmpty()) {
+        final SnippetEvent snippetEvent = evalResult.events().get(0);
+        if (snippetEvent.status().equals(Snippet.Status.VALID)) {
+          final String value = snippetEvent.value();
+          if (value != null && !value.isBlank() && !value.equals("null")) {
+            out.add(div(value));
+          }
+          if (snippetEvent.exception() != null) {
+            errors.add(join(div(snippetEvent.exception().toString())));
+          }
+        } else {
+          final String errorMessage = buildErrorMessage(evalResult);
+          errors.add(pre(errorMessage));
+        }
+      }
+      if (evalResult.events().size() > 1) {
+        LOG.debug("Skipping snippet events of index >=1");
+      }
+      if (!evalResult.out().isEmpty()) {
+        // allow interpretation
+        out.add(div(rawHtml(evalResult.out())));
+      }
+      if (!evalResult.err().isEmpty()) {
+        errors.add(div(evalResult.out()));
+      }
+
+      return new OutAndErrResults(out, errors);
+    }
+
+    @NotNull
+    private static String buildErrorMessage(EvalResult evalResult) {
+      final List<Diag> diagnostics = Optional.ofNullable(evalResult.diagnostics())
+                                             .map(l -> l.get(0))
+                                             .orElse(Collections.emptyList());
+      if (diagnostics.isEmpty()) {
+        return "Invalid snippet. Could not diagnose the issue error";
+      }
+      StringBuilder s = new StringBuilder();
+      for (Diag d : diagnostics) {
+        final String errorMessage = d.getMessage(Locale.ENGLISH);
+        final String source = evalResult.events().get(0).snippet().source();
+        int startPosition = (int) d.getStartPosition();
+        int endPosition = (int) d.getEndPosition();
+        s.append(buildErrorMessage(errorMessage, source, startPosition, endPosition));
+      }
+      return s.toString();
+    }
+
+    private static StringBuilder buildErrorMessage(String errorMessage, String source, int startPosition, int endPosition) {
+      final StringBuilder s = new StringBuilder();
+      s.append("Error: \n").append(errorMessage).append("\n");
+      for (final String line : source.split("\n")) {
+        if (line.length() < startPosition) {
+          s.append(line).append("\n");
+          startPosition = startPosition - line.length() - 1;
+          endPosition = endPosition - line.length() - 1;
+        } else {
+          s.append(line).append("\n");
+          s.append(" ".repeat(startPosition))
+           .append("^".repeat(endPosition - startPosition + 1))
+           .append("\n");
+          break;
+        }
+      }
+      return s;
+    }
+
+    private static DivTag codeViewer(final String codeLines, final boolean success) {
+      final DivTag content = div(codeLines).withClasses(CM_CONTENT,
+                                                        WHITESPACE_PRE,
+                                                        success ? CM_SUCCESS
+                                                                : CM_FAILURE);
       final DivTag cm = div(div(content).withClasses(CM_SCROLLER)).withClasses(CM_EDITOR);
       return div(cm).withClasses(VIEWER, VIEWER_CODE, W_FULL, MAX_W_WIDE);
     }
 
-    private static DivTag resultViewer(DomContent resultLines) {
-      final DomContent resultLines1 = div(div(resultLines).withClasses(OVERFLOW_Y_HIDDEN)).withClasses("relative");
-      return div(resultLines1).withClasses(VIEWER,
-                                           VIEWER_RESULT,
-                                           W_FULL,
-                                           MAX_W_PROSE,
-                                           PX_8);
+    private static DivTag resultViewer(final DomContent results, final boolean success) {
+      final DomContent resultLines1 =
+              div(div(results).withClasses(OVERFLOW_Y_HIDDEN)).withClasses(RELATIVE);
+
+      final List<String> classes = new ArrayList<>();
+      classes.addAll(List.of(VIEWER, VIEWER_RESULT, W_FULL, MAX_W_PROSE, PX_8));
+      if (!success) {
+        classes.add(RESULT_ERROR);
+      }
+      return div(resultLines1).withClasses(classes.toArray(new String[]{}));
     }
 
     private static DivTag htmlViewer(final DomContent markdown) {
-      final DomContent markdownViewer = div(markdown).withClasses("viewer-markdown");
-      return div(markdownViewer).withClasses(VIEWER, VIEWER_HTML, W_FULL, MAX_W_PROSE, PX_8);
+      final DomContent markdownViewer = div(markdown).withClasses(VIEWER_MARKDOWN);
+      return div(markdownViewer).withClasses(VIEWER,
+                                             VIEWER_HTML,
+                                             W_FULL,
+                                             MAX_W_PROSE,
+                                             PX_8);
     }
 
     private static String markdownToHtml(final String markdown) {
@@ -167,5 +264,8 @@ public class Renderer {
 
       return comment.toString().trim();
     }
+  }
+
+  private record OutAndErrResults(List<Object> out, List<Object> errors) {
   }
 }

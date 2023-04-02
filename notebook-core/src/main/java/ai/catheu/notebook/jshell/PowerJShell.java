@@ -10,9 +10,8 @@ import java.io.PrintStream;
 import java.util.List;
 
 /**
- * bundles all resources necessary to manipulate a jshell
+ * An opinionated wrapping of JShell that exposes more info about snippets
  */
-// todo
 public class PowerJShell {
 
   private final JShell delegate;
@@ -32,7 +31,13 @@ public class PowerJShell {
 
   public EvalResult eval(String input) throws IllegalStateException {
     final List<SnippetEvent> eval = delegate.eval(input);
-    return new EvalResult(eval, popOut(), popErr());
+    return new EvalResult(eval,
+                          popOut(),
+                          popErr(),
+                          eval.stream()
+                              .map(SnippetEvent::snippet)
+                              .map(s -> delegate.diagnostics(s).toList())
+                              .toList());
   }
 
   public void close() {
