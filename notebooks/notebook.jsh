@@ -1,3 +1,4 @@
+// comment before import
 import java.util.List;
 int x = 3;
 3;
@@ -32,6 +33,7 @@ for (int i=0; i<4; i++;) {
   System.out.println(x + r);
 }
 
+//hehe
 x;
 MyObj.class;
 Stream.of(x, 3, 4, 5);

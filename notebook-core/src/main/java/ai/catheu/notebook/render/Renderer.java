@@ -2,6 +2,8 @@ package ai.catheu.notebook.render;
 
 import ai.catheu.notebook.evaluate.Interpreted;
 import ai.catheu.notebook.evaluate.InterpretedSnippet;
+import ai.catheu.notebook.jshell.EvalResult;
+import com.vladsch.flexmark.ext.footnotes.FootnoteExtension;
 import com.vladsch.flexmark.ext.gitlab.GitLabExtension;
 import com.vladsch.flexmark.ext.tables.TablesExtension;
 import com.vladsch.flexmark.html.HtmlRenderer;
@@ -39,9 +41,10 @@ public class Renderer {
   static {
     MutableDataSet options = new MutableDataSet();
     // uncomment to set optional extensions
-    options.set(Parser.EXTENSIONS, Arrays.asList(TablesExtension.create(), GitLabExtension.create()));
+    options.set(Parser.EXTENSIONS, Arrays.asList(TablesExtension.create(), GitLabExtension.create(),
+                                                 FootnoteExtension.create()));
     // uncomment to convert soft-breaks to hard breaks
-    //options.set(HtmlRenderer.SOFT_BREAK, "<br />\n");
+    options.set(HtmlRenderer.SOFT_BREAK, "<br />\n");
     parser = Parser.builder(options).build();
     renderer = HtmlRenderer.builder(options).build();
   }
@@ -84,12 +87,12 @@ public class Renderer {
     }
 
     private DomContent renderJava(final InterpretedSnippet s) {
-      final DomContent codeLines = each(lines.subList(s.staticSnippet().start(),
-                                                 s.staticSnippet().end()),
-                                   LineAwareRenderer::codeLine);
+      final String codeLines = String.join("\n", lines.subList(s.staticSnippet().start(),
+                                                             s.staticSnippet().end()));
       final DivTag code = codeViewer(codeLines);
       // FIXME CYRIL make results look better
-      final DomContent resultLines = each(s.evalResult().events(), e -> div(e.value()).with(br()));
+      final EvalResult evalResult = s.evalResult();
+      final DomContent resultLines = each(evalResult.events(), e -> div(e.value()).with(br()));
       final DivTag result = resultViewer(resultLines);
 
       return join(code, result);
@@ -99,7 +102,7 @@ public class Renderer {
       return div(codeLine).withClasses(CM_LINE);
     }
 
-    private static DivTag codeViewer(DomContent codeLines) {
+    private static DivTag codeViewer(String codeLines) {
       final DivTag content = div(codeLines).withClasses(CM_CONTENT, WHITESPACE_PRE);
       final DivTag cm = div(div(content).withClasses(CM_SCROLLER)).withClasses(CM_EDITOR);
       return div(cm).withClasses(VIEWER, VIEWER_CODE, W_FULL, MAX_W_WIDE);

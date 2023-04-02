@@ -114,15 +114,15 @@ public class GreedyInterpreter implements Interpreter {
       final StaticSnippet s = staticParsing.snippets().get(i);
       final String fingerprint = fingerprintToSnippetIdx.inverse().get(i);
       if (s.type().equals(StaticSnippet.Type.JAVA)) {
-        if (snippetsIdxToRun.contains(i)) {
+        if (fingerprint == null) {
+          // imports are not fingerprinted and always re-evaluated for the moment
+          LOG.debug("Evaluating: " + s.completionInfo().source().strip());
+          final EvalResult res = shell.eval(s.completionInfo().source());
+          interpretedSnippets1.add(new InterpretedSnippet(s, res));
+        } else if (snippetsIdxToRun.contains(i)) {
           LOG.debug("Evaluating: " + s.completionInfo().source().strip());
           final EvalResult res = shell.eval(s.completionInfo().source());
           resultCache.put(fingerprint, res);
-          interpretedSnippets1.add(new InterpretedSnippet(s, res));
-        } else if (s.completionInfo().source().startsWith("import")) {
-          // always rerun imports for the moment
-          LOG.debug("Evaluating: " + s.completionInfo().source().strip());
-          final EvalResult res = shell.eval(s.completionInfo().source());
           interpretedSnippets1.add(new InterpretedSnippet(s, res));
         } else {
           // use cached result

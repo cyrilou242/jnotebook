@@ -9,8 +9,9 @@
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.js" integrity="sha384-PwRUT/YqbnEjkZO0zZxNqcxACrXe+j766U2amXcgMg5457rve2Y7I6ZJSm2A0mS4" crossorigin="anonymous"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
             onload="renderMathInElement(document.body);"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-    <script>mermaid.initialize({startOnLoad:true});</script>
+    <script defer src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js" onload="mermaid.initialize({startOnLoad:true});"></script>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
     <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
     <script>tailwind.config = {
         darkMode: "class",
@@ -28,8 +29,7 @@
             extend: {},
         },
         plugins: [],
-    }
-    </script>
+    }</script>
     <style type="text/tailwindcss">@tailwind base;
     @tailwind components;
     @tailwind utilities;
@@ -501,8 +501,11 @@
     .katex * {
         @apply border-black;
     }
+
+    .hljs {
+        background-color: transparent !important;
+    }
     </style>
-    <link rel="stylesheet" href="./index.css"/>
 </head>
 <body class="dark:bg-gray-900">
 <div class="flex">
@@ -541,7 +544,10 @@
                     // TODO implement proper closing
                 } else {
                     document.getElementById("notebook").innerHTML = event.data;
+                    // render mermaid
                     mermaid.init({noteMargin: 10}, '.mermaid');
+
+                    // render latex
                     var mathElems = document.getElementsByClassName("katex");
                     var elems = [];
                     for (const i in mathElems) {
@@ -549,6 +555,11 @@
                     }
                     elems.forEach(elem => {
                         katex.render(elem.textContent, elem, { throwOnError: false, displayMode: elem.nodeName !== 'SPAN', });
+                    });
+
+                    // render code color
+                    document.querySelectorAll('div.cm-content').forEach(el => {
+                        hljs.highlightElement(el, {language: 'java'});
                     });
                 }
             }
