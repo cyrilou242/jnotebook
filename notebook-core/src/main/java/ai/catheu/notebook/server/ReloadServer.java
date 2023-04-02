@@ -20,10 +20,7 @@ import org.xnio.XnioWorker;
 
 import java.io.IOException;
 
-//TODO CYRIL a full reload is ok to start with
-// partial reload can be implemented later using ids and replacing ids by ids?
-// not sure how to insert between ids yet - maybe a linked list, or a notion of preceding node
-// but preceding is annoying at delete time - maybe soft delete by emptying
+// a full reload is ok to start with
 public class ReloadServer {
 
   private static final Logger LOG = LoggerFactory.getLogger(Main.class);
