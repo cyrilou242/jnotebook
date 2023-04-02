@@ -2,6 +2,8 @@ package ai.catheu.notebook.render;
 
 import ai.catheu.notebook.evaluate.Interpreted;
 import ai.catheu.notebook.evaluate.InterpretedSnippet;
+import com.vladsch.flexmark.ext.gitlab.GitLabExtension;
+import com.vladsch.flexmark.ext.tables.TablesExtension;
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.ast.Node;
@@ -10,6 +12,7 @@ import j2html.tags.DomContent;
 import j2html.tags.UnescapedText;
 import j2html.tags.specialized.DivTag;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static j2html.TagCreator.*;
@@ -36,7 +39,7 @@ public class Renderer {
   static {
     MutableDataSet options = new MutableDataSet();
     // uncomment to set optional extensions
-    //options.set(Parser.EXTENSIONS, Arrays.asList(TablesExtension.create(), StrikethroughExtension.create()));
+    options.set(Parser.EXTENSIONS, Arrays.asList(TablesExtension.create(), GitLabExtension.create()));
     // uncomment to convert soft-breaks to hard breaks
     //options.set(HtmlRenderer.SOFT_BREAK, "<br />\n");
     parser = Parser.builder(options).build();
@@ -151,7 +154,7 @@ public class Renderer {
             inComment = false;
             comment.append(line.substring(0, line.indexOf("*/")).trim()).append("\n");
           } else {
-            comment.append(line.trim()).append(" ");
+            comment.append(line.trim()).append("\n");
           }
         } else if (inJavadoc) {
           if (line.contains("*/")) {
