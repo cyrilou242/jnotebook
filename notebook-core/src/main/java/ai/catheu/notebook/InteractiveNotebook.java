@@ -2,6 +2,7 @@ package ai.catheu.notebook;
 
 import ai.catheu.notebook.evaluate.Interpreter;
 import ai.catheu.notebook.evaluate.GreedyInterpreter;
+import ai.catheu.notebook.evaluate.ShellProvider;
 import ai.catheu.notebook.file.PathObservables;
 import ai.catheu.notebook.parse.StaticParser;
 import ai.catheu.notebook.render.Renderer;
@@ -29,8 +30,9 @@ public class InteractiveNotebook {
 
   public InteractiveNotebook(final Main.InteractiveConfiguration configuration) {
     this.configuration = configuration;
-    this.staticParser = new StaticParser();
-    this.interpreter = new GreedyInterpreter();
+    final ShellProvider shellProvider = new ShellProvider();
+    this.staticParser = new StaticParser(shellProvider);
+    this.interpreter = new GreedyInterpreter(shellProvider);
     this.renderer = new Renderer();
     this.server = new ReloadServer();
   }

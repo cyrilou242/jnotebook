@@ -5,6 +5,8 @@ import ai.catheu.notebook.parse.StaticSnippet;
 import ai.catheu.notebook.parse.StaticSnippet.Type;
 import jdk.jshell.JShell;
 import jdk.jshell.SnippetEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -14,7 +16,14 @@ import java.util.Map;
 
 public class SimpleInterpreter implements Interpreter {
 
-  final Map<Path, JShell> fileToShell = new HashMap();
+  private static final Logger LOG = LoggerFactory.getLogger(SimpleInterpreter.class);
+
+  private final Map<Path, JShell> fileToShell = new HashMap();
+  private final ShellProvider shellProvider;
+
+  public SimpleInterpreter(final ShellProvider shellProvider) {
+    this.shellProvider = shellProvider;
+  }
 
   public Interpreted interpret(final StaticParsing staticParsing) {
     final JShell shell =
@@ -36,8 +45,8 @@ public class SimpleInterpreter implements Interpreter {
   }
 
   private JShell newShell(final Path path) {
-    final JShell jshell = JShell.builder().build();
-    return jshell;
+    LOG.info("Starting new shell for file: {}", path.getFileName());
+    return shellProvider.getShell();
   }
 
   @Override

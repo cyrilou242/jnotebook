@@ -31,12 +31,11 @@ public class GreedyInterpreter implements Interpreter {
 
   private static final Logger LOG = LoggerFactory.getLogger(GreedyInterpreter.class);
 
-  // FIXME cyril use a class name that is less prone to collision
-  private static final String SYNTHETIC_CLASS = "A";
-  private static final String CLASS_PREFIX = "class " + SYNTHETIC_CLASS + " { \n";
+  // the synthetic names are complex to avoid collision with user defined types
+  private static final String SYNTHETIC_CLASS_NAME = "B9fe3d5Synth";
+  private static final String SYNTHETIC_METHOD_NAME = "ce75c1cSynth";
+  private static final String CLASS_PREFIX = "class " + SYNTHETIC_CLASS_NAME + " { \n";
   private static final String BLOCK_SUFFIX = "}";
-  // FIXME cyril use a method name that is less prone to collision
-  private static final String SYNTHETIC_METHOD_PREFIX = "synth";
   public static final CtScanner FINGERPRINT_PREPARATOR = new CtScanner() {
     @Override
     protected void enter(CtElement e) {
@@ -46,8 +45,8 @@ public class GreedyInterpreter implements Interpreter {
 
     @Override
     public <T> void visitCtMethod(CtMethod<T> m) {
-      if (m.getSimpleName().startsWith(SYNTHETIC_METHOD_PREFIX)) {
-        m.setSimpleName(SYNTHETIC_METHOD_PREFIX);
+      if (m.getSimpleName().startsWith(SYNTHETIC_METHOD_NAME)) {
+        m.setSimpleName(SYNTHETIC_METHOD_NAME);
       }
       super.visitCtMethod(m);
     }
@@ -55,6 +54,11 @@ public class GreedyInterpreter implements Interpreter {
 
   final Map<Path, JShell> fileToShell = new HashMap<>();
   final Map<Path, Map<String, List<SnippetEvent>>> fileToResultCache = new HashMap<>();
+  private final ShellProvider shellProvider;
+
+  public GreedyInterpreter(final ShellProvider shellProvider) {
+    this.shellProvider = shellProvider;
+  }
 
   @Override
   public Interpreted interpret(final StaticParsing staticParsing) {
@@ -223,7 +227,7 @@ public class GreedyInterpreter implements Interpreter {
         public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
           if (reference.getDeclaringType() != null) {
             final var declaringType = reference.getDeclaringType();
-            if (declaringType.getSimpleName().equals(SYNTHETIC_CLASS)) {
+            if (declaringType.getSimpleName().equals(SYNTHETIC_CLASS_NAME)) {
               dependencies.putEdge(member.getSimpleName(), reference.getSimpleName());
             }
           }
@@ -233,7 +237,7 @@ public class GreedyInterpreter implements Interpreter {
         public <T> void visitCtExecutableReference(CtExecutableReference<T> reference) {
           if (reference.getDeclaringType() != null) {
             final var declaringType = reference.getDeclaringType();
-            if (declaringType.getSimpleName().equals(SYNTHETIC_CLASS)) {
+            if (declaringType.getSimpleName().equals(SYNTHETIC_CLASS_NAME)) {
               dependencies.putEdge(member.getSimpleName(), reference.getSimpleName());
             }
           }
@@ -243,7 +247,7 @@ public class GreedyInterpreter implements Interpreter {
         public <T> void visitCtArrayTypeReference(CtArrayTypeReference<T> reference) {
           if (reference.getDeclaringType() != null) {
             final var declaringType = reference.getDeclaringType();
-            if (declaringType.getSimpleName().equals(SYNTHETIC_CLASS)) {
+            if (declaringType.getSimpleName().equals(SYNTHETIC_CLASS_NAME)) {
               dependencies.putEdge(member.getSimpleName(), reference.getSimpleName());
             }
           }
@@ -253,7 +257,7 @@ public class GreedyInterpreter implements Interpreter {
         public <T> void visitCtTypeReference(CtTypeReference<T> reference) {
           if (reference.getDeclaringType() != null) {
             final var declaringType = reference.getDeclaringType();
-            if (declaringType.getSimpleName().equals(SYNTHETIC_CLASS)) {
+            if (declaringType.getSimpleName().equals(SYNTHETIC_CLASS_NAME)) {
               dependencies.putEdge(member.getSimpleName(), reference.getSimpleName());
             }
           }
@@ -268,8 +272,7 @@ public class GreedyInterpreter implements Interpreter {
 
   private JShell newShell(final Path path) {
     LOG.info("Starting new shell for file: {}", path.getFileName());
-    final JShell jshell = JShell.builder().build();
-    return jshell;
+    return shellProvider.getShell();
   }
 
   private static CtClass<?> parseClassCode(String classCode) {
@@ -282,7 +285,7 @@ public class GreedyInterpreter implements Interpreter {
   }
 
   private static StringBuilder methodPrefix(final int i) {
-    return new StringBuilder("public Object " + SYNTHETIC_METHOD_PREFIX + i + "(){");
+    return new StringBuilder("public Object " + SYNTHETIC_METHOD_NAME + i + "(){");
   }
 
   private static StringBuilder idComment(final int i) {

@@ -1,5 +1,6 @@
 package ai.catheu.notebook.parse;
 
+import ai.catheu.notebook.evaluate.ShellProvider;
 import ai.catheu.notebook.parse.StaticSnippet.Type;
 import io.methvin.watcher.DirectoryChangeEvent;
 import io.reactivex.rxjava3.annotations.NonNull;
@@ -23,7 +24,11 @@ import static jdk.jshell.SourceCodeAnalysis.Completeness.EMPTY;
 public class StaticParser {
 
   private static final Logger LOG = LoggerFactory.getLogger(StaticParser.class);
-  final JShell analysisShell = newJShell();
+  private final JShell analysisShell;
+
+  public StaticParser(final ShellProvider shellProvider) {
+    this.analysisShell = shellProvider.getShell();
+  }
 
   public StaticParsing staticSnippets(@NonNull final DirectoryChangeEvent event) {
     try {
@@ -133,12 +138,6 @@ public class StaticParser {
     }
 
     return new StaticParsing(filePath, lines, notebookSnippets);
-  }
-
-  private static JShell newJShell() {
-    return JShell.builder()
-                 // set options
-                 .build();
   }
 
 
