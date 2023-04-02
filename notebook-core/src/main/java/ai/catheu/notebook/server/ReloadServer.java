@@ -20,7 +20,6 @@ import org.xnio.XnioWorker;
 
 import java.io.IOException;
 
-// a full reload is ok to start with
 public class ReloadServer {
 
   private static final Logger LOG = LoggerFactory.getLogger(Main.class);
