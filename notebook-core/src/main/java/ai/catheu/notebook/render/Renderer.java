@@ -98,10 +98,6 @@ public class Renderer {
       return join(code, result);
     }
 
-    private static DomContent codeLine(final String codeLine) {
-      return div(codeLine).withClasses(CM_LINE);
-    }
-
     private static DivTag codeViewer(String codeLines) {
       final DivTag content = div(codeLines).withClasses(CM_CONTENT, WHITESPACE_PRE);
       final DivTag cm = div(div(content).withClasses(CM_SCROLLER)).withClasses(CM_EDITOR);
