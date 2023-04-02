@@ -542,7 +542,6 @@
                 } else {
                     document.getElementById("notebook").innerHTML = event.data;
                     mermaid.init({noteMargin: 10}, '.mermaid');
-                    //renderMathInElement(document.getElementById("notebook"));
                     var mathElems = document.getElementsByClassName("katex");
                     var elems = [];
                     for (const i in mathElems) {
