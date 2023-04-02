@@ -2,7 +2,7 @@ package ai.catheu.notebook;
 
 import ai.catheu.notebook.evaluate.Interpreter;
 import ai.catheu.notebook.evaluate.GreedyInterpreter;
-import ai.catheu.notebook.evaluate.ShellProvider;
+import ai.catheu.notebook.jshell.ShellProvider;
 import ai.catheu.notebook.file.PathObservables;
 import ai.catheu.notebook.parse.StaticParser;
 import ai.catheu.notebook.render.Renderer;

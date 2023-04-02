@@ -1,12 +1,18 @@
 package ai.catheu.notebook.evaluate;
 
+import ai.catheu.notebook.jshell.EvalResult;
+import ai.catheu.notebook.jshell.PowerJShell;
+import ai.catheu.notebook.jshell.ShellProvider;
 import ai.catheu.notebook.parse.StaticParsing;
 import ai.catheu.notebook.parse.StaticSnippet;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
-import jdk.jshell.*;
+import jdk.jshell.ErroneousSnippet;
+import jdk.jshell.Snippet;
+import jdk.jshell.SnippetEvent;
+import jdk.jshell.SourceCodeAnalysis;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spoon.Launcher;
@@ -52,8 +58,8 @@ public class GreedyInterpreter implements Interpreter {
     }
   };
 
-  final Map<Path, JShell> fileToShell = new HashMap<>();
-  final Map<Path, Map<String, List<SnippetEvent>>> fileToResultCache = new HashMap<>();
+  final Map<Path, PowerJShell> fileToShell = new HashMap<>();
+  final Map<Path, Map<String, EvalResult>> fileToResultCache = new HashMap<>();
   private final ShellProvider shellProvider;
 
   public GreedyInterpreter(final ShellProvider shellProvider) {
@@ -62,9 +68,9 @@ public class GreedyInterpreter implements Interpreter {
 
   @Override
   public Interpreted interpret(final StaticParsing staticParsing) {
-    final JShell shell =
+    final PowerJShell shell =
             fileToShell.computeIfAbsent(staticParsing.path(), this::newShell);
-    final Map<String, List<SnippetEvent>> resultCache = fileToResultCache.computeIfAbsent(
+    final Map<String, EvalResult> resultCache = fileToResultCache.computeIfAbsent(
             staticParsing.path(),
             ignored -> new HashMap<>());
 
@@ -94,7 +100,7 @@ public class GreedyInterpreter implements Interpreter {
     for (final String f : resultCache.keySet()) {
       if (!fingerprintToSnippetIdx.containsKey(f)) {
         // snippets can be dropped
-        for (SnippetEvent s : resultCache.get(f)) {
+        for (SnippetEvent s : resultCache.get(f).events()) {
           LOG.debug("Dropping outdated snippet: {}", s.snippet().source());
           shell.drop(s.snippet());
         }
@@ -110,19 +116,19 @@ public class GreedyInterpreter implements Interpreter {
       if (s.type().equals(StaticSnippet.Type.JAVA)) {
         if (snippetsIdxToRun.contains(i)) {
           LOG.debug("Evaluating: " + s.completionInfo().source().strip());
-          final List<SnippetEvent> events = shell.eval(s.completionInfo().source());
-          resultCache.put(fingerprint, events);
-          interpretedSnippets1.add(new InterpretedSnippet(s, events));
+          final EvalResult res = shell.eval(s.completionInfo().source());
+          resultCache.put(fingerprint, res);
+          interpretedSnippets1.add(new InterpretedSnippet(s, res));
         } else if (s.completionInfo().source().startsWith("import")) {
           // always rerun imports for the moment
           LOG.debug("Evaluating: " + s.completionInfo().source().strip());
-          final List<SnippetEvent> events = shell.eval(s.completionInfo().source());
-          interpretedSnippets1.add(new InterpretedSnippet(s, events));
+          final EvalResult res = shell.eval(s.completionInfo().source());
+          interpretedSnippets1.add(new InterpretedSnippet(s, res));
         } else {
           // use cached result
           LOG.debug("Using cache for: " + s.completionInfo().source().strip());
-          final List<SnippetEvent> events = resultCache.get(fingerprint);
-          interpretedSnippets1.add(new InterpretedSnippet(s, events));
+          final EvalResult res = resultCache.get(fingerprint);
+          interpretedSnippets1.add(new InterpretedSnippet(s, res));
         }
       } else {
         interpretedSnippets1.add(new InterpretedSnippet(s, null));
@@ -270,7 +276,7 @@ public class GreedyInterpreter implements Interpreter {
     return new DependencyGraph(dependencies, simpleNameToMember);
   }
 
-  private JShell newShell(final Path path) {
+  private PowerJShell newShell(final Path path) {
     LOG.info("Starting new shell for file: {}", path.getFileName());
     return shellProvider.getShell();
   }

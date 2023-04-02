@@ -1,9 +1,7 @@
 package ai.catheu.notebook.evaluate;
 
+import ai.catheu.notebook.jshell.EvalResult;
 import ai.catheu.notebook.parse.StaticSnippet;
-import jdk.jshell.SnippetEvent;
 
-import java.util.List;
-
-public record InterpretedSnippet(StaticSnippet staticSnippet, List<SnippetEvent> events) {
+public record InterpretedSnippet(StaticSnippet staticSnippet, EvalResult evalResult) {
 }

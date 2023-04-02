@@ -93,6 +93,19 @@
             </dependency>
 
             <dependency>
+                <groupId>com.vladsch.flexmark</groupId>
+                <artifactId>flexmark-all</artifactId>
+                <version>0.64.0</version>
+                <exclusions>
+                    <!--this dependency is broken I don't know why-->
+                    <exclusion>
+                        <groupId>com.openhtmltopdf</groupId>
+                        <artifactId>openhtmltopdf-core</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>31.0.1-jre</version>

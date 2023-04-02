@@ -1,10 +1,10 @@
 package ai.catheu.notebook.parse;
 
-import ai.catheu.notebook.evaluate.ShellProvider;
+import ai.catheu.notebook.jshell.PowerJShell;
+import ai.catheu.notebook.jshell.ShellProvider;
 import ai.catheu.notebook.parse.StaticSnippet.Type;
 import io.methvin.watcher.DirectoryChangeEvent;
 import io.reactivex.rxjava3.annotations.NonNull;
-import jdk.jshell.JShell;
 import jdk.jshell.SourceCodeAnalysis.Completeness;
 import jdk.jshell.SourceCodeAnalysis.CompletionInfo;
 import org.slf4j.Logger;
@@ -24,7 +24,7 @@ import static jdk.jshell.SourceCodeAnalysis.Completeness.EMPTY;
 public class StaticParser {
 
   private static final Logger LOG = LoggerFactory.getLogger(StaticParser.class);
-  private final JShell analysisShell;
+  private final PowerJShell analysisShell;
 
   public StaticParser(final ShellProvider shellProvider) {
     this.analysisShell = shellProvider.getShell();

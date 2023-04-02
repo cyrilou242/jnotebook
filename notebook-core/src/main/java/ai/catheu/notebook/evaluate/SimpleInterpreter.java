@@ -1,10 +1,11 @@
 package ai.catheu.notebook.evaluate;
 
+import ai.catheu.notebook.jshell.EvalResult;
+import ai.catheu.notebook.jshell.PowerJShell;
+import ai.catheu.notebook.jshell.ShellProvider;
 import ai.catheu.notebook.parse.StaticParsing;
 import ai.catheu.notebook.parse.StaticSnippet;
 import ai.catheu.notebook.parse.StaticSnippet.Type;
-import jdk.jshell.JShell;
-import jdk.jshell.SnippetEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +19,7 @@ public class SimpleInterpreter implements Interpreter {
 
   private static final Logger LOG = LoggerFactory.getLogger(SimpleInterpreter.class);
 
-  private final Map<Path, JShell> fileToShell = new HashMap();
+  private final Map<Path, PowerJShell> fileToShell = new HashMap();
   private final ShellProvider shellProvider;
 
   public SimpleInterpreter(final ShellProvider shellProvider) {
@@ -26,13 +27,13 @@ public class SimpleInterpreter implements Interpreter {
   }
 
   public Interpreted interpret(final StaticParsing staticParsing) {
-    final JShell shell =
+    final PowerJShell shell =
             fileToShell.computeIfAbsent(staticParsing.path(), this::newShell);
     final List<InterpretedSnippet> interpretedSnippets = new ArrayList<>();
     for (StaticSnippet s : staticParsing.snippets()) {
       if (s.type().equals(Type.JAVA)) {
-        final List<SnippetEvent> events = shell.eval(s.completionInfo().source());
-        interpretedSnippets.add(new InterpretedSnippet(s, events));
+        final EvalResult res = shell.eval(s.completionInfo().source());
+        interpretedSnippets.add(new InterpretedSnippet(s, res));
       } else {
         // magic interpretation not implemented
         interpretedSnippets.add(new InterpretedSnippet(s, null));
@@ -44,13 +45,13 @@ public class SimpleInterpreter implements Interpreter {
                            interpretedSnippets);
   }
 
-  private JShell newShell(final Path path) {
+  private PowerJShell newShell(final Path path) {
     LOG.info("Starting new shell for file: {}", path.getFileName());
     return shellProvider.getShell();
   }
 
   @Override
   public void stop() {
-    fileToShell.values().forEach(JShell::close);
+    fileToShell.values().forEach(PowerJShell::close);
   }
 }

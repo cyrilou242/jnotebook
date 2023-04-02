@@ -1,13 +1,11 @@
-package ai.catheu.notebook.evaluate;
-
-import jdk.jshell.JShell;
+package ai.catheu.notebook.jshell;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
 
 public class ShellProvider {
 
-  private final Deque<JShell> preparedShells;
+  private final Deque<PowerJShell> preparedShells;
 
   public ShellProvider() {
     this.preparedShells = new ArrayDeque<>(2);
@@ -16,15 +14,14 @@ public class ShellProvider {
     this.preparedShells.add(internalNewShell());
   }
 
-  public JShell getShell() {
+  public PowerJShell getShell() {
     if (!preparedShells.isEmpty()) {
       return preparedShells.pop();
     }
     return internalNewShell();
   }
 
-  private static JShell internalNewShell() {
-    final JShell jshell = JShell.builder().build();
-    return jshell;
+  private static PowerJShell internalNewShell() {
+    return new PowerJShell();
   }
 }
