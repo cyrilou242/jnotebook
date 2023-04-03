@@ -46,6 +46,12 @@ public class Main {
 
     @CommandLine.Parameters(index = "0", description = "The notebook folder to watch.",
                             defaultValue = "notebooks")
-    String notebookPath = "notebooks";
+    public String notebookPath = "notebooks";
+
+    @CommandLine.Option(names = {"-cp", "-classpath", "--class-path"},
+                        paramLabel = "class search path of directories and zip/jar files",
+                        description = "A : separated list of directories, JAR archives,\n and ZIP archives to search for class files.",
+                        defaultValue = "")
+    public String classPath = "";
   }
 }

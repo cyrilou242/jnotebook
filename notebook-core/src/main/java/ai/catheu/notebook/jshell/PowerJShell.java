@@ -19,12 +19,13 @@ public class PowerJShell {
   private final PrintStream errPrintStream;
 
   // will implement options as arguments later
-  public PowerJShell() {
+  public PowerJShell(final Configuration configuration) {
     out = new ByteArrayOutputStream();
     outPrintStream = new PrintStream(out);
     err = new ByteArrayOutputStream();
     errPrintStream = new PrintStream(err);
     this.delegate = JShell.builder().out(outPrintStream).err(errPrintStream).build();
+    this.delegate.addToClasspath(configuration.classpath);
   }
 
   public EvalResult eval(String input) throws IllegalStateException {
@@ -71,5 +72,8 @@ public class PowerJShell {
 
   public void drop(Snippet snippet) {
     delegate.drop(snippet);
+  }
+
+  public record Configuration(String classpath) {
   }
 }

@@ -30,7 +30,7 @@ public class InteractiveNotebook {
 
   public InteractiveNotebook(final Main.InteractiveConfiguration configuration) {
     this.configuration = configuration;
-    final ShellProvider shellProvider = new ShellProvider();
+    final ShellProvider shellProvider = new ShellProvider(configuration);
     this.staticParser = new StaticParser(shellProvider);
     this.interpreter = new GreedyInterpreter(shellProvider);
     this.renderer = new Renderer();
