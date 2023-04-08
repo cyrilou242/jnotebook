@@ -1,4 +1,4 @@
-package ai.catheu.jnotebook.parse;
+package tech.catheu.jnotebook.parse;
 
 import java.nio.file.Path;
 import java.util.List;

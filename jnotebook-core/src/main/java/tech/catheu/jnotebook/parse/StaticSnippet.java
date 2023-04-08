@@ -1,4 +1,4 @@
-package ai.catheu.jnotebook.parse;
+package tech.catheu.jnotebook.parse;
 
 import jdk.jshell.SourceCodeAnalysis.CompletionInfo;
 

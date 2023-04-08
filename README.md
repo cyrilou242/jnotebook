@@ -5,7 +5,7 @@ Intepret jshell files.
 
 ## How to run
 
-./mvnw compile exec:java -Dexec.mainClass="ai.catheu.jnotebook.Main"
+./mvnw compile exec:java -Dexec.mainClass="tech.catheu.jnotebook.Main"
 
 
 ## run with dependencies in the class-path

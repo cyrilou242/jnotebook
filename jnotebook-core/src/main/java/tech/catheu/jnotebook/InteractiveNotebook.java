@@ -1,12 +1,12 @@
-package ai.catheu.jnotebook;
+package tech.catheu.jnotebook;
 
-import ai.catheu.jnotebook.evaluate.Interpreter;
-import ai.catheu.jnotebook.evaluate.GreedyInterpreter;
-import ai.catheu.jnotebook.jshell.ShellProvider;
-import ai.catheu.jnotebook.file.PathObservables;
-import ai.catheu.jnotebook.parse.StaticParser;
-import ai.catheu.jnotebook.render.Renderer;
-import ai.catheu.jnotebook.server.ReloadServer;
+import tech.catheu.jnotebook.evaluate.Interpreter;
+import tech.catheu.jnotebook.evaluate.GreedyInterpreter;
+import tech.catheu.jnotebook.jshell.ShellProvider;
+import tech.catheu.jnotebook.file.PathObservables;
+import tech.catheu.jnotebook.parse.StaticParser;
+import tech.catheu.jnotebook.render.Renderer;
+import tech.catheu.jnotebook.server.ReloadServer;
 import io.methvin.watcher.DirectoryChangeEvent;
 import io.reactivex.rxjava3.core.Observable;
 import org.slf4j.Logger;

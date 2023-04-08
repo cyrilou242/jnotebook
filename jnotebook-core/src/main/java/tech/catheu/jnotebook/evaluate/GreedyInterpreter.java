@@ -1,10 +1,10 @@
-package ai.catheu.jnotebook.evaluate;
+package tech.catheu.jnotebook.evaluate;
 
-import ai.catheu.jnotebook.jshell.EvalResult;
-import ai.catheu.jnotebook.jshell.PowerJShell;
-import ai.catheu.jnotebook.jshell.ShellProvider;
-import ai.catheu.jnotebook.parse.StaticParsing;
-import ai.catheu.jnotebook.parse.StaticSnippet;
+import tech.catheu.jnotebook.jshell.EvalResult;
+import tech.catheu.jnotebook.jshell.PowerJShell;
+import tech.catheu.jnotebook.jshell.ShellProvider;
+import tech.catheu.jnotebook.parse.StaticParsing;
+import tech.catheu.jnotebook.parse.StaticSnippet;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.graph.GraphBuilder;

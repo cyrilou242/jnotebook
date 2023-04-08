@@ -1,4 +1,4 @@
-package ai.catheu.jnotebook.file;
+package tech.catheu.jnotebook.file;
 
 import io.methvin.watcher.DirectoryChangeEvent;
 import io.methvin.watcher.DirectoryWatcher;

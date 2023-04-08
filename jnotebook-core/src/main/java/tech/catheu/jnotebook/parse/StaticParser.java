@@ -1,8 +1,8 @@
-package ai.catheu.jnotebook.parse;
+package tech.catheu.jnotebook.parse;
 
-import ai.catheu.jnotebook.jshell.PowerJShell;
-import ai.catheu.jnotebook.jshell.ShellProvider;
-import ai.catheu.jnotebook.parse.StaticSnippet.Type;
+import tech.catheu.jnotebook.jshell.PowerJShell;
+import tech.catheu.jnotebook.jshell.ShellProvider;
+import tech.catheu.jnotebook.parse.StaticSnippet.Type;
 import io.methvin.watcher.DirectoryChangeEvent;
 import io.reactivex.rxjava3.annotations.NonNull;
 import jdk.jshell.SourceCodeAnalysis.Completeness;
@@ -16,8 +16,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ai.catheu.jnotebook.parse.StaticSnippet.Type.COMMENT;
-import static ai.catheu.jnotebook.parse.StaticSnippet.Type.JAVA;
+import static tech.catheu.jnotebook.parse.StaticSnippet.Type.COMMENT;
+import static tech.catheu.jnotebook.parse.StaticSnippet.Type.JAVA;
 import static io.methvin.watcher.DirectoryChangeEvent.EventType.*;
 import static jdk.jshell.SourceCodeAnalysis.Completeness.EMPTY;
 

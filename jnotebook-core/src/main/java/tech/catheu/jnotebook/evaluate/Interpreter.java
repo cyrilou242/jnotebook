@@ -1,6 +1,6 @@
-package ai.catheu.jnotebook.evaluate;
+package tech.catheu.jnotebook.evaluate;
 
-import ai.catheu.jnotebook.parse.StaticParsing;
+import tech.catheu.jnotebook.parse.StaticParsing;
 
 public interface Interpreter {
 

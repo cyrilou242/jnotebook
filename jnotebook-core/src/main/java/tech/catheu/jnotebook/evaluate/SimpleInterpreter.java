@@ -1,11 +1,10 @@
-package ai.catheu.jnotebook.evaluate;
+package tech.catheu.jnotebook.evaluate;
 
-import ai.catheu.jnotebook.jshell.EvalResult;
-import ai.catheu.jnotebook.jshell.PowerJShell;
-import ai.catheu.jnotebook.jshell.ShellProvider;
-import ai.catheu.jnotebook.parse.StaticParsing;
-import ai.catheu.jnotebook.parse.StaticSnippet;
-import ai.catheu.jnotebook.parse.StaticSnippet.Type;
+import tech.catheu.jnotebook.jshell.EvalResult;
+import tech.catheu.jnotebook.jshell.PowerJShell;
+import tech.catheu.jnotebook.jshell.ShellProvider;
+import tech.catheu.jnotebook.parse.StaticParsing;
+import tech.catheu.jnotebook.parse.StaticSnippet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +30,7 @@ public class SimpleInterpreter implements Interpreter {
             fileToShell.computeIfAbsent(staticParsing.path(), this::newShell);
     final List<InterpretedSnippet> interpretedSnippets = new ArrayList<>();
     for (StaticSnippet s : staticParsing.snippets()) {
-      if (s.type().equals(Type.JAVA)) {
+      if (s.type().equals(StaticSnippet.Type.JAVA)) {
         final EvalResult res = shell.eval(s.completionInfo().source());
         interpretedSnippets.add(new InterpretedSnippet(s, res));
       } else {

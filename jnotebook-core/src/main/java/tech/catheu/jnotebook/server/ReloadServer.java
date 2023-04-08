@@ -1,6 +1,6 @@
-package ai.catheu.jnotebook.server;
+package tech.catheu.jnotebook.server;
 
-import ai.catheu.jnotebook.Main;
+import tech.catheu.jnotebook.Main;
 import io.undertow.Handlers;
 import io.undertow.Undertow;
 import io.undertow.server.RoutingHandler;

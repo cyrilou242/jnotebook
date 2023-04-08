@@ -1,6 +1,6 @@
-package ai.catheu.jnotebook.jshell;
+package tech.catheu.jnotebook.jshell;
 
-import ai.catheu.jnotebook.Main;
+import tech.catheu.jnotebook.Main;
 import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

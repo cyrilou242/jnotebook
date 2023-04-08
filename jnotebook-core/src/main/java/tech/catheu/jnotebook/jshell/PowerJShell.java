@@ -1,4 +1,4 @@
-package ai.catheu.jnotebook.jshell;
+package tech.catheu.jnotebook.jshell;
 
 import jdk.jshell.*;
 

@@ -1,4 +1,4 @@
-package ai.catheu.jnotebook;
+package tech.catheu.jnotebook;
 
 import j2html.tags.DomContent;
 import j2html.tags.specialized.DivTag;

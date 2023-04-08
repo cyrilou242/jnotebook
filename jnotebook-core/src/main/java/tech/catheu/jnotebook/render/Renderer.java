@@ -1,9 +1,9 @@
-package ai.catheu.jnotebook.render;
+package tech.catheu.jnotebook.render;
 
-import ai.catheu.jnotebook.InteractiveNotebook;
-import ai.catheu.jnotebook.evaluate.Interpreted;
-import ai.catheu.jnotebook.evaluate.InterpretedSnippet;
-import ai.catheu.jnotebook.jshell.EvalResult;
+import tech.catheu.jnotebook.InteractiveNotebook;
+import tech.catheu.jnotebook.evaluate.Interpreted;
+import tech.catheu.jnotebook.evaluate.InterpretedSnippet;
+import tech.catheu.jnotebook.jshell.EvalResult;
 import com.vladsch.flexmark.ext.footnotes.FootnoteExtension;
 import com.vladsch.flexmark.ext.gitlab.GitLabExtension;
 import com.vladsch.flexmark.ext.tables.TablesExtension;

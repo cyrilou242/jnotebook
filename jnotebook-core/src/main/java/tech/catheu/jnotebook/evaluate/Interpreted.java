@@ -1,4 +1,4 @@
-package ai.catheu.jnotebook.evaluate;
+package tech.catheu.jnotebook.evaluate;
 
 import java.nio.file.Path;
 import java.util.List;

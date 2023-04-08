@@ -8,7 +8,7 @@ var s1 = "<code>THIS IS NEW CODE</code>";
 import java.util.List;
 import java.util.Map;
 
-import ai.catheu.jnotebook.Nb;
+import tech.catheu.jnotebook.Nb;
 
 Integer.valueOf(3).toString();
 
