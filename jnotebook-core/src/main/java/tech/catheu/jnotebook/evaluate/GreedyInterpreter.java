@@ -1,10 +1,5 @@
 package tech.catheu.jnotebook.evaluate;
 
-import tech.catheu.jnotebook.jshell.EvalResult;
-import tech.catheu.jnotebook.jshell.PowerJShell;
-import tech.catheu.jnotebook.jshell.ShellProvider;
-import tech.catheu.jnotebook.parse.StaticParsing;
-import tech.catheu.jnotebook.parse.StaticSnippet;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.graph.GraphBuilder;
@@ -13,6 +8,8 @@ import jdk.jshell.ErroneousSnippet;
 import jdk.jshell.Snippet;
 import jdk.jshell.SnippetEvent;
 import jdk.jshell.SourceCodeAnalysis;
+import org.apache.commons.lang3.JavaVersion;
+import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spoon.Launcher;
@@ -26,6 +23,11 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.support.compiler.VirtualFile;
+import tech.catheu.jnotebook.jshell.EvalResult;
+import tech.catheu.jnotebook.jshell.PowerJShell;
+import tech.catheu.jnotebook.jshell.ShellProvider;
+import tech.catheu.jnotebook.parse.StaticParsing;
+import tech.catheu.jnotebook.parse.StaticSnippet;
 
 import java.nio.file.Path;
 import java.util.*;
@@ -283,11 +285,20 @@ public class GreedyInterpreter implements Interpreter {
 
   private static CtClass<?> parseClassCode(String classCode) {
     Launcher launcher = new Launcher();
-    launcher.getEnvironment().setComplianceLevel(11);
+    launcher.getEnvironment().setComplianceLevel(getJavaVersion());
     launcher.getEnvironment().setNoClasspath(true);
     launcher.getEnvironment().setCommentEnabled(true);
     launcher.addInputResource(new VirtualFile(classCode));
     return (CtClass<?>) launcher.buildModel().getAllTypes().iterator().next();
+  }
+
+  private static int getJavaVersion() {
+    if (SystemUtils.isJavaVersionAtLeast(JavaVersion.JAVA_17)) {
+      return 17;
+    } else if (SystemUtils.isJavaVersionAtLeast(JavaVersion.JAVA_16)) {
+      return 16;
+    }
+    return 11;
   }
 
   private static StringBuilder methodPrefix(final int i) {
