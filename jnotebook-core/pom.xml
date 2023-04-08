@@ -17,6 +17,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>tech.catheu</groupId>
+            <artifactId>jnotebook-utils</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>io.methvin</groupId>
             <artifactId>directory-watcher</artifactId>
         </dependency>
@@ -67,12 +72,6 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-        </dependency>
-
-        <!-- viewer dependencies -->
-        <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
         </dependency>
 
     </dependencies>

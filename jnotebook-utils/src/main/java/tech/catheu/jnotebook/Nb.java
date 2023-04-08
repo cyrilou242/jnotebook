@@ -9,10 +9,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static j2html.TagCreator.*;
 
-// FIXME CYRIL move to another package
 public class Nb {
 
   public static DivTag vega(final Map<String, Object> data) {
@@ -50,7 +48,9 @@ public class Nb {
   }
 
   public static DomContent grid(final int maxCols, final Object... objects) {
-    checkArgument(maxCols > 0 && maxCols <= 12);
+    if (maxCols < 1 || maxCols > 12) {
+      throw new IllegalArgumentException(String.format("Invalid maxCols value: %s. maxCols must be between 1 and 12", maxCols));
+    }
     return div(each(Arrays.asList(objects), Nb::html)).withClasses("grid", "grid-cols-" + maxCols);
   }
 

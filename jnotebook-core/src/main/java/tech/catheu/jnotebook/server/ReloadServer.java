@@ -1,6 +1,5 @@
 package tech.catheu.jnotebook.server;
 
-import tech.catheu.jnotebook.Main;
 import io.undertow.Handlers;
 import io.undertow.Undertow;
 import io.undertow.server.RoutingHandler;
@@ -17,6 +16,7 @@ import org.xnio.OptionMap;
 import org.xnio.Options;
 import org.xnio.Xnio;
 import org.xnio.XnioWorker;
+import tech.catheu.jnotebook.Main;
 
 import java.io.IOException;
 
@@ -56,7 +56,19 @@ public class ReloadServer {
                                                    .set(Options.BACKLOG, 10000)
                                                    .getMap());
 
-    worker.execute(server::start);
+    worker.execute(new ServerLauncher());
+  }
+
+  private class ServerLauncher implements  Runnable {
+    @Override
+    public void run() {
+      try {
+        server.start();
+      } catch (Exception e) {
+        LOG.error("Server error. Shutting down notebook server.", e);
+        System.exit(1);
+      }
+    }
   }
 
   public void sendReload() {

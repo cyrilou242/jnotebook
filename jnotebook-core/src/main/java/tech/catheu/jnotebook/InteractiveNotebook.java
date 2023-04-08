@@ -1,21 +1,19 @@
 package tech.catheu.jnotebook;
 
-import tech.catheu.jnotebook.evaluate.Interpreter;
-import tech.catheu.jnotebook.evaluate.GreedyInterpreter;
-import tech.catheu.jnotebook.jshell.ShellProvider;
-import tech.catheu.jnotebook.file.PathObservables;
-import tech.catheu.jnotebook.parse.StaticParser;
-import tech.catheu.jnotebook.render.Renderer;
-import tech.catheu.jnotebook.server.ReloadServer;
 import io.methvin.watcher.DirectoryChangeEvent;
 import io.reactivex.rxjava3.core.Observable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tech.catheu.jnotebook.evaluate.GreedyInterpreter;
+import tech.catheu.jnotebook.evaluate.Interpreter;
+import tech.catheu.jnotebook.file.PathObservables;
+import tech.catheu.jnotebook.jshell.ShellProvider;
+import tech.catheu.jnotebook.parse.StaticParser;
+import tech.catheu.jnotebook.render.Renderer;
+import tech.catheu.jnotebook.server.ReloadServer;
 
 import java.io.IOException;
 import java.nio.file.Paths;
-
-import static io.methvin.watcher.DirectoryChangeEvent.EventType.DELETE;
 
 public class InteractiveNotebook {
 
@@ -42,15 +40,11 @@ public class InteractiveNotebook {
     final Observable<DirectoryChangeEvent> notebookEvents =
             PathObservables.of(Paths.get(configuration.notebookPath))
                            .filter(e -> e.path().toString().endsWith(JSHELL_SUFFIX));
-
-    final var deletes = notebookEvents.filter(e -> e.eventType().equals(DELETE));
     //.subscribe(s -> server.sendReload()); to subscribe on a side scheduler
 
-    LOG.info("Notebook server started successfully on http://localhost:5002");
+    LOG.info("Notebook server started on http://localhost:5002");
 
-    notebookEvents.filter(e -> !e.eventType().equals(DELETE))
-                  .doOnError(InteractiveNotebook::logError)
-                  .map(staticParser::staticSnippets)
+    notebookEvents.map(staticParser::staticSnippets)
                   .doOnError(InteractiveNotebook::logError)
                   .map(interpreter::interpret)
                   .doOnError(InteractiveNotebook::logError)
