@@ -32,7 +32,7 @@ public class InteractiveNotebook {
     this.staticParser = new StaticParser(shellProvider);
     this.interpreter = new GreedyInterpreter(shellProvider);
     this.renderer = new Renderer();
-    this.server = new ReloadServer();
+    this.server = new ReloadServer(configuration);
   }
 
   public void run() throws IOException {
@@ -42,7 +42,7 @@ public class InteractiveNotebook {
                            .filter(e -> e.path().toString().endsWith(JSHELL_SUFFIX));
     //.subscribe(s -> server.sendReload()); to subscribe on a side scheduler
 
-    LOG.info("Notebook server started on http://localhost:5002");
+    LOG.info("Notebook server started on http://localhost:" + configuration.port);
 
     notebookEvents.map(staticParser::staticSnippets)
                   .doOnError(InteractiveNotebook::logError)

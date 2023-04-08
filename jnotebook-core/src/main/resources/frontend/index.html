@@ -553,14 +553,15 @@
             <div id="helper" class="viewer viewer-result w-full max-w-prose px-8">
                 <div class="relative">
                     <div class="overflow-y-hidden">
-                        <p>Save a file in your notebooks folder to make your notebook appear…</p></div>
+                        <p>Save a file in your <code>[[${config.notebookPath}]]</code> folder to make your notebook appear…</p></div>
                 </div>
             </div>
         </div>
     </div>
-    <script>
+    <script th:inline="javascript">
         function connect() {
-            var socket = new WebSocket("ws://localhost:5002/websocket");
+            var port = [[${config.port}]];
+            var socket = new WebSocket("ws://localhost:" + port + "/websocket");
 
             socket.onclose = function (event) {
                 console.log("Websocket connection closed or unable to connect; " +

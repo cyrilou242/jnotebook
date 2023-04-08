@@ -4,7 +4,7 @@ System.out.println("<code>THIS IS CODE</code>");
 // hey lol lol lol hey
 var s1 = "<code>THIS IS NEW CODE</code>";
 
-// hehe
+// hehe hoho
 import java.util.List;
 import java.util.Map;
 
@@ -50,7 +50,7 @@ Nb.plotly(
     ),
   Map.of(), Map.of());
 
-// ## using vega hop hey hey
+// ## using vega hop ho
 var plot4 = Nb.vega(Map.of(
                     "width", 650,
                     "height", 400,

@@ -2,9 +2,10 @@ package tech.catheu.jnotebook.server;
 
 import io.undertow.Handlers;
 import io.undertow.Undertow;
+import io.undertow.server.HttpHandler;
+import io.undertow.server.HttpServerExchange;
 import io.undertow.server.RoutingHandler;
-import io.undertow.server.handlers.resource.ClassPathResourceManager;
-import io.undertow.server.handlers.resource.ResourceHandler;
+import io.undertow.util.Headers;
 import io.undertow.websockets.WebSocketConnectionCallback;
 import io.undertow.websockets.WebSocketProtocolHandshakeHandler;
 import io.undertow.websockets.core.WebSocketChannel;
@@ -12,6 +13,9 @@ import io.undertow.websockets.core.WebSockets;
 import io.undertow.websockets.spi.WebSocketHttpExchange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import org.xnio.OptionMap;
 import org.xnio.Options;
 import org.xnio.Xnio;
@@ -24,30 +28,28 @@ public class ReloadServer {
 
   private static final Logger LOG = LoggerFactory.getLogger(Main.class);
 
+  private final Main.InteractiveConfiguration configuration;
+
   private Undertow server;
   private WebSocketChannel webSocketChannel;
   XnioWorker worker;
 
-  public void start() throws IOException {
-    // Create the resource handler for serving static files
-    ResourceHandler resourceHandler = new ResourceHandler(new ClassPathResourceManager(
-            getClass().getClassLoader(),
-            "frontend"));
+  public ReloadServer(final Main.InteractiveConfiguration configuration) {
+    this.configuration = configuration;
+  }
 
-    // Create the routing handler for handling WebSocket requests
+
+  public void start() throws IOException {
     RoutingHandler routingHandler = Handlers.routing()
-                                            .get("/", resourceHandler)
-                                            .get("/{path}", resourceHandler)
+                                            .get("/", new TemplatedHttpHandler(configuration))
                                             .get("/websocket",
                                                  new WebSocketProtocolHandshakeHandler(new ConnectionCallback()));
-
-    // Create the Undertow server and start it
     server = Undertow.builder()
-                     .addHttpListener(5002, "localhost")
+                     .addHttpListener(configuration.port, "localhost")
                      .setHandler(routingHandler)
                      .build();
 
-    // Create a worker thread pool with 10 threads
+    // not sure if the config is relevant
     XnioWorker worker = Xnio.getInstance()
                             .createWorker(OptionMap.builder()
                                                    .set(Options.WORKER_IO_THREADS, 10)
@@ -59,7 +61,7 @@ public class ReloadServer {
     worker.execute(new ServerLauncher());
   }
 
-  private class ServerLauncher implements  Runnable {
+  private class ServerLauncher implements Runnable {
     @Override
     public void run() {
       try {
@@ -70,6 +72,40 @@ public class ReloadServer {
       }
     }
   }
+
+  private static class TemplatedHttpHandler implements HttpHandler {
+
+    final TemplateEngine templateEngine;
+    final Context context;
+    final Main.InteractiveConfiguration configuration;
+
+    TemplatedHttpHandler(final Main.InteractiveConfiguration configuration) {
+      this.configuration = configuration;
+      this.templateEngine = createTemplateEngine();
+      this.context = new Context();
+      this.context.setVariable("config", this.configuration);
+    }
+
+    private static TemplateEngine createTemplateEngine() {
+      ClassLoaderTemplateResolver resolver = new ClassLoaderTemplateResolver();
+      resolver.setPrefix("frontend/");
+      resolver.setSuffix(".html");
+
+      TemplateEngine engine = new TemplateEngine();
+      engine.setTemplateResolver(resolver);
+
+      return engine;
+    }
+
+    @Override
+    public void handleRequest(HttpServerExchange exchange) throws Exception {
+      String html = templateEngine.process("index", context);
+
+      exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/html");
+      exchange.getResponseSender().send(html);
+    }
+  }
+
 
   public void sendReload() {
     sendMessage("reload");
@@ -83,7 +119,8 @@ public class ReloadServer {
     if (webSocketChannel != null && webSocketChannel.isOpen()) {
       WebSockets.sendText(message, webSocketChannel, null);
     } else {
-      LOG.error("ERROR: trying to send updates but no client is opened. Go to http://localhost:5002");
+      LOG.error(
+              "ERROR: trying to send updates but no client is opened. Go to http://localhost:" + configuration.port);
     }
   }
 

@@ -44,10 +44,18 @@ public class Main {
 
   public static class InteractiveConfiguration {
 
+    // server configs
     @CommandLine.Parameters(index = "0", description = "The notebook folder to watch.",
                             defaultValue = "notebooks")
     public String notebookPath = "notebooks";
 
+    @CommandLine.Option(names = {"-p", "--port"},
+                        paramLabel = "server port",
+                        description = "Port of the notebook server",
+                        defaultValue = "5002")
+    public Integer port;
+
+    // notebook runtime configs
     @CommandLine.Option(names = {"-cp", "-classpath", "--class-path"},
                         paramLabel = "class search path of directories and zip/jar files",
                         description = "A : separated list of directories, JAR archives,\n and ZIP archives to search for class files.",
