@@ -20,7 +20,7 @@ Nb.plotly(
 
 
 // ## using vega hop hey hey
-Nb.vegaLite(Map.of(
+Nb.vega(Map.of(
                     "width", 650,
                     "height", 400,
                     "data", Map.of(

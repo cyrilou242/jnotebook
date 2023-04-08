@@ -13,17 +13,17 @@ import static j2html.TagCreator.div;
 // FIXME CYRIL move to another package
 public class Nb {
 
-  public static void vegaLite(final Map<String, Object> data) {
+  public static void vega(final Map<String, Object> data) {
     final JSONObject json = new JSONObject(data);
-    vegaLite(json);
+    vega(json);
   }
 
-  public static void vegaLite(final JSONObject jsonData) {
-    final DomContent res = vegaLiteHtml(jsonData);
+  public static void vega(final JSONObject jsonData) {
+    final DomContent res = vegaHtml(jsonData);
     System.out.println(res);
   }
 
-  private static DomContent vegaLiteHtml(JSONObject jsonData) {
+  private static DomContent vegaHtml(JSONObject jsonData) {
     final DivTag chartContainer = div().withClasses("vega-lite vega-embed has-actions")
                                        .withData("config", jsonData.toString());
     return div(chartContainer).withClasses("overflow-x-auto");

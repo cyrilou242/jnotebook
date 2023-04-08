@@ -20,7 +20,7 @@ l.get(0);
 
 error make the whole rendering fail:
 
-Nb.vegaLite(new JSONObject("""{
+Nb.vega(new JSONObject("""{
 "data": {
 "values": [
 {"a": "C", "b": 2}, {"a": "C", "b": 7}, {"a": "C", "b": 4},
