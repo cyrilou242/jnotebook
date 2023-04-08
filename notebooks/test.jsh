@@ -2,25 +2,56 @@
 System.out.println("<code>THIS IS CODE</code>");
 
 // hey lol lol lol hey
-"<code>THIS IS NEW CODE</code>";
+var s1 = "<code>THIS IS NEW CODE</code>";
 
-throw new UnsupportedOperationException("Louise has to sleep");
-
+// hehe
 import java.util.List;
 import java.util.Map;
 
-import ai.catheu.jnotebook.Nb
+import ai.catheu.jnotebook.Nb;
 
-// ## plotly HEY hello hey
+Integer.valueOf(3).toString();
+
+// final test
+Nb.html(s1);
+
+throw new UnsupportedOperationException("Louise has to sleep");
+
+// hey ho hey ho on rentre
+Nb.row(1,2,3, 4, 5, 6);
+
+Nb.col(1,2,3, 4, 5, 6);
+
+Nb.col(Nb.row(1,2,3), Nb.row(4, 5, 6));
+
+Nb.col(Nb.row(1,2), Nb.row("LOL", "Louise"), Nb.row(4, 5, 6));
+
+
+var plot1 = Nb.plotly(
+              List.of(
+                Map.of("z", List.of(List.of(1, 2, 3), List.of(3, 2, 1)), "type", "surface")
+                ),
+              Map.of(), Map.of());
+
+var plot2 = Nb.plotly(
+                          List.of(
+                            Map.of("z", List.of(List.of(1, 2, 3), List.of(3, 2, 1)), "type", "surface")
+                            ),
+                          Map.of(), Map.of());
+
+Nb.row(plot1, plot2);
+
+Nb.grid(4, 1,2,3,4,5,6,7);
+
+// ## plotly example
 Nb.plotly(
   List.of(
     Map.of("z", List.of(List.of(1, 2, 3), List.of(3, 2, 1)), "type", "surface")
     ),
   Map.of(), Map.of());
 
-
 // ## using vega hop hey hey
-Nb.vega(Map.of(
+var plot4 = Nb.vega(Map.of(
                     "width", 650,
                     "height", 400,
                     "data", Map.of(
@@ -47,6 +78,8 @@ Nb.vega(Map.of(
                             )
                     )
             ));
+
+Nb.col(plot4, plot4);
 
 // ## Latex hey you youuuuuuuu
 

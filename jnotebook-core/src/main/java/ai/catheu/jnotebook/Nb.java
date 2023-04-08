@@ -5,43 +5,35 @@ import j2html.tags.specialized.DivTag;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static j2html.TagCreator.div;
+import static com.google.common.base.Preconditions.checkArgument;
+import static j2html.TagCreator.*;
 
 // FIXME CYRIL move to another package
 public class Nb {
 
-  public static void vega(final Map<String, Object> data) {
+  public static DivTag vega(final Map<String, Object> data) {
     final JSONObject json = new JSONObject(data);
-    vega(json);
+    return vega(json);
   }
 
-  public static void vega(final JSONObject jsonData) {
-    final DomContent res = vegaHtml(jsonData);
-    System.out.println(res);
-  }
-
-  private static DomContent vegaHtml(JSONObject jsonData) {
+  public static DivTag vega(final JSONObject jsonData) {
     final DivTag chartContainer = div().withClasses("vega-lite vega-embed has-actions")
                                        .withData("config", jsonData.toString());
     return div(chartContainer).withClasses("overflow-x-auto");
   }
 
-  public static void plotly(final List<Object> data, final Map<String, Object> layout, final Map<String, Object> config) {
+  public static DivTag plotly(final List<Object> data, final Map<String, Object> layout, final Map<String, Object> config) {
     final JSONArray jsonData = new JSONArray(data);
     final JSONObject jsonLayout = new JSONObject(layout);
     final JSONObject jsonConfig = new JSONObject(config);
-    plotly(jsonData, jsonLayout, jsonConfig);
+    return plotly(jsonData, jsonLayout, jsonConfig);
   }
 
-  private static void plotly(JSONArray jsonData, JSONObject jsonLayout, JSONObject jsonConfig) {
-    final DomContent res = plotlyHtml(jsonData, jsonLayout, jsonConfig);
-    System.out.println(res);
-  }
-
-  private static DomContent plotlyHtml(JSONArray jsonData, JSONObject jsonLayout, JSONObject jsonConfig) {
+  public static DivTag plotly(JSONArray jsonData, JSONObject jsonLayout, JSONObject jsonConfig) {
     final DivTag chartContainer = div().withClasses("plotly js-plotly-plot")
                                        .withData("data", jsonData.toString())
                                        .withData("layout", jsonLayout.toString())
@@ -49,10 +41,23 @@ public class Nb {
     return div(chartContainer).withClasses("overflow-x-auto");
   }
 
-  // tables
-  // code
-  // images
-  // markdown
-  // row
-  // col
+  public static DomContent row(final Object... objects) {
+    return div(each(Arrays.asList(objects), Nb::html)).withClasses("grid", "grid-flow-row");
+  }
+
+  public static DomContent col(final Object... objects) {
+    return div(each(Arrays.asList(objects), Nb::html)).withClasses("grid", "grid-flow-col");
+  }
+
+  public static DomContent grid(final int maxCols, final Object... objects) {
+    checkArgument(maxCols > 0 && maxCols <= 12);
+    return div(each(Arrays.asList(objects), Nb::html)).withClasses("grid", "grid-cols-" + maxCols);
+  }
+
+  public static DomContent html(final Object obj) {
+    if (obj instanceof DomContent content) {
+      return content;
+    }
+    return div(rawHtml(obj.toString()));
+  }
 }

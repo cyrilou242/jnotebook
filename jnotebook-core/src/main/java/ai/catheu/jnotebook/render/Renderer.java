@@ -123,7 +123,8 @@ public class Renderer {
         if (snippetEvent.status().equals(Snippet.Status.VALID)) {
           final String value = snippetEvent.value();
           if (value != null && !value.isBlank() && !value.equals("null")) {
-            out.add(div(value));
+            // allow interpretation
+            out.add(div(rawHtml(value)));
           }
           if (snippetEvent.exception() != null) {
             errors.add(join(div(snippetEvent.exception().toString())));
@@ -137,8 +138,7 @@ public class Renderer {
         LOG.debug("Skipping snippet events of index >=1");
       }
       if (!evalResult.out().isEmpty()) {
-        // allow interpretation
-        out.add(div(rawHtml(evalResult.out())));
+        out.add(div(evalResult.out()));
       }
       if (!evalResult.err().isEmpty()) {
         errors.add(div(evalResult.out()));
