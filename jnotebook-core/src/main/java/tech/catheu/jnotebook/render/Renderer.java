@@ -1,9 +1,5 @@
 package tech.catheu.jnotebook.render;
 
-import tech.catheu.jnotebook.InteractiveNotebook;
-import tech.catheu.jnotebook.evaluate.Interpreted;
-import tech.catheu.jnotebook.evaluate.InterpretedSnippet;
-import tech.catheu.jnotebook.jshell.EvalResult;
 import com.vladsch.flexmark.ext.footnotes.FootnoteExtension;
 import com.vladsch.flexmark.ext.gitlab.GitLabExtension;
 import com.vladsch.flexmark.ext.tables.TablesExtension;
@@ -20,6 +16,10 @@ import jdk.jshell.SnippetEvent;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tech.catheu.jnotebook.InteractiveNotebook;
+import tech.catheu.jnotebook.evaluate.Interpreted;
+import tech.catheu.jnotebook.evaluate.InterpretedSnippet;
+import tech.catheu.jnotebook.jshell.EvalResult;
 
 import java.util.*;
 
@@ -164,9 +164,9 @@ public class Renderer {
         return s.toString();
       }
       if (!evalResult.unresolvedDeps().isEmpty()) {
-        final StringBuilder s = new StringBuilder("Unresolved dependencies: \n");
-        evalResult.unresolvedDeps().forEach( deps -> deps.forEach(d -> s.append(d).append("\n")));
-        return s.toString();
+        final StringBuilder message = new StringBuilder("Unresolved dependencies: \n");
+        evalResult.unresolvedDeps().forEach( deps -> deps.forEach(d -> message.append(d).append("\n")));
+        return message.toString();
       }
 
       return "Invalid snippet. Could not diagnose the issue error";

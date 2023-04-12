@@ -54,7 +54,7 @@ public class InteractiveNotebook {
   }
 
   private static void logError(Throwable e) {
-    LOG.error(e.getMessage());
+    LOG.error(e.getMessage(), e);
   }
 
 

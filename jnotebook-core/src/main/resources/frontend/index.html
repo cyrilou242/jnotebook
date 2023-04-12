@@ -16,6 +16,9 @@
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/d3-flame-graph@4.1.3/dist/d3-flamegraph.css">
+    <script type="text/javascript" src="https://d3js.org/d3.v7.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/d3-flame-graph@4.1.3/dist/d3-flamegraph.min.js"></script>
     <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
     <script>tailwind.config = {
         darkMode: "class",
@@ -606,10 +609,17 @@
                         vegaEmbed(el, JSON.parse(el.dataset.config))
                     });
 
-                    // render
+                    // render plotly
                     document.querySelectorAll('div.js-plotly-plot').forEach( el => {
                         Plotly.newPlot(el, JSON.parse(el.dataset.data), JSON.parse(el.dataset.layout), JSON.parse(el.dataset.config));
                     });
+
+                    // render flamegraphs
+                    document.querySelectorAll(".flame").forEach(el => {
+                        const chart = flamegraph().inverted(true).width(el.parentElement.offsetWidth);
+                        d3.select(el).datum(JSON.parse(el.dataset.profile)).call(chart);
+                    })
+
                 }
             }
         }

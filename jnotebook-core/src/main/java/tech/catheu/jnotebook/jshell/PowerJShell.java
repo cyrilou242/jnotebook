@@ -60,7 +60,9 @@ public class PowerJShell {
     outPrintStream = new PrintStream(out);
     err = new ByteArrayOutputStream();
     errPrintStream = new PrintStream(err);
-    this.delegate = JShell.builder().out(outPrintStream).err(errPrintStream).build();
+    this.delegate = JShell.builder()
+            .executionEngine("local")
+                          .out(outPrintStream).err(errPrintStream).build();
     this.delegate.addToClasspath(configuration.classpath);
     for (final String script : initScripts) {
       for (final String statement: script.split("\n")) {

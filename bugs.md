@@ -14,10 +14,6 @@ l.get(0);
 
 
 
-
-
-
-
 error make the whole rendering fail:
 
 Nb.vega(new JSONObject("""{
@@ -31,3 +27,7 @@ Nb.vega(new JSONObject("""{
 "mark": "point",
 "encoding": {}
 }""");
+
+
+Such incompleteness makes the rendering fail: 
+Path profile1 = Nb.profile(() -> addElements(10_000, new ArrayList());

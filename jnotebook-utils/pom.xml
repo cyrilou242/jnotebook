@@ -26,6 +26,11 @@
             <artifactId>j2html</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.microsoft.jfr</groupId>
+            <artifactId>jfr-streaming</artifactId>
+        </dependency>
+
     </dependencies>
 
 </project>

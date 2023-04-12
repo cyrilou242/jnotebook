@@ -101,3 +101,22 @@ int errored(int lol) {
     return x;
 }
 
+
+// ## profiling functions cool lol
+
+void addElements(final int numElems, List<Integer> l) {
+    for (int i = 0; i<numElems; i++) {
+        l.add(i);
+    }
+}
+
+
+Path profile1 = Nb.profile(() -> addElements(10_000, new ArrayList<Integer>()));
+
+Path profile2 = Nb.profile(() -> addElements(10_000, new ArrayList<Integer>(10_000)));
+
+Path profile3 = Paths.get("/Users/cyril/flight_recording_11018aistartreethirdeyeStartreeThirdEyeServerDebugserverUserscyrilIdeaProjectste2configserveryaml26_2.jfr");
+Nb.flame(profile3);
+
+// hey ho ho ho ho ho
+int x = 3;
