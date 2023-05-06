@@ -16,7 +16,6 @@ import jdk.jshell.SnippetEvent;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tech.catheu.jnotebook.InteractiveNotebook;
 import tech.catheu.jnotebook.evaluate.Interpreted;
 import tech.catheu.jnotebook.evaluate.InterpretedSnippet;
 import tech.catheu.jnotebook.jshell.EvalResult;
@@ -27,7 +26,7 @@ import static j2html.TagCreator.*;
 
 public class Renderer {
 
-  private static final Logger LOG = LoggerFactory.getLogger(InteractiveNotebook.class);
+  private static final Logger LOG = LoggerFactory.getLogger(Renderer.class);
 
   public static final String CM_CONTENT = "cm-content";
   public static final String CM_EDITOR = "cm-editor";
