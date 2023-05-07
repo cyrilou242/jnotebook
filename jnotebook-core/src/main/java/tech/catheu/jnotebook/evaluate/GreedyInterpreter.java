@@ -286,7 +286,7 @@ public class GreedyInterpreter implements Interpreter {
           }
         }
 
-        // todo cyril add all other kinds of references...
+        // fixme cyril add all other kinds of references and tests
       });
     }
 
