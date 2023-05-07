@@ -99,15 +99,17 @@ public class GreedyInterpreter implements Interpreter {
     }
 
     // clean outdated jshell snippets
-    for (final String f : resultCache.keySet()) {
-      if (!fingerprintToSnippetIdx.containsKey(f)) {
-        // snippets can be dropped
-        for (SnippetEvent s : resultCache.get(f).events()) {
-          LOG.debug("Dropping outdated snippet: {}", s.snippet().source());
-          shell.drop(s.snippet());
-        }
-        fingerprintToSnippetIdx.remove(f);
+    final List<String> toRemove = resultCache.keySet()
+                                       .stream()
+                                       .filter(fingerprint -> !fingerprintToSnippetIdx.containsKey(fingerprint))
+                                       .toList();
+    for (final String fingerprint : toRemove) {
+      for (SnippetEvent s : resultCache.get(fingerprint).events()) {
+        // fixme cyril ? this uses jshell dependency mechanism but does not delete according to computed dependencies
+        LOG.debug("Dropping outdated snippet: {}", s.snippet().source().trim());
+        shell.drop(s.snippet());
       }
+      resultCache.remove(fingerprint);
     }
 
     // build result snippets

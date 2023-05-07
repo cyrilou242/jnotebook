@@ -31,3 +31,48 @@ Nb.vega(new JSONObject("""{
 
 Such incompleteness makes the rendering fail: 
 Path profile1 = Nb.profile(() -> addElements(10_000, new ArrayList());
+
+
+
+
+
+
+BUG 3
+this snippets seems to evaluate even if there is an additional comma in new ArrayList<>(3 * elements));  
+int elements = 10_001;
+Runnable poorInit = () -> {
+List<Integer> a = new ArrayList<>();
+for (int i = 0; i < elements; i++) {
+a.add(i);
+}
+};
+
+var poorInitProfilePath = Nb.profile(poorInit, 1000L);
+
+Runnable goodInit = () -> {
+ArrayList<Integer> a = new ArrayList<>(3 * elements));
+for (int i = 0; i < elements; i++) {
+a.add(i);
+}
+};
+
+It should fail with a syntax error. 
+Maybe the example can be simplified.
+Goal: 
+- reduce this example to a minimal example
+- fix issue 
+
+
+BUG 4:
+the snippet below seems to make the parser throw an exception an additional } is present
+
+Runnable goodInit = () -> {
+for (int rep = 0; rep<1000; rep++) {
+ArrayList<Integer> a = new ArrayList<>(4 * elements);
+for (int i = 0; i < elements; i++) {
+a.add(i);
+}
+}
+}
+}
+;
