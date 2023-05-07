@@ -599,6 +599,7 @@
                     location.reload(true);
                 } else if (event.data.startsWith("close")) {
                     // TODO implement proper closing
+                    console.log("Received close message but close is not implemented.");
                 } else {
                     document.getElementById("notebook").innerHTML = event.data;
                     // render mermaid
