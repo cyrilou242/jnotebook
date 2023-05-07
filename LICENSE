@@ -29,8 +29,12 @@ GNU General Public License Usage
 Commercial License Usage
 
   OEMs (Original Equipment Manufacturers), ISVs (Independent Software
-  Vendors), VARs (Value Added Resellers) and other distributors that
-  combine and distribute commercially licensed software with jNotebook
+  Vendors), VARs (Value Added Resellers) and other distributors that:
+  - combine and distribute commercially licensed software with jNotebook
+  AND/OR
+  - use jNotebook source code as input data for statistical algorithms
+  and distribute commercially licensed software including such statistical
+  algorithms and/or any of their outputs
   must enter into a commercial license agreement with Cyril de Catheu.
 
   The commercial jNotebook license gives you the full rights to create
