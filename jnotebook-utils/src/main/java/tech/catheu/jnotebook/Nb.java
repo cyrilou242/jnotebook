@@ -110,13 +110,14 @@ public class Nb {
                              final RecordingOptions recordingOptions,
                              final RecordingConfiguration recordingConfiguration,
                              final Path savePath) {
+    final ProfiledRunnable profiledRunnable = new ProfiledRunnable(runnable);
     try {
       FlightRecorderConnection flightRecorderConnection =
               FlightRecorderConnection.connect(mBeanServer);
       try (Recording recording = flightRecorderConnection.newRecording(recordingOptions,
                                                                        recordingConfiguration)) {
         recording.start();
-        runnable.run();
+        profiledRunnable.run();
         recording.stop();
         recording.dump(savePath.toString());
         return savePath;
@@ -134,5 +135,23 @@ public class Nb {
             div().withClasses("flame").withData("profile", jsonProfile.toString());
 
     return div(chartContainer).withClasses("overflow-x-auto");
+  }
+
+  /**
+   * Wrapper class that makes it easier to find the Runnable being profiled by {@link #profile(Runnable, long)}
+   * when inspecting the jfr logs.
+   */
+  private static class ProfiledRunnable implements Runnable {
+
+    private final Runnable delegate;
+
+    private ProfiledRunnable(final Runnable delegate) {
+      this.delegate = delegate;
+    }
+
+    @Override
+    public void run() {
+      delegate.run();
+    }
   }
 }
