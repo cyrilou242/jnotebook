@@ -38,8 +38,8 @@
 
     <properties>
         <project.version>1.0-SNAPSHOT</project.version>
-        <maven.compiler.source>16</maven.compiler.source>
-        <maven.compiler.target>16</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <undertow.version>2.3.4.Final</undertow.version>
