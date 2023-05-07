@@ -17,7 +17,7 @@ Nb.html(s1);
 
 throw new UnsupportedOperationException("Louise has to sleep");
 
-// hey ho hey ho on rentre
+// hey ho hey ho on rentre lol
 Nb.row(1,2,3, 4, 5, 6);
 
 Nb.col(1,2,3, 4, 5, 6);
