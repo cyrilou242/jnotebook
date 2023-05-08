@@ -20,20 +20,27 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Notebook</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css" integrity="sha384-vKruj+a13U8yHIkAyGgK1J3ArTLzrFGBbBc0tDp4ad/EyewESeXE/Iv67Aj8gKZ0" crossorigin="anonymous">
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.js" integrity="sha384-PwRUT/YqbnEjkZO0zZxNqcxACrXe+j766U2amXcgMg5457rve2Y7I6ZJSm2A0mS4" crossorigin="anonymous"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css"
+          integrity="sha384-vKruj+a13U8yHIkAyGgK1J3ArTLzrFGBbBc0tDp4ad/EyewESeXE/Iv67Aj8gKZ0" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.js"
+            integrity="sha384-PwRUT/YqbnEjkZO0zZxNqcxACrXe+j766U2amXcgMg5457rve2Y7I6ZJSm2A0mS4"
+            crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/contrib/auto-render.min.js"
+            integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
             onload="renderMathInElement(document.body);"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js" onload="mermaid.initialize({startOnLoad:true});"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"
+            onload="mermaid.initialize({startOnLoad:true});"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/d3-flame-graph@4.1.3/dist/d3-flamegraph.css">
+    <link rel="stylesheet" type="text/css"
+          href="https://cdn.jsdelivr.net/npm/d3-flame-graph@4.1.3/dist/d3-flamegraph.css">
     <script type="text/javascript" src="https://d3js.org/d3.v7.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/d3-flame-graph@4.1.3/dist/d3-flamegraph.min.js"></script>
+    <script type="text/javascript"
+            src="https://cdn.jsdelivr.net/npm/d3-flame-graph@4.1.3/dist/d3-flamegraph.min.js"></script>
     <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
     <script>tailwind.config = {
         darkMode: "class",
@@ -571,26 +578,15 @@
             <div id="helper" class="viewer viewer-result w-full max-w-prose px-8">
                 <div class="relative">
                     <div class="overflow-y-hidden">
-                        <p>Save a file in your <code>[[${config.notebookPath}]]</code> folder to make your notebook appear…</p></div>
+                        <p>Save a file in your <code>[[${config.notebookPath}]]</code> folder to make your notebook
+                            appear…</p></div>
                 </div>
             </div>
         </div>
     </div>
     <script th:inline="javascript">
-        function reload() {
-            // 1000 = "Normal closure" and the second parameter is a
-            // human-readable reason.
-            socket.close(1000, "Reloading page after receiving reload");
-            console.log("Reloading page after receiving reload");
-            location.reload(true);
-        }
-
-        function close() {
-            console.log("Received close message but close is not implemented.");
-        }
-
-        function update(event) {
-            document.getElementById("notebook").innerHTML = event.data;
+        function update(eventData) {
+            document.getElementById("notebook").innerHTML = eventData;
             // render mermaid
             mermaid.init({noteMargin: 10}, '.mermaid');
 
@@ -626,7 +622,7 @@
             })
         }
 
-        function connect() {
+        function startWebSocketServer() {
             var port = [[${config.port}]];
             var socket = new WebSocket("ws://localhost:" + port + "/websocket");
 
@@ -634,24 +630,20 @@
                 console.log("Websocket connection closed or unable to connect; " +
                     "starting reconnect timeout");
                 socket = null;
-                setTimeout(function () {
-                    connect();
-                }, 5000)
+                setTimeout(function () {startWebSocketServer();}, 5000)
             }
 
-            socket.onmessage = function (event) {
-                if (event.data.startsWith("reload")) {
-                    reload();
-                } else if (event.data.startsWith("close")) {
-                    // TODO implement proper closing
-                    close();
+            socket.onmessage = (socketEvent)  => {
+                if (socketEvent.data.startsWith("exampleKeyword")) {
+                    //do something - not useful anymore but keeping the pattern
+
                 } else {
-                    update(event);
+                    update(socketEvent.data);
                 }
-            }
+            };
         }
 
-        connect();
+        startWebSocketServer();
     </script>
 </div>
 </body>

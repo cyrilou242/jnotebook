@@ -36,6 +36,8 @@ import org.xnio.XnioWorker;
 import tech.catheu.jnotebook.Main;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ReloadServer {
 
@@ -44,6 +46,7 @@ public class ReloadServer {
   private final Main.InteractiveConfiguration configuration;
 
   private Undertow server;
+  private List<WebSocketChannel> channels = new ArrayList<>();
   private WebSocketChannel webSocketChannel;
   XnioWorker worker;
 
@@ -54,7 +57,8 @@ public class ReloadServer {
 
   public void start() throws IOException {
     RoutingHandler routingHandler = Handlers.routing()
-                                            .get("/", new TemplatedHttpHandler(configuration))
+                                            .get("/",
+                                                 new TemplatedHttpHandler(configuration))
                                             .get("/websocket",
                                                  new WebSocketProtocolHandshakeHandler(new ConnectionCallback()));
     server = Undertow.builder()
@@ -119,21 +123,20 @@ public class ReloadServer {
     }
   }
 
-
-  public void sendReload() {
-    sendMessage("reload");
-  }
-
   public void sendUpdate(final String html) {
     sendMessage(html);
   }
 
   private void sendMessage(final String message) {
-    if (webSocketChannel != null && webSocketChannel.isOpen()) {
-      WebSockets.sendText(message, webSocketChannel, null);
-    } else {
-      LOG.error(
-              "ERROR: trying to send updates but no client is opened. Go to http://localhost:" + configuration.port);
+    boolean messageSent = false;
+    for (final WebSocketChannel channel : channels) {
+      if (channel != null && channel.isOpen()) {
+        WebSockets.sendText(message, channel, null);
+        messageSent = true;
+      }
+    }
+    if (!messageSent) {
+      LOG.error("ERROR: trying to send updates but no client is opened. Go to http://localhost:" + configuration.port);
     }
   }
 
@@ -144,19 +147,18 @@ public class ReloadServer {
     if (server != null) {
       server.stop();
     }
-    if (webSocketChannel != null) {
-      webSocketChannel.close();
+    for (final WebSocketChannel channel : channels) {
+      if (channel != null) {
+        channel.close();
+      }
     }
   }
 
   private class ConnectionCallback implements WebSocketConnectionCallback {
     @Override
-    public void onConnect(WebSocketHttpExchange webSocketHttpExchange, WebSocketChannel channel) {
-      // send close signal to previous connection
-      if (webSocketChannel != null) {
-        sendMessage("close");
-      }
-      webSocketChannel = channel;
+    public void onConnect(WebSocketHttpExchange webSocketHttpExchange,
+                          WebSocketChannel channel) {
+      channels.add(channel);
     }
   }
 }
