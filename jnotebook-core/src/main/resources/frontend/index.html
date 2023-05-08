@@ -577,6 +577,55 @@
         </div>
     </div>
     <script th:inline="javascript">
+        function reload() {
+            // 1000 = "Normal closure" and the second parameter is a
+            // human-readable reason.
+            socket.close(1000, "Reloading page after receiving reload");
+            console.log("Reloading page after receiving reload");
+            location.reload(true);
+        }
+
+        function close() {
+            console.log("Received close message but close is not implemented.");
+        }
+
+        function update(event) {
+            document.getElementById("notebook").innerHTML = event.data;
+            // render mermaid
+            mermaid.init({noteMargin: 10}, '.mermaid');
+
+            // render latex
+            var mathElems = document.getElementsByClassName("katex");
+            var elems = [];
+            for (const i in mathElems) {
+                if (mathElems.hasOwnProperty(i)) elems.push(mathElems[i]);
+            }
+            elems.forEach(elem => {
+                katex.render(elem.textContent, elem, {throwOnError: false, displayMode: elem.nodeName !== 'SPAN',});
+            });
+
+            // render code color
+            document.querySelectorAll('div.cm-content').forEach(el => {
+                hljs.highlightElement(el, {language: 'java'});
+            });
+
+            // render vega
+            document.querySelectorAll('div.vega-embed').forEach(el => {
+                vegaEmbed(el, JSON.parse(el.dataset.config))
+            });
+
+            // render plotly
+            document.querySelectorAll('div.js-plotly-plot').forEach(el => {
+                Plotly.newPlot(el, JSON.parse(el.dataset.data), JSON.parse(el.dataset.layout), JSON.parse(el.dataset.config));
+            });
+
+            // render flamegraphs
+            document.querySelectorAll(".flame").forEach(el => {
+                const chart = flamegraph().inverted(true).width(el.parentElement.offsetWidth);
+                d3.select(el).datum(JSON.parse(el.dataset.profile)).call(chart);
+            })
+        }
+
         function connect() {
             var port = [[${config.port}]];
             var socket = new WebSocket("ws://localhost:" + port + "/websocket");
@@ -592,50 +641,12 @@
 
             socket.onmessage = function (event) {
                 if (event.data.startsWith("reload")) {
-                    // 1000 = "Normal closure" and the second parameter is a
-                    // human-readable reason.
-                    socket.close(1000, "Reloading page after receiving reload");
-                    console.log("Reloading page after receiving reload");
-                    location.reload(true);
+                    reload();
                 } else if (event.data.startsWith("close")) {
                     // TODO implement proper closing
-                    console.log("Received close message but close is not implemented.");
+                    close();
                 } else {
-                    document.getElementById("notebook").innerHTML = event.data;
-                    // render mermaid
-                    mermaid.init({noteMargin: 10}, '.mermaid');
-
-                    // render latex
-                    var mathElems = document.getElementsByClassName("katex");
-                    var elems = [];
-                    for (const i in mathElems) {
-                        if (mathElems.hasOwnProperty(i)) elems.push(mathElems[i]);
-                    }
-                    elems.forEach(elem => {
-                        katex.render(elem.textContent, elem, { throwOnError: false, displayMode: elem.nodeName !== 'SPAN', });
-                    });
-
-                    // render code color
-                    document.querySelectorAll('div.cm-content').forEach(el => {
-                        hljs.highlightElement(el, {language: 'java'});
-                    });
-
-                    // render vega
-                    document.querySelectorAll('div.vega-embed').forEach( el => {
-                        vegaEmbed(el, JSON.parse(el.dataset.config))
-                    });
-
-                    // render plotly
-                    document.querySelectorAll('div.js-plotly-plot').forEach( el => {
-                        Plotly.newPlot(el, JSON.parse(el.dataset.data), JSON.parse(el.dataset.layout), JSON.parse(el.dataset.config));
-                    });
-
-                    // render flamegraphs
-                    document.querySelectorAll(".flame").forEach(el => {
-                        const chart = flamegraph().inverted(true).width(el.parentElement.offsetWidth);
-                        d3.select(el).datum(JSON.parse(el.dataset.profile)).call(chart);
-                    })
-
+                    update(event);
                 }
             }
         }
