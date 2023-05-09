@@ -76,3 +76,13 @@ a.add(i);
 }
 }
 ;
+
+
+
+This seems to break the cache/fingerprinting: with or without trailing in (int i=0; i<4; i++;):
+```
+for (int i=0; i<4; i++) {
+int x = i +1;
+System.out.println(x + r);
+}
+```
