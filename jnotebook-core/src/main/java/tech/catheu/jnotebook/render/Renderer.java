@@ -32,9 +32,11 @@ import org.slf4j.LoggerFactory;
 import tech.catheu.jnotebook.evaluate.Interpreted;
 import tech.catheu.jnotebook.evaluate.InterpretedSnippet;
 import tech.catheu.jnotebook.jshell.EvalResult;
+import tech.catheu.jnotebook.parse.StaticSnippet;
 
 import java.util.*;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static j2html.TagCreator.*;
 
 public class Renderer {
@@ -65,20 +67,19 @@ public class Renderer {
 
   static {
     MutableDataSet options = new MutableDataSet();
-    // uncomment to set optional extensions
     options.set(Parser.EXTENSIONS,
                 Arrays.asList(TablesExtension.create(),
                               GitLabExtension.create(),
                               FootnoteExtension.create()));
-    // uncomment to convert soft-breaks to hard breaks
+    // convert soft-breaks to hard breaks
     options.set(HtmlRenderer.SOFT_BREAK, "<br />\n");
     parser = Parser.builder(options).build();
     renderer = HtmlRenderer.builder(options).build();
   }
 
   public final String render(Interpreted interpreted) {
-    final LineAwareRenderer renderer = new LineAwareRenderer(interpreted.lines());
-    final DomContent content = each(interpreted.interpretedSnippets(), renderer::render);
+    final LineAwareRenderer domRenderer = new LineAwareRenderer(interpreted.lines());
+    final DomContent content = domRenderer.render(interpreted);
 
     return content.render();
   }
@@ -87,18 +88,54 @@ public class Renderer {
   }
 
   private static class LineAwareRenderer {
+    private final List<DomContent> elems = new ArrayList<>();
+    private final List<InterpretedSnippet> groupedJavaSnippets = new ArrayList<>();
     private final List<String> lines;
+    private final Map<EvalResult, EvalHtmlOutputs> outputsCache = new HashMap<>();
 
     public LineAwareRenderer(List<String> lines) {
       this.lines = lines;
     }
 
-    private DomContent render(final InterpretedSnippet s) {
-      return switch (s.staticSnippet().type()) {
-        case JAVA -> renderJava(s);
-        case MAGIC -> renderMagic(s);
-        case COMMENT -> renderComment(s);
-      };
+    // can only be run once
+    public final DomContent render(final Interpreted interpreted) {
+      for (final InterpretedSnippet snippet : interpreted.interpretedSnippets()) {
+        if (snippet.staticSnippet().type().equals(StaticSnippet.Type.COMMENT)) {
+          if (!groupedJavaSnippets.isEmpty()) {
+            flushGroupedJavaSnippets();
+          }
+          elems.add(renderComment(snippet));
+        } else if (snippet.staticSnippet().type().equals(StaticSnippet.Type.MAGIC)) {
+          throw new UnsupportedOperationException("MAGIC not implemented yet");
+        } else {
+          final EvalHtmlOutputs res = getHtmlOuputs(snippet.evalResult());
+          if (!res.errors.isEmpty()) {
+            // never group a snippet with others if it contains an error
+            flushGroupedJavaSnippets();
+            elems.add(renderGroupedJava(List.of(snippet)));
+            continue;
+          }
+          if (!groupedJavaSnippets.isEmpty()) {
+            final InterpretedSnippet lastSnippet =
+                    groupedJavaSnippets.get(groupedJavaSnippets.size() - 1);
+            if (lastSnippet.staticSnippet().end() != snippet.staticSnippet().start()) {
+              flushGroupedJavaSnippets();
+            }
+          }
+          groupedJavaSnippets.add(snippet);
+        }
+      }
+      flushGroupedJavaSnippets();
+
+      return join(elems.toArray());
+
+    }
+
+    private void flushGroupedJavaSnippets() {
+      if (!groupedJavaSnippets.isEmpty()) {
+        elems.add(renderGroupedJava(groupedJavaSnippets));
+        groupedJavaSnippets.clear();
+      }
     }
 
     private DomContent renderComment(final InterpretedSnippet s) {
@@ -112,31 +149,66 @@ public class Renderer {
       throw new UnsupportedOperationException();
     }
 
-    private DomContent renderJava(final InterpretedSnippet s) {
-      final String codeLines = String.join("\n",
-                                           lines.subList(s.staticSnippet().start(),
-                                                         s.staticSnippet().end()));
-      final OutAndErrResults results = getResults(s.evalResult());
-      final DivTag code = codeViewer(codeLines, results.errors.isEmpty());
-      if (results.out.isEmpty() && results.errors.isEmpty()) {
+    private DomContent renderGroupedJava(final List<InterpretedSnippet> snippets) {
+      checkArgument(snippets.size() > 0);
+
+      final String codeLines = combineCodeLines(snippets);
+      final EvalHtmlOutputs htmlOuputs = combineOutputs(snippets);
+
+      final DivTag code = codeViewer(codeLines, htmlOuputs.errors.isEmpty());
+      if (htmlOuputs.evalRes == null && htmlOuputs.stdOut == null && htmlOuputs.errors.isEmpty()) {
         return code;
       }
-      final UnescapedText htmlResults =
-              join(join(results.out.toArray()), join(results.errors.toArray()));
-      final DivTag result = resultViewer(htmlResults, results.errors.isEmpty());
+      final UnescapedText htmlResults = join(htmlOuputs.stdOut,
+                                             htmlOuputs.evalRes,
+                                             join(htmlOuputs.errors.toArray()));
+      final DivTag result = resultViewer(htmlResults, htmlOuputs.errors.isEmpty());
+
       return join(code, result);
     }
 
-    private static OutAndErrResults getResults(final EvalResult evalResult) {
-      final List<Object> out = new ArrayList<>();
-      final List<Object> errors = new ArrayList<>();
+    @NotNull
+    private EvalHtmlOutputs combineOutputs(List<InterpretedSnippet> snippets) {
+      // take last result only, but group all std out
+      final InterpretedSnippet lastSnippet = snippets.get(snippets.size() - 1);
+      final EvalHtmlOutputs lastHtmlOutput = getHtmlOuputs(lastSnippet.evalResult());
+      final List<Object> combinedStdOut = new ArrayList<>();
+      for (final InterpretedSnippet snippet : snippets) {
+        final EvalHtmlOutputs outputs = getHtmlOuputs(snippet.evalResult());
+        if (outputs.stdOut != null) {
+          combinedStdOut.add(outputs.stdOut);
+        }
+      }
+      return new EvalHtmlOutputs(lastHtmlOutput.evalRes,
+                                 combinedStdOut.isEmpty() ? null
+                                                          : join(combinedStdOut.toArray()),
+                                 lastHtmlOutput.errors);
+    }
+
+    @NotNull
+    private String combineCodeLines(List<InterpretedSnippet> snippets) {
+      final int numSnippets = snippets.size();
+      final InterpretedSnippet firstSnippet = snippets.get(0);
+      final InterpretedSnippet lastSnippet = snippets.get(numSnippets - 1);
+      return String.join("\n",
+                         lines.subList(firstSnippet.staticSnippet().start(),
+                                       lastSnippet.staticSnippet().end()));
+    }
+
+    private EvalHtmlOutputs getHtmlOuputs(final EvalResult evalResult) {
+      return outputsCache.computeIfAbsent(evalResult, this::computeHtmlOuputs);
+    }
+
+    private EvalHtmlOutputs computeHtmlOuputs(final EvalResult evalResult) {
+      DomContent evalRes = null;
+      final List<DomContent> errors = new ArrayList<>();
       if (!evalResult.events().isEmpty()) {
         final SnippetEvent snippetEvent = evalResult.events().get(0);
         if (snippetEvent.status().equals(Snippet.Status.VALID)) {
           final String value = snippetEvent.value();
           if (value != null && !value.isBlank() && !value.equals("null")) {
             // allow interpretation
-            out.add(div(rawHtml(value)));
+            evalRes = div(rawHtml(value));
           }
           if (snippetEvent.exception() != null) {
             errors.add(join(div(snippetEvent.exception().toString())));
@@ -149,14 +221,15 @@ public class Renderer {
       if (evalResult.events().size() > 1) {
         LOG.debug("Skipping snippet events of index >=1");
       }
+      DomContent stdOut = null;
       if (!evalResult.out().isEmpty()) {
-        out.add(div(evalResult.out()));
+        stdOut = div(evalResult.out());
       }
       if (!evalResult.err().isEmpty()) {
         errors.add(div(evalResult.out()));
       }
 
-      return new OutAndErrResults(out, errors);
+      return new EvalHtmlOutputs(evalRes, stdOut, errors);
     }
 
     @NotNull
@@ -177,14 +250,16 @@ public class Renderer {
       }
       if (!evalResult.unresolvedDeps().isEmpty()) {
         final StringBuilder message = new StringBuilder("Unresolved dependencies: \n");
-        evalResult.unresolvedDeps().forEach( deps -> deps.forEach(d -> message.append(d).append("\n")));
+        evalResult.unresolvedDeps()
+                  .forEach(deps -> deps.forEach(d -> message.append(d).append("\n")));
         return message.toString();
       }
 
       return "Invalid snippet. Could not diagnose the issue error";
     }
 
-    private static StringBuilder buildErrorMessage(String errorMessage, String source, int startPosition, int endPosition) {
+    private static StringBuilder buildErrorMessage(String errorMessage, String source,
+                                                   int startPosition, int endPosition) {
       final StringBuilder s = new StringBuilder();
       s.append("Error: \n").append(errorMessage).append("\n");
       for (final String line : source.split("\n")) {
@@ -284,6 +359,8 @@ public class Renderer {
     }
   }
 
-  private record OutAndErrResults(List<Object> out, List<Object> errors) {
+  private record EvalHtmlOutputs(DomContent evalRes,
+                                 DomContent stdOut,
+                                 List<DomContent> errors) {
   }
 }
