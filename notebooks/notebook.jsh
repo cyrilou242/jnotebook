@@ -23,17 +23,18 @@ class MyObj {
   int lol = 3;
 }
 
+// printing works
 System.out.println(x);
 
 MyObj obj = new MyObj();
 List<?> noway = List.of(3);
 
-for (int i=0; i<4; i++;) {
+for (int i=0; i<4; i++) {
   int x = i +1;
   System.out.println(x + r);
 }
 
-//hehe
+//hehe hoho
 x;
 MyObj.class;
 Stream.of(x, 3, 4, 5);
