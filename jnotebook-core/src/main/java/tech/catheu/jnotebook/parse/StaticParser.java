@@ -62,7 +62,7 @@ public class StaticParser {
         throw new IllegalStateException("Unknown file event kind: " + type.name());
       }
     } catch (Exception e) {
-      LOG.error(e.getMessage());
+      LOG.error("Error during static parsing: " + e.getMessage(), e);
       return new StaticParsing(null, null, null);
     }
   }
@@ -132,8 +132,10 @@ public class StaticParser {
       lineIdx++;
     }
 
-    final int lastEndIndex = notebookSnippets.get(notebookSnippets.size() - 1).end();
-    if (lastEndIndex != lineIdx) {
+    final boolean needFlush =
+            notebookSnippets.size() == 0 || notebookSnippets.get(notebookSnippets.size() - 1)
+                                                            .end() != lineIdx;
+    if (needFlush) {
       // need to flush the last block
       if (codeStartIndex != Integer.MAX_VALUE) {
         // assume it is incomplete code
