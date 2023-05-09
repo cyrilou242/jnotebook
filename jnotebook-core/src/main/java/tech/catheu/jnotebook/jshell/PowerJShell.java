@@ -60,7 +60,8 @@ public class PowerJShell {
           void printf(java.util.Locale l, String format, Object... args) { System.out.printf(l, format, args); }
           void printf(String format, Object... args) { System.out.printf(format, args); }
           """;
-  private static final List<String> initScripts = List.of(JSHELL_DEFAULT_JSH, JSHELL_PRINTING_JSH);
+  private static final List<String> initScripts =
+          List.of(JSHELL_DEFAULT_JSH, JSHELL_PRINTING_JSH);
 
   private final JShell delegate;
   private final ByteArrayOutputStream out;
@@ -74,18 +75,26 @@ public class PowerJShell {
     err = new ByteArrayOutputStream();
     errPrintStream = new PrintStream(err);
     this.delegate = JShell.builder()
-            .executionEngine("local")
-                          .out(outPrintStream).err(errPrintStream).build();
+                          .executionEngine("local")
+                          .build();
     this.delegate.addToClasspath(configuration.classpath);
     for (final String script : initScripts) {
-      for (final String statement: script.split("\n")) {
-       this.delegate.eval(statement);
+      for (final String statement : script.split("\n")) {
+        this.delegate.eval(statement);
       }
     }
   }
 
   public EvalResult eval(String input) throws IllegalStateException {
+    // FIXME CYRIL hacky + not thread safe - need to ask on dev mailing
+    final PrintStream previousOutStream = System.out;
+    final PrintStream previousErrStream = System.err;
+    System.setOut(outPrintStream);
+    System.setErr(errPrintStream);
     final List<SnippetEvent> eval = delegate.eval(input);
+    System.setOut(previousOutStream);
+    System.setErr(previousErrStream);
+
     List<List<Diag>> diagnostics = new ArrayList<>();
     List<List<String>> unresolvedDeps = new ArrayList<>();
     for (final SnippetEvent se : eval) {
