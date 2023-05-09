@@ -58,6 +58,7 @@ public class InteractiveNotebook {
     LOG.info("Notebook server started on http://localhost:" + configuration.port);
 
     notebookEvents.map(staticParser::staticSnippets)
+                  //.doOnEach(server::sendWorkInProgress)
                   .doOnError(InteractiveNotebook::logError)
                   .map(interpreter::interpret)
                   .doOnError(InteractiveNotebook::logError)
