@@ -44,6 +44,7 @@
     <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.18.2/tocbot.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.18.2/tocbot.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.1/dist/cdn.min.js"></script>
     <script>tailwind.config = {
         darkMode: "class",
         content: ["./tw/viewer.js", "./tw/**/*.edn"],
@@ -573,20 +574,28 @@
     </style>
 </head>
 <body class="dark:bg-gray-900">
-<div class="flex">
-    <div class="toc-toggle z-10 fixed right-2 top-2 md:right-auto md:left-3 md:top-[7px] text-slate-400 font-sans text-xs hover:underline cursor-pointer flex items-center bg-white py-1 px-3 md:p-0 rounded-full md:rounded-none border md:border-0 border-slate-200 shadow md:shadow-none">
+<div x-data="{ tocOpen: false }" class="flex">
+    <button x-on:click="tocOpen = ! tocOpen"
+            class="toc-toggle z-10 fixed right-2 top-2 md:right-auto md:left-3 md:top-[7px] text-slate-400 font-sans text-xs hover:underline cursor-pointer flex items-center bg-white py-1 px-3 md:p-0 rounded-full md:rounded-none border md:border-0 border-slate-200 shadow md:shadow-none">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20"
              height="20">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
         </svg>
-        <span class="uppercase tracking-wider ml-1 font-bold text-[12px]">ToC</span></div>
-    <aside class="h-screen z-10 flex-shrink-0 fixed bg-slate-100 font-sans border-r border-t w-64">
-        <div class="px-3 mb-1 mt-1 md:mt-0 text-xs md:text-[12px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-medium px-3 mb-1 leading-none">
+        <span class="uppercase tracking-wider ml-1 font-bold text-[12px]">ToC</span>
+    </button>
+    <aside x-show="tocOpen" class="h-screen z-10 flex-shrink-0 fixed bg-slate-100 font-sans border-r border-t w-64">
+        <div class="px-3 mb-1 mt-1 md:mt-0 text-xs md:text-[12px] uppercase tracking-wider text-slate-500 font-medium px-3 mb-1 leading-none">
             ToC
+        </div>
+        <div x-on:click="tocOpen = ! tocOpen" class="toc-toggle text-slate-500 absolute right-2 top-[11px] cursor-pointer z-10">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                 stroke-width="2" class="w-4 w-4">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path>
+            </svg>
         </div>
         <div id="toc"></div>
     </aside>
-    <div class="flex-auto h-screen overflow-y-auto scroll-container ml-64">
+    <div x-bind:class="tocOpen ? 'ml-64' : ''" class="flex-auto h-screen overflow-y-auto scroll-container">
         <div id="notebook" class="flex flex-col items-center viewer-notebook flex-auto">
             <div id="helper" class="viewer viewer-result w-full max-w-prose px-8">
                 <div class="relative">
