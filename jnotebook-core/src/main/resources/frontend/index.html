@@ -89,7 +89,7 @@
         }
 
         code, .code {
-            @apply font-mono text-sm text-gray-900 bg-slate-50 px-0.5 py-px rounded dark:bg-gray-800;
+            @apply font-mono text-sm text-gray-900 bg-slate-50 px-0.5 py-px rounded;
         }
 
         code::before, code::after {
@@ -272,7 +272,7 @@
     /* --------------------------------------------------------------- */
 
     .viewer-code {
-        @apply font-mono bg-slate-100 rounded-sm text-sm overflow-x-auto dark:bg-gray-800;
+        @apply font-mono bg-slate-100 rounded-sm text-sm overflow-x-auto;
     }
 
     .viewer-code .cm-content {
@@ -335,9 +335,7 @@
     .viewer-notebook,
     .viewer-markdown {
         @apply prose
-        dark:prose-invert
         prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline
-        dark:prose-a:text-blue-300
         prose-p:mt-4 prose-p:leading-snug
         prose-ol:mt-4 prose-ol:mb-6 prose-ol:leading-snug
         prose-ul:mt-4 prose-ul:mb-6 prose-ul:leading-snug
@@ -573,7 +571,7 @@
 
     </style>
 </head>
-<body class="dark:bg-gray-900">
+<body>
 <div x-data="{ tocOpen: false }" class="flex">
     <button x-on:click="tocOpen = ! tocOpen"
             class="toc-toggle z-10 fixed right-2 top-2 md:right-auto md:left-3 md:top-[7px] text-slate-400 font-sans text-xs hover:underline cursor-pointer flex items-center bg-white py-1 px-3 md:p-0 rounded-full md:rounded-none border md:border-0 border-slate-200 shadow md:shadow-none">
@@ -618,8 +616,7 @@
             hasInnerContainers: true,
         });
 
-        function update(eventData) {
-            document.getElementById("notebook").innerHTML = eventData;
+        function reRender() {
             // render mermaid
             mermaid.init({noteMargin: 10}, '.mermaid');
 
@@ -658,6 +655,11 @@
             tocbot.refresh();
         }
 
+        function update(eventData) {
+            document.getElementById("notebook").innerHTML = eventData;
+            reRender();
+        }
+
         function startWebSocketServer() {
             var port = [[${config.port}]];
             var socket = new WebSocket("ws://localhost:" + port + "/websocket");
@@ -680,7 +682,6 @@
                 }
             };
         }
-
         startWebSocketServer();
     </script>
 </div>
