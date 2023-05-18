@@ -42,6 +42,8 @@
     <script type="text/javascript"
             src="https://cdn.jsdelivr.net/npm/d3-flame-graph@4.1.3/dist/d3-flamegraph.min.js"></script>
     <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.18.2/tocbot.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.18.2/tocbot.css">
     <script>tailwind.config = {
         darkMode: "class",
         content: ["./tw/viewer.js", "./tw/**/*.edn"],
@@ -572,8 +574,19 @@
 </head>
 <body class="dark:bg-gray-900">
 <div class="flex">
-    <div class="fixed top-2 left-2 md:left-auto md:right-2 z-10"></div>
-    <div class="flex-auto h-screen overflow-y-auto scroll-container">
+    <div class="toc-toggle z-10 fixed right-2 top-2 md:right-auto md:left-3 md:top-[7px] text-slate-400 font-sans text-xs hover:underline cursor-pointer flex items-center bg-white py-1 px-3 md:p-0 rounded-full md:rounded-none border md:border-0 border-slate-200 shadow md:shadow-none">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20"
+             height="20">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+        <span class="uppercase tracking-wider ml-1 font-bold text-[12px]">ToC</span></div>
+    <aside class="h-screen z-10 flex-shrink-0 fixed bg-slate-100 font-sans border-r border-t w-64">
+        <div class="px-3 mb-1 mt-1 md:mt-0 text-xs md:text-[12px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-medium px-3 mb-1 leading-none">
+            ToC
+        </div>
+        <div id="toc"></div>
+    </aside>
+    <div class="flex-auto h-screen overflow-y-auto scroll-container ml-64">
         <div id="notebook" class="flex flex-col items-center viewer-notebook flex-auto">
             <div id="helper" class="viewer viewer-result w-full max-w-prose px-8">
                 <div class="relative">
@@ -585,6 +598,17 @@
         </div>
     </div>
     <script th:inline="javascript">
+        tocbot.init({
+            // Where to render the table of contents.
+            tocSelector: '#toc',
+            // Where to grab the headings to build the table of contents.
+            contentSelector: '#notebook',
+            // Which headings to grab inside of the contentSelector element.
+            headingSelector: 'h1, h2, h3',
+            // For headings inside relative or absolute positioned containers within content.
+            hasInnerContainers: true,
+        });
+
         function update(eventData) {
             document.getElementById("notebook").innerHTML = eventData;
             // render mermaid
@@ -620,6 +644,9 @@
                 const chart = flamegraph().inverted(true).width(el.parentElement.offsetWidth);
                 d3.select(el).datum(JSON.parse(el.dataset.profile)).call(chart);
             })
+
+            // refresh table of content
+            tocbot.refresh();
         }
 
         function startWebSocketServer() {
@@ -630,10 +657,12 @@
                 console.log("Websocket connection closed or unable to connect; " +
                     "starting reconnect timeout");
                 socket = null;
-                setTimeout(function () {startWebSocketServer();}, 5000)
+                setTimeout(function () {
+                    startWebSocketServer();
+                }, 5000)
             }
 
-            socket.onmessage = (socketEvent)  => {
+            socket.onmessage = (socketEvent) => {
                 if (socketEvent.data.startsWith("exampleKeyword")) {
                     //do something - not useful anymore but keeping the pattern
 

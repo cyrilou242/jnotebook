@@ -73,6 +73,8 @@ public class Renderer {
                               FootnoteExtension.create()));
     // convert soft-breaks to hard breaks
     options.set(HtmlRenderer.SOFT_BREAK, "<br />\n");
+    options.set(HtmlRenderer.GENERATE_HEADER_ID, true);
+    options.set(HtmlRenderer.RENDER_HEADER_ID, true);
     parser = Parser.builder(options).build();
     renderer = HtmlRenderer.builder(options).build();
   }
