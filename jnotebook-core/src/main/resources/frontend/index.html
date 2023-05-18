@@ -565,6 +565,38 @@
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor' style='width: 100%; height: 100%;'%3E%3Cpath fill-rule='evenodd' d='M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z' clip-rule='evenodd'/%3E%3C/svg%3E");
     }
 
+    /* START: connection status header */
+    .status-header {
+        @apply z-10 fixed left-0 right-0 text-center font-sans text-xs bg-white;
+    }
+
+    .status-info {
+        @apply uppercase tracking-wider ml-1 font-bold text-[12px]
+    }
+
+    [data-status="COMPUTE"]::after {
+        content: 'Computing...';
+        color: green;
+    }
+
+    [data-status="TRANSFER"]::after {
+        content: "Transferring results...";
+        color: green;
+    }
+
+    [data-status="CONNECTED"]::after {
+        content: "Connected";
+        color: green;
+    }
+
+    [data-status="DISCONNECTED"]::after {
+        content: "Disconnected";
+        color: red;
+    }
+
+    /* END: connection status header */
+
+
     .result-error {
         background-color: #ffe4e4;
     }
@@ -572,20 +604,24 @@
     </style>
 </head>
 <body>
-<div x-data="{ tocOpen: false }" class="flex">
+<div x-data="{ tocOpen: false, notebookStatus: 'Connected'}" class="flex">
     <button x-on:click="tocOpen = ! tocOpen"
-            class="toc-toggle z-10 fixed right-2 top-2 md:right-auto md:left-3 md:top-[7px] text-slate-400 font-sans text-xs hover:underline cursor-pointer flex items-center bg-white py-1 px-3 md:p-0 rounded-full md:rounded-none border md:border-0 border-slate-200 shadow md:shadow-none">
+            class="toc-toggle z-20 fixed right-2 top-2 md:right-auto md:left-3 md:top-[7px] text-slate-400 font-sans text-xs hover:underline cursor-pointer flex items-center bg-white py-1 px-3 md:p-0 rounded-full md:rounded-none border md:border-0 border-slate-200 shadow md:shadow-none">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20"
              height="20">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
         </svg>
-        <span class="uppercase tracking-wider ml-1 font-bold text-[12px]">ToC</span>
+        <span class="tracking-wider ml-1 font-bold text-[12px]">ToC</span>
     </button>
-    <aside x-show="tocOpen" class="h-screen z-10 flex-shrink-0 fixed bg-slate-100 font-sans border-r border-t w-64">
+    <div x-bind:class="tocOpen ? 'ml-64' : ''" class="status-header">
+        <span id="status-message" data-status="" class="status-info"></span>
+    </div>
+    <aside x-show="tocOpen" class="h-screen z-20 flex-shrink-0 fixed bg-slate-100 font-sans border-r border-t w-64">
         <div class="px-3 mb-1 mt-1 md:mt-0 text-xs md:text-[12px] uppercase tracking-wider text-slate-500 font-medium px-3 mb-1 leading-none">
             ToC
         </div>
-        <div x-on:click="tocOpen = ! tocOpen" class="toc-toggle text-slate-500 absolute right-2 top-[11px] cursor-pointer z-10">
+        <div x-on:click="tocOpen = ! tocOpen"
+             class="toc-toggle text-slate-500 absolute right-2 top-[11px] cursor-pointer z-10">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
                  stroke-width="2" class="w-4 w-4">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path>
@@ -658,6 +694,13 @@
         function update(eventData) {
             document.getElementById("notebook").innerHTML = eventData;
             reRender();
+            updateStatus("CONNECTED");
+        }
+
+        function updateStatus(status) {
+            console.log("Status change: " + status);
+            const statusElem = document.getElementById("status-message");
+            statusElem.dataset.status = status;
         }
 
         function startWebSocketServer() {
@@ -667,6 +710,7 @@
             socket.onclose = function (event) {
                 console.log("Websocket connection closed or unable to connect; " +
                     "starting reconnect timeout");
+                updateStatus("DISCONNECTED");
                 socket = null;
                 setTimeout(function () {
                     startWebSocketServer();
@@ -674,14 +718,14 @@
             }
 
             socket.onmessage = (socketEvent) => {
-                if (socketEvent.data.startsWith("exampleKeyword")) {
-                    //do something - not useful anymore but keeping the pattern
-
+                if (socketEvent.data.startsWith("status_")) {
+                    updateStatus(socketEvent.data.substring(7))
                 } else {
                     update(socketEvent.data);
                 }
             };
         }
+
         startWebSocketServer();
     </script>
 </div>

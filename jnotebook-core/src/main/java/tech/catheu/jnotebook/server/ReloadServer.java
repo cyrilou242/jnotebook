@@ -123,7 +123,12 @@ public class ReloadServer {
     }
   }
 
+  public void sendStatus(NotebookServerStatus status) {
+    sendMessage("status_" + status.toString());
+  }
+
   public void sendUpdate(final String html) {
+    sendStatus(NotebookServerStatus.TRANSFER);
     lastUpdate = html;
     sendMessage(html);
   }
@@ -160,8 +165,10 @@ public class ReloadServer {
     public void onConnect(WebSocketHttpExchange webSocketHttpExchange,
                           WebSocketChannel channel) {
       channels.add(channel);
+      // resend to every channel - not very correct but simpler for the moment
+      sendStatus(NotebookServerStatus.CONNECTED);
       if (lastUpdate != null) {
-        // resend to every channel - not necessary but simpler
+        // resend to every channel - not necessary but simpler for the moment
         sendUpdate(lastUpdate);
       }
     }

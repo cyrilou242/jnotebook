@@ -24,6 +24,7 @@ import tech.catheu.jnotebook.jshell.ShellProvider;
 import tech.catheu.jnotebook.parse.StaticParser;
 import tech.catheu.jnotebook.render.Renderer;
 import tech.catheu.jnotebook.server.ReloadServer;
+import tech.catheu.jnotebook.server.NotebookServerStatus;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -57,14 +58,15 @@ public class InteractiveNotebook {
 
     LOG.info("Notebook server started on http://localhost:" + configuration.port);
 
-    notebookEvents.map(staticParser::staticSnippets)
-                  //.doOnEach(server::sendWorkInProgress)
-                  .doOnError(InteractiveNotebook::logError)
-                  .map(interpreter::interpret)
-                  .doOnError(InteractiveNotebook::logError)
-                  .map(renderer::render)
-                  .doOnError(InteractiveNotebook::logError)
-                  .subscribe(server::sendUpdate, InteractiveNotebook::logError);
+    notebookEvents
+            .doOnEach(e -> server.sendStatus(NotebookServerStatus.COMPUTE))
+            .map(staticParser::staticSnippets)
+            .doOnError(InteractiveNotebook::logError)
+            .map(interpreter::interpret)
+            .doOnError(InteractiveNotebook::logError)
+            .map(renderer::render)
+            .doOnError(InteractiveNotebook::logError)
+            .subscribe(server::sendUpdate, InteractiveNotebook::logError);
   }
 
   private static void logError(Throwable e) {
