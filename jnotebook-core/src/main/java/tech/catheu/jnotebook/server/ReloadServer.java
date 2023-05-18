@@ -46,9 +46,9 @@ public class ReloadServer {
   private final Main.InteractiveConfiguration configuration;
 
   private Undertow server;
-  private List<WebSocketChannel> channels = new ArrayList<>();
-  private WebSocketChannel webSocketChannel;
+  private final List<WebSocketChannel> channels = new ArrayList<>();
   XnioWorker worker;
+  private String lastUpdate;
 
   public ReloadServer(final Main.InteractiveConfiguration configuration) {
     this.configuration = configuration;
@@ -124,6 +124,7 @@ public class ReloadServer {
   }
 
   public void sendUpdate(final String html) {
+    lastUpdate = html;
     sendMessage(html);
   }
 
@@ -159,6 +160,10 @@ public class ReloadServer {
     public void onConnect(WebSocketHttpExchange webSocketHttpExchange,
                           WebSocketChannel channel) {
       channels.add(channel);
+      if (lastUpdate != null) {
+        // resend to every channel - not necessary but simpler
+        sendUpdate(lastUpdate);
+      }
     }
   }
 }
