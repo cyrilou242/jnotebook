@@ -50,8 +50,6 @@ public class StaticParser {
       if (type.equals(CREATE)) {
         return snippetsOf(filePath);
       } else if (type.equals(DELETE)) {
-        // delete in mem entries and clean everything
-        // TODO CYRIL implement
         return new StaticParsing(filePath, null, null);
       } else if (type.equals(MODIFY)) {
         return snippetsOf(filePath);
@@ -67,7 +65,7 @@ public class StaticParser {
     }
   }
 
-  private StaticParsing snippetsOf(final Path filePath) throws IOException {
+  public StaticParsing snippetsOf(final Path filePath) throws IOException {
     final List<String> lines = Files.readAllLines(filePath);
     List<StaticSnippet> notebookSnippets = new ArrayList<>();
     int lineIdx = 0;

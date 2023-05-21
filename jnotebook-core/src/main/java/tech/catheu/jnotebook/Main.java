@@ -24,9 +24,8 @@ public class Main {
   private static final Logger LOG = LoggerFactory.getLogger(Main.class);
 
   public static void main(String[] args) {
-    CommandLine commandLine = new CommandLine(new InteractiveCommand());
-    // add command here
-    //commandLine.addSubcommand("command2", new Command2());
+    final CommandLine commandLine = new CommandLine(new InteractiveCommand());
+    commandLine.addSubcommand(new RenderCommand());
     int exitCode = commandLine.execute(args);
     System.exit(exitCode);
   }
@@ -54,10 +53,17 @@ public class Main {
     }
   }
 
+  public static class SharedConfiguration {
+    // notebook runtime configs
+    @CommandLine.Option(names = {"-cp", "-classpath", "--class-path"},
+                        paramLabel = "class search path of directories and zip/jar files",
+                        description = "A : separated list of directories, JAR archives,\n and ZIP archives to search for class files.",
+                        defaultValue = "")
+    public String classPath = "";
+  }
 
-  public static class InteractiveConfiguration {
 
-    // server configs
+  public static class InteractiveConfiguration extends SharedConfiguration {
     @CommandLine.Parameters(index = "0", description = "The notebook folder to watch.",
                             defaultValue = "notebooks")
     public String notebookPath = "notebooks";
@@ -67,12 +73,27 @@ public class Main {
                         description = "Port of the notebook server",
                         defaultValue = "5002")
     public Integer port;
+  }
 
-    // notebook runtime configs
-    @CommandLine.Option(names = {"-cp", "-classpath", "--class-path"},
-                        paramLabel = "class search path of directories and zip/jar files",
-                        description = "A : separated list of directories, JAR archives,\n and ZIP archives to search for class files.",
-                        defaultValue = "")
-    public String classPath = "";
+
+  @CommandLine.Command(name = "render", mixinStandardHelpOptions = true,
+                       description = "Render a notebook in a publishable format.")
+  public static class RenderCommand implements Runnable {
+    @CommandLine.Mixin
+    private RenderConfiguration config;
+
+    public void run() {
+      final NotebookRenderer renderer = NotebookRenderer.from(config);
+      renderer.render(config);
+    }
+  }
+
+  public static class RenderConfiguration extends SharedConfiguration {
+
+    @CommandLine.Parameters(index = "0", description = "The path to the notebook to render.")
+    public String inputPath;
+
+    @CommandLine.Parameters(index = "1", description = "The output path.")
+    public String outputPath;
   }
 }

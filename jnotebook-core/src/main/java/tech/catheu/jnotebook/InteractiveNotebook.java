@@ -23,7 +23,7 @@ import tech.catheu.jnotebook.file.PathObservables;
 import tech.catheu.jnotebook.jshell.ShellProvider;
 import tech.catheu.jnotebook.parse.StaticParser;
 import tech.catheu.jnotebook.render.Renderer;
-import tech.catheu.jnotebook.server.ReloadServer;
+import tech.catheu.jnotebook.server.InteractiveServer;
 import tech.catheu.jnotebook.server.NotebookServerStatus;
 
 import java.io.IOException;
@@ -38,7 +38,7 @@ public class InteractiveNotebook {
   private final StaticParser staticParser;
   private final Interpreter interpreter;
   private final Renderer renderer;
-  private final ReloadServer server;
+  private final InteractiveServer server;
 
   public InteractiveNotebook(final Main.InteractiveConfiguration configuration) {
     this.configuration = configuration;
@@ -46,7 +46,7 @@ public class InteractiveNotebook {
     this.staticParser = new StaticParser(shellProvider);
     this.interpreter = new GreedyInterpreter(shellProvider);
     this.renderer = new Renderer();
-    this.server = new ReloadServer(configuration);
+    this.server = new InteractiveServer(configuration);
   }
 
   public void run() throws IOException {

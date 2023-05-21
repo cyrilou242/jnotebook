@@ -26,9 +26,6 @@ import io.undertow.websockets.core.WebSockets;
 import io.undertow.websockets.spi.WebSocketHttpExchange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
-import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import org.xnio.OptionMap;
 import org.xnio.Options;
 import org.xnio.Xnio;
@@ -38,8 +35,11 @@ import tech.catheu.jnotebook.Main;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-public class ReloadServer {
+import static tech.catheu.jnotebook.server.HtmlTemplateEngine.TEMPLATE_KEY_CONFIG;
+
+public class InteractiveServer {
 
   private static final Logger LOG = LoggerFactory.getLogger(Main.class);
 
@@ -50,7 +50,7 @@ public class ReloadServer {
   XnioWorker worker;
   private String lastUpdate;
 
-  public ReloadServer(final Main.InteractiveConfiguration configuration) {
+  public InteractiveServer(final Main.InteractiveConfiguration configuration) {
     this.configuration = configuration;
   }
 
@@ -92,32 +92,19 @@ public class ReloadServer {
 
   private static class TemplatedHttpHandler implements HttpHandler {
 
-    final TemplateEngine templateEngine;
-    final Context context;
+    final HtmlTemplateEngine templateEngine;
+    final Map<String, Object> context;
     final Main.InteractiveConfiguration configuration;
 
     TemplatedHttpHandler(final Main.InteractiveConfiguration configuration) {
       this.configuration = configuration;
-      this.templateEngine = createTemplateEngine();
-      this.context = new Context();
-      this.context.setVariable("config", this.configuration);
-    }
-
-    private static TemplateEngine createTemplateEngine() {
-      ClassLoaderTemplateResolver resolver = new ClassLoaderTemplateResolver();
-      resolver.setPrefix("frontend/");
-      resolver.setSuffix(".html");
-
-      TemplateEngine engine = new TemplateEngine();
-      engine.setTemplateResolver(resolver);
-
-      return engine;
+      this.templateEngine = new HtmlTemplateEngine();
+      this.context = Map.of(TEMPLATE_KEY_CONFIG, this.configuration);
     }
 
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
-      String html = templateEngine.process("index", context);
-
+      final String html = templateEngine.render(context);
       exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/html");
       exchange.getResponseSender().send(html);
     }

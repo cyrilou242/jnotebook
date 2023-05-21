@@ -35,13 +35,12 @@ public class ShellProvider {
   private static final String GRADLE_PROJECT_FILE = "build.gradle";
   public static final String MAVEN_DEPENDENCY_COMMAND =
           " -q exec:exec -Dexec.executable=echo -Dexec.args=\"%classpath\"";
-
   private final Deque<PowerJShell> preparedShells;
-  private final Main.InteractiveConfiguration configuration;
+  private final Main.SharedConfiguration configuration;
 
   private String resolvedClasspath = null;
 
-  public ShellProvider(Main.InteractiveConfiguration configuration) {
+  public ShellProvider(Main.SharedConfiguration configuration) {
     this.configuration = configuration;
     this.preparedShells = new ArrayDeque<>(2);
 

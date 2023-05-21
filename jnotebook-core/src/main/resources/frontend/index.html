@@ -22,13 +22,13 @@
     <title>Notebook</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css"
           integrity="sha384-vKruj+a13U8yHIkAyGgK1J3ArTLzrFGBbBc0tDp4ad/EyewESeXE/Iv67Aj8gKZ0" crossorigin="anonymous">
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.js"
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.js"
             integrity="sha384-PwRUT/YqbnEjkZO0zZxNqcxACrXe+j766U2amXcgMg5457rve2Y7I6ZJSm2A0mS4"
             crossorigin="anonymous"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/contrib/auto-render.min.js"
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/contrib/auto-render.min.js"
             integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
             onload="renderMathInElement(document.body);"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"
             onload="mermaid.initialize({startOnLoad:true});"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
@@ -613,7 +613,7 @@
         </svg>
         <span class="tracking-wider ml-1 font-bold text-[12px]">ToC</span>
     </button>
-    <div x-bind:class="tocOpen ? 'ml-64' : ''" class="status-header">
+    <div th:if="${interactive_config}" x-bind:class="tocOpen ? 'ml-64' : ''" class="status-header">
         <span id="status-message" data-status="" class="status-info"></span>
     </div>
     <aside x-show="tocOpen" class="h-screen z-20 flex-shrink-0 fixed bg-slate-100 font-sans border-r border-t w-64">
@@ -630,17 +630,19 @@
         <div id="toc"></div>
     </aside>
     <div x-bind:class="tocOpen ? 'ml-64' : ''" class="flex-auto h-screen overflow-y-auto scroll-container">
-        <div id="notebook" class="flex flex-col items-center viewer-notebook flex-auto">
+        <div th:if="${rendered}" th:utext="${rendered}" id="notebook" class="flex flex-col items-center viewer-notebook flex-auto">
+        </div>
+        <div th:unless="${rendered}" id="notebook" class="flex flex-col items-center viewer-notebook flex-auto">
             <div id="helper" class="viewer viewer-result w-full max-w-prose px-8">
                 <div class="relative">
                     <div class="overflow-y-hidden">
-                        <p>Save a file in your <code>[[${config.notebookPath}]]</code> folder to make your notebook
+                        <p>Save a file in your <code>[[${interactive_config.notebookPath}]]</code> folder to make your notebook
                             appear…</p></div>
                 </div>
             </div>
         </div>
     </div>
-    <script th:inline="javascript">
+    <script defer th:inline="javascript">
         tocbot.init({
             // Where to render the table of contents.
             tocSelector: '#toc',
@@ -690,7 +692,9 @@
             // refresh table of content
             tocbot.refresh();
         }
-
+    </script>
+    <script defer>reRender();</script>
+    <script defer th:if="${interactive_config}" th:inline="javascript">
         function update(eventData) {
             document.getElementById("notebook").innerHTML = eventData;
             reRender();
@@ -703,8 +707,7 @@
             statusElem.dataset.status = status;
         }
 
-        function startWebSocketServer() {
-            var port = [[${config.port}]];
+        function startWebSocketServer(port) {
             var socket = new WebSocket("ws://localhost:" + port + "/websocket");
 
             socket.onclose = function (event) {
@@ -726,7 +729,10 @@
             };
         }
 
-        startWebSocketServer();
+        const port = /*[[${interactive_config.port}]];*/ "5002";
+        if (port !== null) {
+            startWebSocketServer(port);
+        }
     </script>
 </div>
 </body>
