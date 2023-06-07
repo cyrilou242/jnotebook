@@ -613,10 +613,10 @@
         </svg>
         <span class="tracking-wider ml-1 font-bold text-[12px]">ToC</span>
     </button>
-    <div th:if="${interactive_config}" x-bind:class="tocOpen ? 'ml-64' : ''" class="status-header">
+    <div th:if="${interactive_config}" x-bind:class="tocOpen ? 'ml-52' : ''" class="status-header">
         <span id="status-message" data-status="" class="status-info"></span>
     </div>
-    <aside x-show="tocOpen" class="h-screen z-20 flex-shrink-0 fixed bg-slate-100 font-sans border-r border-t w-64">
+    <aside x-show="tocOpen" class="h-screen z-20 flex-shrink-0 fixed bg-slate-100 font-sans border-r border-t w-52">
         <div class="px-3 mb-1 mt-1 md:mt-0 text-xs md:text-[12px] uppercase tracking-wider text-slate-500 font-medium px-3 mb-1 leading-none">
             ToC
         </div>
@@ -629,7 +629,7 @@
         </div>
         <div id="toc"></div>
     </aside>
-    <div x-bind:class="tocOpen ? 'ml-64' : ''" class="flex-auto h-screen overflow-y-auto scroll-container">
+    <div x-bind:class="tocOpen ? 'ml-52' : ''" class="flex-auto h-screen overflow-y-auto scroll-container">
         <div th:if="${rendered}" th:utext="${rendered}" id="notebook" class="flex flex-col items-center viewer-notebook flex-auto">
         </div>
         <div th:unless="${rendered}" id="notebook" class="flex flex-col items-center viewer-notebook flex-auto">
@@ -716,7 +716,7 @@
                 updateStatus("DISCONNECTED");
                 socket = null;
                 setTimeout(function () {
-                    startWebSocketServer();
+                    startWebSocketServer(port);
                 }, 5000)
             }
 
