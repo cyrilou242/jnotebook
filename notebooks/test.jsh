@@ -12,6 +12,12 @@ import tech.catheu.jnotebook.Nb;
 
 Integer.valueOf(3).toString();
 
+int y = 4;
+
+Thread.sleep(5000);
+
+System.out.println(y);
+
 // final test
 Nb.html(s1);
 
@@ -102,7 +108,7 @@ int errored(int lol) {
 }
 
 
-// ## profiling functions cool lol
+// ## profiling functions
 
 void addElements(final int numElems, List<Integer> l) {
     for (int i = 0; i<numElems; i++) {

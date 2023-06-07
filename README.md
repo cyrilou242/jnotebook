@@ -1,7 +1,15 @@
 # jNotebook
 
-Notebook for Java.   
-Intepret jshell files.
+## Live notebooks for Java.   
+
+TODO LINK TO DOC - USING CLERK 
+
+jNotebook interprets java JShell files and render them as notebook.
+
+TODO INSERT SCREEENSHOT
+
+## Demos
+
 
 ## How to run
 

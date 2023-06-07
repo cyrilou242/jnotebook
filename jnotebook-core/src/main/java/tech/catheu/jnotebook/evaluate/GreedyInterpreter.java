@@ -36,6 +36,7 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.support.compiler.VirtualFile;
+import tech.catheu.jnotebook.Nb;
 import tech.catheu.jnotebook.jshell.EvalResult;
 import tech.catheu.jnotebook.jshell.PowerJShell;
 import tech.catheu.jnotebook.jshell.ShellProvider;
@@ -170,6 +171,17 @@ public class GreedyInterpreter implements Interpreter {
     }
   }
 
+  public static void main(String[] args) {
+    Nb.vega(Map.of(
+            "data", Map.of("url", "data/seattle-weather.csv"),
+            "mark", "bar",
+            "encoding", Map.of(
+                    "x", Map.of("timeUnit", "month", "field", "date", "type", "ordinal"),
+            "y", Map.of("aggregate", "mean", "field", "precipitation")
+          )
+        ));
+  }
+
   private SourceClass buildSourceClass(final StaticParsing staticParsing, final SourceCodeAnalysis ana) {
     StringBuilder spoonCompatibleSource = new StringBuilder(CLASS_PREFIX);
     Map<Integer, Snippet> staticSnippetIdxToSnippet = new HashMap<>();
@@ -177,7 +189,13 @@ public class GreedyInterpreter implements Interpreter {
       final StaticSnippet e = staticParsing.snippets().get(i);
       if (e.type().equals(StaticSnippet.Type.JAVA)) {
         final String snippetString = e.completionInfo().source();
-        final Snippet preAnalysis = ana.sourceToSnippets(snippetString).get(0);
+        final Snippet preAnalysis;
+        try {
+          preAnalysis = ana.sourceToSnippets(snippetString).get(0);
+        } catch (NullPointerException err) {
+          // FIXME CYRIL implement better error handling
+          throw err;
+        }
         staticSnippetIdxToSnippet.put(i, preAnalysis);
         switch (preAnalysis.kind()) {
           case IMPORT:

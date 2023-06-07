@@ -86,3 +86,16 @@ int x = i +1;
 System.out.println(x + r);
 }
 ```
+
+This incorrect input breaks the parsing with an NPE:
+```
+Nb.vega(Map.of(
+          "data", Map.of("url", "data/seattle-weather.csv"),
+          "mark", "bar",
+          "encoding", Map.of(
+            "x": Map.of("timeUnit", "month", "field", "date", "type", "ordinal"),
+            "y": Map.of("aggregate", "mean", "field", "precipitation")
+          )
+        );
+```
+catch these cases
