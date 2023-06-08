@@ -33,7 +33,7 @@
 // Make sure your editor is configured to work with JShell files.
 // TODO CYRIL
 
-// ## 💡Editor principle
+// ## 💡 Editor principle
 // Cells are delimited by blank lines
 
 String s1 = "Hello";
@@ -152,7 +152,7 @@ DomContent title(String text) {
 };
 title("My title!");
 
-// All `Nb` viewers output are of class `j2html.tags.DomContent`. It is easy to combine viewers
+// All `Nb` viewers output are of class `j2html.tags.DomContent`. This makes is easy to combine viewers
 var graph1 = Nb.vega(Map.of(
                          "data", Map.of("url", "https://vega.github.io/vega-lite/data/seattle-weather.csv"),
                          "mark", "bar",
@@ -172,8 +172,16 @@ var graph2 = Nb.vega(Map.of(
 Nb.row(title("My awesome analysis"), Nb.col(graph1, graph2));
 
 // ## 🔥 Flamegraphs
+// You can profile methods and generate flamegraphs.
 
-// FIXME CYRIL - make sure it does not make the loading time of page too long
+Runnable arrayFilling = () -> {
+  List<Integer> a = new ArrayList<>();
+  for (int i = 0; i < 10000000; i++) {
+    a.add(i);
+  }
+};
+var profilePath = Nb.profile(arrayFilling);
+Nb.flame(profilePath);
 
 
 
