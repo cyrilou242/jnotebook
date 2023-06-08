@@ -150,7 +150,7 @@ import j2html.tags.DomContent;
 DomContent title(String text) {
     return p(text).withStyle("font-weight:bold; font-size: x-large; display: block;margin-left: auto; margin-right: auto");
 };
-title("My title!");
+title("A big title.");
 
 // All `Nb` viewers output are of class `j2html.tags.DomContent`. This makes is easy to combine viewers
 var graph1 = Nb.vega(Map.of(
