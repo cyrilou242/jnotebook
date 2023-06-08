@@ -2,7 +2,7 @@
 
 ## Live notebooks for Java.   
 
-[Book of jNotebook](https://jnotebook.catheu.tech/) - Quickstart   
+[Book of jNotebook](https://jnotebook.catheu.tech/) - Quickstart - [Roadmap](https://github.com/cyrilou242/jnotebook/discussions/1)
 
 jNotebook interprets Java JShell files and render them as notebook.
 
@@ -27,10 +27,3 @@ jNotebook is a notebook library for Java that aims to address these problems by 
     Because jNotebook is not required to run JShell files, you can create JShell scripts interactively with jNotebook, you won't depend on jNotebook in production later.
 - no out-of-order execution: jNotebook always evaluates from top to bottom. jNotebook builds a dependency graph of Java statements and only recomputes the needed changes to keep the feedback loop fast.
 - cells outputs are interpreted as html. This gives access to great visualization libraries and standard html for formatting.
-
-
-## Developer
-Set the log level to `DEBUG`: 
-```
--Dorg.slf4j.simpleLogger.defaultLogLevel=debug
-```
