@@ -1,0 +1,47 @@
+name: Publish doc
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      # don't use setup-java cache - hash file pattern has issues
+      - name: Cache local Maven repository
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: license-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml', 'LICENSE', 'HEADER') }}
+      - name: build and run test
+        run: ./mvnw -T 1C -B clean install
+      - name: generate doc
+        id: generate_doc
+        run: |
+          java -jar jnotebook-distribution/target/jnotebook-distribution-*.jar render doc/book.jsh index.html
+          EOF="EOFLOL"
+          echo "INDEX_HTML<<$EOF" >> "$GITHUB_OUTPUT"
+          cat index.html >> $GITHUB_OUTPUT
+          echo "$EOF" >> "$GITHUB_OUTPUT"
+          rm index.html
+      - name: push doc
+        run: |
+          git pull
+          git checkout website
+          echo -e "${INDEX_HTML}" > index.html
+          git config --global user.name "jnotebook-ci"
+          git config --global user.email "jnotebook-ci@users.noreply.github.com"
+          git add index.html
+          git commit --allow-empty -m  "update doc" 
+          git push
+        env:
+          INDEX_HTML: ${{ steps.generate_doc.outputs.INDEX_HTML }}
+
