@@ -2,7 +2,7 @@
 
 ## Live notebooks for Java.   
 
-Book of jNotebook - Quickstart   
+[Book of jNotebook](https://jnotebook.catheu.tech/) - Quickstart   
 
 jNotebook interprets Java JShell files and render them as notebook.
 
