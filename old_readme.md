@@ -20,3 +20,10 @@ Use `-pl` to control which module classpath you want. Use ... to include test de
 
 ### Use gradle dependencies
 This is undocumented. Please contribute!
+
+
+## Developer
+Set the log level to `DEBUG`: 
+```
+-Dorg.slf4j.simpleLogger.defaultLogLevel=debug
+```
