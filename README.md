@@ -10,7 +10,7 @@ jNotebook interprets Java JShell files and render them as notebook.
 
 ## Rationale
 
-Computational notebooks allow arguing from evidence by mixing prose with executable code. For a good overview of problems users encounter in traditional notebooks like Jupyter, see I don't like notebooks and What’s Wrong with Computational Notebooks? Pain Points, Needs, and Design Opportunities.
+Computational notebooks allow arguing from evidence by mixing prose with executable code. For a good overview of problems users encounter in traditional notebooks like Jupyter, see [I don't like notebooks](https://www.youtube.com/watch?v=7jiPeIFXb6U) and [What’s Wrong with Computational Notebooks? Pain Points, Needs, and Design Opportunities](https://austinhenley.com/pubs/Chattopadhyay2020CHI_NotebookPainpoints.pdf).
 
 Specifically jNotebook wants to address the following problems:
 
