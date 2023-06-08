@@ -1,1 +1,827 @@
-INDEX_HTML
+<!--
+
+    Copyright Cyril de Catheu, 2023
+
+    Licensed under the JNOTEBOOK LICENSE 1.0 (the "License"); you may not use
+    this file except in compliance with the License. You may obtain a copy of the
+    License at https://raw.githubusercontent.com/cyrilou242/jnotebook/main/LICENSE
+
+    Unless required by applicable law or agreed to in writing, software distributed under the
+    License is distributed on an "AS IS" BASIS, WITHOUT * WARRANTIES OF ANY KIND,
+    either express or implied.
+    See the License for the specific language governing permissions and limitations under
+    the License.
+
+-->
+<!DOCTYPE html>
+<html lang="en" class="overflow-hidden min-h-screen">
+<head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Notebook</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css"
+          integrity="sha384-vKruj+a13U8yHIkAyGgK1J3ArTLzrFGBbBc0tDp4ad/EyewESeXE/Iv67Aj8gKZ0" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.js"
+            integrity="sha384-PwRUT/YqbnEjkZO0zZxNqcxACrXe+j766U2amXcgMg5457rve2Y7I6ZJSm2A0mS4"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/contrib/auto-render.min.js"
+            integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+            onload="renderMathInElement(document.body);"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"
+            onload="mermaid.initialize({startOnLoad:true});"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <link rel="stylesheet" type="text/css"
+          href="https://cdn.jsdelivr.net/npm/d3-flame-graph@4.1.3/dist/d3-flamegraph.css">
+    <script type="text/javascript" src="https://d3js.org/d3.v7.js"></script>
+    <script type="text/javascript"
+            src="https://cdn.jsdelivr.net/npm/d3-flame-graph@4.1.3/dist/d3-flamegraph.min.js"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.18.2/tocbot.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.18.2/tocbot.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.1/dist/cdn.min.js"></script>
+    <script>tailwind.config = {
+        darkMode: "class",
+        content: ["./tw/viewer.js", "./tw/**/*.edn"],
+        safelist: ['dark'],
+        theme: {
+            extend: {},
+            fontFamily: {
+                sans: ["Fira Sans", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
+                serif: ["PT Serif", "serif"],
+                mono: ["Fira Mono", "monospace"]
+            }
+        },
+        variants: {
+            extend: {},
+        },
+        plugins: [],
+    }</script>
+    <style type="text/tailwindcss">@tailwind base;
+    @tailwind components;
+    @tailwind utilities;
+
+    @layer base {
+        html {
+            font-size: 18px;
+        }
+
+        @media (max-width: 600px) {
+            html {
+                font-size: 16px;
+            }
+        }
+        .font-condensed {
+            font-family: "Fira Sans Condensed", sans-serif;
+        }
+
+        .font-inter {
+            font-family: "Inter", sans-serif;
+        }
+
+        body {
+            @apply font-serif antialiased text-gray-900 sm:overscroll-y-none;
+        }
+
+        code, .code {
+            @apply font-mono text-sm text-gray-900 bg-slate-50 px-0.5 py-px rounded;
+        }
+
+        code::before, code::after {
+            @apply content-none !important;
+        }
+
+        h1, h3, h4, h5, h6 {
+            @apply font-condensed font-bold mt-8 first:mt-0;
+        }
+
+        h2 {
+            /*We cannot collapse margins due to nesting but we want to*/
+            /*keep the h2’s large margin visible*/
+            @apply font-condensed font-bold mt-8 first:mt-2;
+        }
+
+        h1 {
+            @apply text-4xl;
+        }
+
+        h2 {
+            @apply text-3xl;
+        }
+
+        h3 {
+            @apply text-2xl;
+        }
+
+        button {
+            @apply focus:outline-none;
+        }
+
+        strong {
+            @apply font-bold;
+        }
+
+        em {
+            @apply italic;
+        }
+
+        pre {
+            @apply m-0 font-mono;
+        }
+    }
+
+    /* Compatibility */
+    /* --------------------------------------------------------------- */
+    /* TODO: Verify which colors are in use and replace with Tailwind
+       colors accordingly. Move Nj-specific styles out of here. */
+
+    :root {
+        --teal-color: #31afd0;
+        --dark-teal-color: #095960;
+        --near-black-color: #2e2e2c;
+        --red-color: #d64242;
+        --dark-blue-color: #1f2937;
+        --dark-blue-60-color: rgba(28, 42, 56, 0.6);
+        --gray-panel-color: rgba(239, 241, 245, 1.000);
+        --brand-color: var(--dark-blue-color);
+        --link-color: #5046e4;
+        --command-bar-selected-color: var(--teal-color);
+    }
+
+    .serif {
+        @apply font-serif;
+    }
+
+    .sans-serif {
+        @apply font-sans;
+    }
+
+    .monospace {
+        @apply font-mono;
+    }
+
+    .inter {
+        @apply font-inter;
+    }
+
+    .border-color-teal {
+        border-color: var(--dark-teal-color);
+    }
+
+    .teal {
+        color: var(--teal-color);
+    }
+
+    .bg-dark-blue {
+        background: var(--dark-blue-color);
+    }
+
+    .bg-dark-blue-60 {
+        background: rgba(28, 42, 56, 0.6);
+    }
+
+    .bg-gray-panel {
+        background: var(--gray-panel-color);
+    }
+
+    .text-dark-blue {
+        color: var(--dark-blue-color);
+    }
+
+    .text-dark-blue-60 {
+        color: var(--dark-blue-60-color);
+    }
+
+    .border-dark-blue-30 {
+        border-color: rgba(28, 42, 56, 0.6);
+    }
+
+    .text-brand {
+        color: var(--dark-blue-color);
+    }
+
+    .bg-brand {
+        background: var(--dark-blue-color);
+    }
+
+    .text-selected {
+        color: white;
+    }
+
+    .red {
+        color: var(--red-color);
+    }
+
+    /* Disclose Button */
+    /* --------------------------------------------------------------- */
+
+    .disclose {
+        @apply content-none border-solid cursor-pointer inline-block relative mr-[3px] top-[-2px] transition-all;
+        border-color: var(--near-black-color) transparent;
+        border-width: 6px 4px 0;
+    }
+
+    .disclose:hover {
+        border-color: var(--near-black-color) transparent;
+    }
+
+    .dark .disclose,
+    .dark .disclose:hover {
+        border-color: white transparent;
+    }
+
+    .disclose.collapsed {
+        @apply rotate-[-90deg];
+    }
+
+    /* Layout */
+    /* --------------------------------------------------------------- */
+
+    .page {
+        @apply max-w-5xl mx-auto px-12 box-border flex-shrink-0;
+    }
+
+    .max-w-prose {
+        @apply max-w-[46rem] !important;
+    }
+
+    .max-w-wide {
+        @apply max-w-3xl !important;
+    }
+
+    /* List Styles */
+    /* --------------------------------------------------------------- */
+
+    .task-list-item + .task-list-item,
+    .viewer-markdown ul ul {
+        @apply mt-1 mb-0;
+    }
+
+    /* compact TOC */
+    .viewer-markdown .toc ul {
+        list-style: none;
+        @apply my-1;
+    }
+
+    /* Code Viewer */
+    /* --------------------------------------------------------------- */
+
+    .viewer-code {
+        @apply font-mono bg-slate-100 rounded-sm text-sm overflow-x-auto;
+    }
+
+    .viewer-code .cm-content {
+        @apply py-4 px-8;
+    }
+
+    @media (min-width: 960px) {
+        .viewer-notebook .viewer-code .cm-content {
+            @apply py-4 pl-12;
+        }
+    }
+
+    /* Don’t show focus outline when double-clicking cell in Safari */
+    .cm-scroller {
+        @apply focus:outline-none;
+    }
+
+    /* Syntax Highlighting */
+    /* --------------------------------------------------------------- */
+
+    .inspected-value {
+        @apply text-xs font-mono leading-[1.25rem];
+    }
+
+    .result-data {
+        @apply font-mono text-sm overflow-x-auto whitespace-nowrap leading-normal;
+    }
+
+    .result-data::-webkit-scrollbar, .path-nav::-webkit-scrollbar {
+        @apply h-0;
+    }
+
+    .result-data-collapsed {
+        @apply whitespace-nowrap;
+    }
+
+    .result-data-field {
+        @apply ml-4 whitespace-nowrap;
+    }
+
+    .result-data-field-link {
+        @apply ml-4 whitespace-nowrap cursor-pointer;
+    }
+
+    .result-data-field-link:hover {
+        @apply text-black bg-black/5;
+    }
+
+    .result-text-empty {
+        color: rgba(0, 0, 0, .3);
+    }
+
+    .browsify-button:hover {
+        box-shadow: -2px 0 0 2px #edf2f7;
+    }
+
+    /* Prose */
+    /* --------------------------------------------------------------- */
+
+    .viewer-notebook,
+    .viewer-markdown {
+        @apply prose
+        prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline
+        prose-p:mt-4 prose-p:leading-snug
+        prose-ol:mt-4 prose-ol:mb-6 prose-ol:leading-snug
+        prose-ul:mt-4 prose-ul:mb-6 prose-ul:leading-snug
+        prose-blockquote:mt-4 prose-blockquote:leading-snug
+        prose-hr:mt-6 prose-hr:border-t-2 prose-hr:border-solid prose-hr:border-slate-200
+        prose-figure:mt-4
+        prose-figcaption:mt-2 prose-figcaption:text-xs
+        prose-headings:mb-4
+        prose-table:mt-0
+        prose-th:mb-0
+        prose-img:my-0
+        prose-code:font-medium prose-code:bg-slate-100
+        max-w-none;
+    }
+
+    .viewer-markdown blockquote p:first-of-type:before,
+    .viewer-markdown blockquote p:last-of-type:after {
+        @apply content-none;
+    }
+
+    /* Images */
+    /* --------------------------------------------------------------- */
+
+
+    /* Todo Lists */
+    /* --------------------------------------------------------------- */
+
+    .contains-task-list {
+        @apply pl-6 list-none;
+    }
+
+    .contains-task-list input[type="checkbox"] {
+        @apply appearance-none h-4 w-4 rounded border border-slate-200 relative mr-[0.3rem] ml-[-1.5rem] top-[0.15rem];
+    }
+
+    .contains-task-list input[type="checkbox"]:checked {
+        @apply border-indigo-600 bg-indigo-600 bg-no-repeat bg-contain;
+        background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");
+    }
+
+    /* Markdown TOC */
+    /* --------------------------------------------------------------- */
+
+    .viewer-markdown .toc {
+        @apply mt-4;
+    }
+
+    .viewer-markdown h1 + .toc {
+        @apply mt-8;
+    }
+
+    .viewer-markdown .toc h1,
+    .viewer-markdown .toc h2,
+    .viewer-markdown .toc h3,
+    .viewer-markdown .toc h4,
+    .viewer-markdown .toc h5,
+    .viewer-markdown .toc h6 {
+        @apply text-base text-indigo-600 font-sans my-0;
+    }
+
+    .viewer-markdown .toc a {
+        @apply text-indigo-600 font-normal no-underline hover:underline;
+    }
+
+    .viewer-markdown .toc li {
+        @apply m-0;
+    }
+
+    .viewer-markdown .toc ul ul {
+        @apply pl-4;
+    }
+
+    /* Notebook Spacing */
+    /* --------------------------------------------------------------- */
+
+    .viewer-notebook {
+        @apply py-16;
+    }
+
+    #clerk-static-app .viewer-notebook {
+        @apply pt-[0.8rem] pb-16;
+    }
+
+    .viewer-markdown *:first-child:not(.viewer-code):not(li):not(h2) {
+        @apply mt-0;
+    }
+
+    /*.viewer + .viewer { @apply mt-6; }*/
+    .viewer + .viewer-result {
+        @apply mt-0;
+    }
+
+    .viewer-code + .viewer-result {
+        @apply mt-3;
+    }
+
+    .viewer-markdown + .viewer-markdown {
+        @apply mt-0;
+    }
+
+    /* Sidenotes */
+    /* --------------------------------------------------------------- */
+
+    .sidenote-ref {
+        @apply top-[-3px] inline-flex justify-center items-center w-[18px] h-[18px]
+        rounded-full bg-slate-100 border border-slate-300 hover:bg-slate-200 hover:border-slate-300
+        m-0 ml-[4px] cursor-pointer;
+    }
+
+    .sidenote {
+        @apply hidden float-left clear-both mx-[2.5%] my-4 text-xs relative w-[95%];
+    }
+
+    .sidenote-ref.expanded + .sidenote {
+        @apply block;
+    }
+
+    @media (min-width: 860px) {
+        .sidenote-ref {
+            @apply top-[-0.5em] w-auto h-auto inline border-0 bg-transparent m-0 pointer-events-none;
+        }
+
+        .sidenote sup {
+            @apply inline;
+        }
+
+        .viewer-markdown .contains-sidenotes p {
+            @apply max-w-[65%];
+        }
+
+        .viewer-markdown p .sidenote {
+            @apply mr-[-54%] mt-[0.2rem] w-1/2 float-right clear-right relative block;
+        }
+    }
+
+    .viewer-code + .viewer:not(.viewer-markdown):not(.viewer-code):not(.viewer-code-folded),
+    .viewer-code-folded + .viewer:not(.viewer-markdown):not(.viewer-code):not(.viewer-code-folded),
+    .viewer-result + .viewer-result {
+        @apply mt-2;
+    }
+
+    .viewer-code + .viewer-code-folded {
+        @apply mt-4;
+    }
+
+    .viewer-result {
+        @apply leading-tight mb-6;
+    }
+
+    .viewer-result figure {
+        @apply mt-0 !important;
+    }
+
+    @media (min-width: 768px) {
+        .devcard-desc > div {
+            @apply max-w-full m-0;
+        }
+    }
+
+    /* Command Palette */
+    /* --------------------------------------------------------------- */
+
+    .nj-commands-input {
+        @apply bg-transparent text-white;
+    }
+
+    .nj-context-menu-item:hover:not([disabled]) {
+        @apply cursor-pointer;
+        background-color: rgba(255, 255, 255, .14);
+    }
+
+    /* Devdocs */
+    /* --------------------------------------------------------------- */
+
+    .logo, .logo-white {
+        @apply block indent-[-999em];
+        background: url(/images/nextjournal-logo.svg) center center no-repeat;
+    }
+
+    .devdocs-body {
+        @apply font-inter;
+    }
+
+    /* Workarounds */
+    /* --------------------------------------------------------------- */
+
+    /* Fixes vega viewer resizing into infinity */
+    .vega-embed .chart-wrapper {
+        @apply h-auto !important;
+    }
+
+    /* fixes fraction separators being overridden by tw’s border-color */
+    .katex * {
+        @apply border-black;
+    }
+
+    /* end of fork */
+    .hljs {
+        background-color: transparent !important;
+    }
+
+    .cm-success {
+        position: relative;
+    }
+
+    .cm-success::after {
+        content: '';
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        width: 24px;
+        height: 24px;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='currentColor' class='w-6 h-6'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z'/%3E%3C/svg%3E");
+    }
+
+    .cm-failure {
+        position: relative;
+    }
+
+    .cm-failure::after {
+        content: '';
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        width: 24px;
+        height: 24px;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor' style='width: 100%; height: 100%;'%3E%3Cpath fill-rule='evenodd' d='M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z' clip-rule='evenodd'/%3E%3C/svg%3E");
+    }
+
+    /* START: connection status header */
+    .status-header {
+        @apply z-10 fixed left-0 right-0 text-center font-sans text-xs bg-white;
+    }
+
+    .status-info {
+        @apply uppercase tracking-wider ml-1 font-bold text-[12px]
+    }
+
+    [data-status="COMPUTE"]::after {
+        content: 'Computing...';
+        color: green;
+    }
+
+    [data-status="TRANSFER"]::after {
+        content: "Transferring results...";
+        color: green;
+    }
+
+    [data-status="CONNECTED"]::after {
+        content: "Connected";
+        color: green;
+    }
+
+    [data-status="DISCONNECTED"]::after {
+        content: "Disconnected";
+        color: red;
+    }
+
+    /* END: connection status header */
+
+
+    .result-error {
+        background-color: #ffe4e4;
+    }
+
+    </style>
+</head>
+<body>
+<div x-data="{ tocOpen: true, notebookStatus: 'Connected'}" class="flex">
+    <button x-on:click="tocOpen = ! tocOpen"
+            class="toc-toggle z-20 fixed right-2 top-2 md:right-auto md:left-3 md:top-[7px] text-slate-400 font-sans text-xs hover:underline cursor-pointer flex items-center bg-white py-1 px-3 md:p-0 rounded-full md:rounded-none border md:border-0 border-slate-200 shadow md:shadow-none">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20"
+             height="20">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+        <span class="tracking-wider ml-1 font-bold text-[12px]">ToC</span>
+    </button>
+    
+    <aside x-show="tocOpen" class="h-screen z-20 flex-shrink-0 fixed bg-slate-100 font-sans border-r border-t w-52">
+        <div class="px-3 mb-1 mt-1 md:mt-0 text-xs md:text-[12px] uppercase tracking-wider text-slate-500 font-medium px-3 mb-1 leading-none">
+            ToC
+        </div>
+        <div x-on:click="tocOpen = ! tocOpen"
+             class="toc-toggle text-slate-500 absolute right-2 top-[11px] cursor-pointer z-10">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                 stroke-width="2" class="w-4 w-4">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path>
+            </svg>
+        </div>
+        <div id="toc"></div>
+    </aside>
+    <div x-bind:class="tocOpen ? 'ml-52' : ''" class="flex-auto h-screen overflow-y-auto scroll-container">
+        <div id="notebook" class="flex flex-col items-center viewer-notebook flex-auto"><div class="viewer viewer-html- w-full max-w-prose px-8"><div class="viewer-markdown"><h1 id="-book-of-jnotebook">📖 Book of jNotebook</h1>
+<p><em>Disclaimer: this documentation is directly copying some content from the <a href="https://book.clerk.vision/#rationale">book of Clerk</a>, a notebook system for Clojure.</em></p>
+<h2 id="-rationale">⚖️ Rationale</h2>
+<p>Computational notebooks allow arguing from evidence by mixing prose with executable code. For a good overview of problems users encounter in traditional notebooks like Jupyter, see <a href="https://www.youtube.com/watch?v=7jiPeIFXb6U">I don't like notebooks</a> and <a href="https://web.eecs.utk.edu/~azh/pubs/Chattopadhyay2020CHI_NotebookPainpoints.pdf">What’s Wrong with Computational Notebooks? Pain Points, Needs, and Design Opportunities</a>.</p>
+<p>Specifically jNotebook wants to address the following problems:</p>
+<ul>
+<li>notebook editors are less helpful than IDE editors</li>
+<li>notebook code is hard to reuse</li>
+<li>out-of-order execution causes reproducibility issues</li>
+<li>notebook code is hard to version control</li>
+<li>the Java ecosystem does not provide a great experience for visualization and document formatting</li>
+</ul>
+<p>jNotebook is a notebook library for Java that aims to address these problems by doing less, namely:</p>
+<ul>
+<li>no editing environment: you can keep the code editor you know and love</li>
+<li>(almost) no new format: jNotebook interprets <a href="https://docs.oracle.com/en/java/javase/20/JShell/scripts.html#GUID-C3A41878-9A9A-4D31-BBDF-909729848A3E">JShell files</a> and renders them as notebook.<br />
+Because jNotebook is not required to run JShell files, you can create JShell scripts interactively with jNotebook, you won't depend on jNotebook in production later.</li>
+<li>no out-of-order execution: jNotebook always evaluates from top to bottom. jNotebook builds a dependency graph of Java statements and only recomputes the needed changes to keep the feedback loop fast.</li>
+<li>cells outputs are interpreted as html. This gives access to great visualization libraries and standard html for formatting.</li>
+</ul>
+<h2 id="-getting-started">🚀 Getting Started</h2>
+<h3 id="install">install</h3>
+<p>TODO CYRIL</p>
+<h3 id="-jnotebook-demo">🤹 jNotebook Demo</h3>
+<p>TODO CYRIL</p>
+<h3 id="-in-an-existing-project">🔌 In an Existing Project</h3>
+<p>TODO CYRIL</p>
+<h3 id="editor-integration">Editor integration</h3>
+<p>Make sure your editor is configured to work with JShell files.<br />
+TODO CYRIL</p>
+<h2 id="-editor-principle">💡 Editor principle</h2>
+<p>Cells are delimited by blank lines</p>
+</div></div> <div class="viewer viewer-code w-full max-w-wide"><div class="cm-editor"><div class="cm-scroller"><div class="cm-content whitespace-pre cm-success">String s1 = &quot;Hello&quot;;</div></div></div></div> <div class="viewer viewer-result w-full max-w-prose px-8"><div class="relative"><div class="overflow-y-hidden"><div>"Hello"</div></div></div></div> <div class="viewer viewer-html- w-full max-w-prose px-8"><div class="viewer-markdown"></div></div> <div class="viewer viewer-code w-full max-w-wide"><div class="cm-editor"><div class="cm-scroller"><div class="cm-content whitespace-pre cm-success">String s2 = &quot;World&quot;;</div></div></div></div> <div class="viewer viewer-result w-full max-w-prose px-8"><div class="relative"><div class="overflow-y-hidden"><div>"World"</div></div></div></div> <div class="viewer viewer-html- w-full max-w-prose px-8"><div class="viewer-markdown"><p>for multi-statements cells, only the last value or method result is returned.</p>
+</div></div> <div class="viewer viewer-code w-full max-w-wide"><div class="cm-editor"><div class="cm-scroller"><div class="cm-content whitespace-pre cm-success">String s3 = &quot;!&quot;;
+String s4 = &quot;!&quot;;
+String message = s1 + &quot; &quot; + s2 + s3 + s4;</div></div></div></div> <div class="viewer viewer-result w-full max-w-prose px-8"><div class="relative"><div class="overflow-y-hidden"><div>"Hello World!!"</div></div></div></div> <div class="viewer viewer-html- w-full max-w-prose px-8"><div class="viewer-markdown"><p>but everything sent to System.out is returned.</p>
+</div></div> <div class="viewer viewer-code w-full max-w-wide"><div class="cm-editor"><div class="cm-scroller"><div class="cm-content whitespace-pre cm-success">System.out.println(&quot;Hello John&quot;);
+System.out.println(&quot;Hello Jane&quot;);
+String s4 = &quot;Hello Alex&quot;;</div></div></div></div> <div class="viewer viewer-result w-full max-w-prose px-8"><div class="relative"><div class="overflow-y-hidden"><div>Hello John
+</div> <div>Hello Jane
+</div> <div>"Hello Alex"</div></div></div></div> <div class="viewer viewer-html- w-full max-w-prose px-8"><div class="viewer-markdown"><p>html in return values is interpreted. (see <a href="#custom-html">custom html</a> for more html manipulation)</p>
+</div></div> <div class="viewer viewer-code w-full max-w-wide"><div class="cm-editor"><div class="cm-scroller"><div class="cm-content whitespace-pre cm-success">String sayHello() {
+  return &quot;&lt;b&gt;Hello John!&lt;/b&gt;&quot;;
+}
+sayHello();</div></div></div></div> <div class="viewer viewer-result w-full max-w-prose px-8"><div class="relative"><div class="overflow-y-hidden"><div>"<b>Hello John!</b>"</div></div></div></div> <div class="viewer viewer-html- w-full max-w-prose px-8"><div class="viewer-markdown"><p>while System.out is not interpreted as html.</p>
+</div></div> <div class="viewer viewer-code w-full max-w-wide"><div class="cm-editor"><div class="cm-scroller"><div class="cm-content whitespace-pre cm-success">System.out.println(&quot;&lt;b&gt;Hello Jane!&lt;/b&gt;&quot;);</div></div></div></div> <div class="viewer viewer-result w-full max-w-prose px-8"><div class="relative"><div class="overflow-y-hidden"><div>&lt;b&gt;Hello Jane!&lt;/b&gt;
+</div></div></div></div> <div class="viewer viewer-html- w-full max-w-prose px-8"><div class="viewer-markdown"><p>By default, the java environment imports common classes. The exact list can be found <a href="https://github.com/cyrilou242/jnotebook/blob/360919e15414509af3ae1a7b9c246dcfe6c3421e/jnotebook-core/src/main/java/tech/catheu/jnotebook/JShell/PowerJShell.java#L28">here</a>.</p>
+</div></div> <div class="viewer viewer-code w-full max-w-wide"><div class="cm-editor"><div class="cm-scroller"><div class="cm-content whitespace-pre cm-success">List.of(1,2,3);
+Map.of(&quot;key&quot;, &quot;value&quot;);
+Thread.sleep(1);</div></div></div></div> <div class="viewer viewer-html- w-full max-w-prose px-8"><div class="viewer-markdown"><p>Mistakes happen! jNotebook tries its best to give helpful error messages.</p>
+</div></div> <div class="viewer viewer-code w-full max-w-wide"><div class="cm-editor"><div class="cm-scroller"><div class="cm-content whitespace-pre cm-failure">invalidJava();</div></div></div></div> <div class="viewer viewer-result w-full max-w-prose px-8 result-error"><div class="relative"><div class="overflow-y-hidden"><pre>Error: 
+cannot find symbol
+  symbol:   method invalidJava()
+  location: class 
+invalidJava();
+^^^^^^^^^^^^
+</pre></div></div></div> <div class="viewer viewer-html- w-full max-w-prose px-8"><div class="viewer-markdown"><p>Exceptions happen too!</p>
+</div></div> <div class="viewer viewer-code w-full max-w-wide"><div class="cm-editor"><div class="cm-scroller"><div class="cm-content whitespace-pre cm-failure">throw new RuntimeException(&quot;Panic!&quot;);</div></div></div></div> <div class="viewer viewer-result w-full max-w-prose px-8 result-error"><div class="relative"><div class="overflow-y-hidden"><div>jdk.jshell.EvalException: Panic!</div></div></div></div> <div class="viewer viewer-html- w-full max-w-prose px-8"><div class="viewer-markdown"><h3 id="markdown">Markdown</h3>
+<p>Latex is supported inline: <span class="katex">a^2+b^2=c^2</span><br />
+using <code>$`a^2+b^2=c^2`$</code>.<br />
+and on a separate line:</p>
+<div class="katex">
+a^2+b^2=c^2
+</div>
+<p>using<br />
+<code>```math<br>a^2+b^2=c^2<br>```</code></p>
+<h3 id="mermaid">Mermaid</h3>
+<p>Mermaid graphs are supported</p>
+<div class="mermaid">
+sequenceDiagram
+Alice-&gt;&gt;+John: Hello John, how are you?
+Alice-&gt;&gt;+John: John, can you hear me?
+John--&gt;&gt;-Alice: Hi Alice, I can hear you!
+John--&gt;&gt;-Alice: I feel great!
+</div>
+<p>using<br />
+<code>```mermaid<br>[MERMAID GRAPH CODE]<br>```</code><br />
+See <a href="https://mermaid.js.org/intro/">mermaid documentation</a> for examples.</p>
+<h2 id="-viewers">🔍 Viewers</h2>
+<p>jNotebook provides viewers and utils for data, tables, plots, flamegraphs etc.<br />
+These utils are packaged in a separate dependency <code>jnotebook-utils</code>. By default, <code>jnotebook-utils</code> is in the classpath.<br />
+All utils are available as static method in <code>tech.catheu.jnotebook.Nb</code>.</p>
+</div></div> <div class="viewer viewer-code w-full max-w-wide"><div class="cm-editor"><div class="cm-scroller"><div class="cm-content whitespace-pre cm-success">import tech.catheu.jnotebook.Nb;</div></div></div></div> <div class="viewer viewer-html- w-full max-w-prose px-8"><div class="viewer-markdown"><h2 id="-tables">🔢 Tables</h2>
+<p><em>coming soon</em></p>
+<h2 id="-plotly">📊 Plotly</h2>
+<p>jNotebook has built-in support for Plotly's low-ceremony plotting. See Plotly's JavaScript <a href="https://plotly.com/javascript/">docs</a> for more examples and <a href="https://plotly.com/javascript/configuration-options/">options</a>.</p>
+</div></div> <div class="viewer viewer-code w-full max-w-wide"><div class="cm-editor"><div class="cm-scroller"><div class="cm-content whitespace-pre cm-success">Nb.plotly(List.of(
+          Map.of(&quot;z&quot;, List.of(List.of(1, 2, 3), List.of(3, 2, 1)), &quot;type&quot;, &quot;surface&quot;)),
+          Map.of(),
+          Map.of());</div></div></div></div> <div class="viewer viewer-result w-full max-w-prose px-8"><div class="relative"><div class="overflow-y-hidden"><div><div class="overflow-x-auto"><div class="plotly js-plotly-plot" data-data="[{&quot;type&quot;:&quot;surface&quot;,&quot;z&quot;:[[1,2,3],[3,2,1]]}]" data-layout="{}" data-config="{}"></div></div></div></div></div></div> <div class="viewer viewer-html- w-full max-w-prose px-8"><div class="viewer-markdown"><h2 id="-vega-lite">🗺 Vega Lite</h2>
+<p>jNotebook also supports <a href="https://vega.github.io/vega-lite/">Vega Lite</a>.</p>
+</div></div> <div class="viewer viewer-code w-full max-w-wide"><div class="cm-editor"><div class="cm-scroller"><div class="cm-content whitespace-pre cm-success">Nb.vega(Map.of(
+            &quot;data&quot;, Map.of(&quot;url&quot;, &quot;https://vega.github.io/vega-lite/data/seattle-weather.csv&quot;),
+            &quot;mark&quot;, &quot;bar&quot;,
+            &quot;encoding&quot;, Map.of(
+                    &quot;x&quot;, Map.of(&quot;timeUnit&quot;, &quot;month&quot;, &quot;field&quot;, &quot;date&quot;, &quot;type&quot;, &quot;ordinal&quot;),
+            &quot;y&quot;, Map.of(&quot;aggregate&quot;, &quot;mean&quot;, &quot;field&quot;, &quot;precipitation&quot;)
+          )
+        ));</div></div></div></div> <div class="viewer viewer-result w-full max-w-prose px-8"><div class="relative"><div class="overflow-y-hidden"><div><div class="overflow-x-auto"><div class="vega-lite vega-embed has-actions" data-config="{&quot;encoding&quot;:{&quot;x&quot;:{&quot;type&quot;:&quot;ordinal&quot;,&quot;field&quot;:&quot;date&quot;,&quot;timeUnit&quot;:&quot;month&quot;},&quot;y&quot;:{&quot;field&quot;:&quot;precipitation&quot;,&quot;aggregate&quot;:&quot;mean&quot;}},&quot;data&quot;:{&quot;url&quot;:&quot;https://vega.github.io/vega-lite/data/seattle-weather.csv&quot;},&quot;mark&quot;:&quot;bar&quot;}"></div></div></div></div></div></div> <div class="viewer viewer-html- w-full max-w-prose px-8"><div class="viewer-markdown"><h2 id="-images">🏞 Images</h2>
+<p><em>coming soon</em></p>
+<h2 id="-grid-layouts">🔠 Grid Layouts</h2>
+<p>Layouts can be composed via rows, columns and grids</p>
+</div></div> <div class="viewer viewer-code w-full max-w-wide"><div class="cm-editor"><div class="cm-scroller"><div class="cm-content whitespace-pre cm-success">Nb.row(1, 2, 3, 4);</div></div></div></div> <div class="viewer viewer-result w-full max-w-prose px-8"><div class="relative"><div class="overflow-y-hidden"><div><div class="grid grid-flow-row"><div>1</div><div>2</div><div>3</div><div>4</div></div></div></div></div></div> <div class="viewer viewer-html- w-full max-w-prose px-8"><div class="viewer-markdown"></div></div> <div class="viewer viewer-code w-full max-w-wide"><div class="cm-editor"><div class="cm-scroller"><div class="cm-content whitespace-pre cm-success">Nb.col(1, 2, 3, 4);</div></div></div></div> <div class="viewer viewer-result w-full max-w-prose px-8"><div class="relative"><div class="overflow-y-hidden"><div><div class="grid grid-cols-4"><div>1</div><div>2</div><div>3</div><div>4</div></div></div></div></div></div> <div class="viewer viewer-html- w-full max-w-prose px-8"><div class="viewer-markdown"></div></div> <div class="viewer viewer-code w-full max-w-wide"><div class="cm-editor"><div class="cm-scroller"><div class="cm-content whitespace-pre cm-success">Nb.col(Nb.row(&quot;John&quot;, &quot;Jane&quot;, &quot;Alex&quot;), Nb.row(1, 2, 3), Nb.row(4, 5, 6));</div></div></div></div> <div class="viewer viewer-result w-full max-w-prose px-8"><div class="relative"><div class="overflow-y-hidden"><div><div class="grid grid-cols-3"><div class="grid grid-flow-row"><div>John</div><div>Jane</div><div>Alex</div></div><div class="grid grid-flow-row"><div>1</div><div>2</div><div>3</div></div><div class="grid grid-flow-row"><div>4</div><div>5</div><div>6</div></div></div></div></div></div></div> <div class="viewer viewer-html- w-full max-w-prose px-8"><div class="viewer-markdown"></div></div> <div class="viewer viewer-code w-full max-w-wide"><div class="cm-editor"><div class="cm-scroller"><div class="cm-content whitespace-pre cm-success">int numCols = 4;
+Nb.grid(numCols, 1, 2, 3, 4, 5, 6, 7);</div></div></div></div> <div class="viewer viewer-result w-full max-w-prose px-8"><div class="relative"><div class="overflow-y-hidden"><div><div class="grid grid-cols-4"><div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div><div>7</div></div></div></div></div></div> <div class="viewer viewer-html- w-full max-w-prose px-8"><div class="viewer-markdown"><h2 id="-custom-html">⚙️ Custom html</h2>
+<p>You can use the <a href="https://j2html.com/">j2html</a> library directly to generate html easily.<br />
+Values inheriting <code>j2html.tags.DomContent</code> are rendered as html.</p>
+</div></div> <div class="viewer viewer-code w-full max-w-wide"><div class="cm-editor"><div class="cm-scroller"><div class="cm-content whitespace-pre cm-success">import static j2html.TagCreator.*; // import all html tags
+b(&quot;Hello red!&quot;).withStyle(&quot;color: red&quot;);</div></div></div></div> <div class="viewer viewer-result w-full max-w-prose px-8"><div class="relative"><div class="overflow-y-hidden"><div><b style="color: red">Hello red!</b></div></div></div></div> <div class="viewer viewer-html- w-full max-w-prose px-8"><div class="viewer-markdown"><p>This makes it easy to create custom viewers</p>
+</div></div> <div class="viewer viewer-code w-full max-w-wide"><div class="cm-editor"><div class="cm-scroller"><div class="cm-content whitespace-pre cm-success">import j2html.tags.DomContent;
+DomContent title(String text) {
+    return p(text).withStyle(&quot;font-weight:bold; font-size: x-large; display: block;margin-left: auto; margin-right: auto&quot;);
+};
+title(&quot;My title!&quot;);</div></div></div></div> <div class="viewer viewer-result w-full max-w-prose px-8"><div class="relative"><div class="overflow-y-hidden"><div><p style="font-weight:bold; font-size: x-large; display: block;margin-left: auto; margin-right: auto">My title!</p></div></div></div></div> <div class="viewer viewer-html- w-full max-w-prose px-8"><div class="viewer-markdown"><p>All <code>Nb</code> viewers output are of class <code>j2html.tags.DomContent</code>. This makes is easy to combine viewers</p>
+</div></div> <div class="viewer viewer-code w-full max-w-wide"><div class="cm-editor"><div class="cm-scroller"><div class="cm-content whitespace-pre cm-success">var graph1 = Nb.vega(Map.of(
+                         &quot;data&quot;, Map.of(&quot;url&quot;, &quot;https://vega.github.io/vega-lite/data/seattle-weather.csv&quot;),
+                         &quot;mark&quot;, &quot;bar&quot;,
+                         &quot;encoding&quot;, Map.of(
+                                 &quot;x&quot;, Map.of(&quot;timeUnit&quot;, &quot;month&quot;, &quot;field&quot;, &quot;date&quot;, &quot;type&quot;, &quot;ordinal&quot;),
+                         &quot;y&quot;, Map.of(&quot;aggregate&quot;, &quot;mean&quot;, &quot;field&quot;, &quot;precipitation&quot;)
+                       )
+                     ));
+var graph2 = Nb.vega(Map.of(
+                         &quot;data&quot;, Map.of(&quot;url&quot;, &quot;https://vega.github.io/vega-lite/data/seattle-weather.csv&quot;),
+                         &quot;mark&quot;, &quot;bar&quot;,
+                         &quot;encoding&quot;, Map.of(
+                                 &quot;x&quot;, Map.of(&quot;timeUnit&quot;, &quot;month&quot;, &quot;field&quot;, &quot;date&quot;, &quot;type&quot;, &quot;ordinal&quot;),
+                         &quot;y&quot;, Map.of(&quot;aggregate&quot;, &quot;mean&quot;, &quot;field&quot;, &quot;precipitation&quot;)
+                       )
+                     ));
+Nb.row(title(&quot;My awesome analysis&quot;), Nb.col(graph1, graph2));</div></div></div></div> <div class="viewer viewer-result w-full max-w-prose px-8"><div class="relative"><div class="overflow-y-hidden"><div><div class="grid grid-flow-row"><p style="font-weight:bold; font-size: x-large; display: block;margin-left: auto; margin-right: auto">My awesome analysis</p><div class="grid grid-cols-2"><div class="overflow-x-auto"><div class="vega-lite vega-embed has-actions" data-config="{&quot;encoding&quot;:{&quot;x&quot;:{&quot;type&quot;:&quot;ordinal&quot;,&quot;field&quot;:&quot;date&quot;,&quot;timeUnit&quot;:&quot;month&quot;},&quot;y&quot;:{&quot;field&quot;:&quot;precipitation&quot;,&quot;aggregate&quot;:&quot;mean&quot;}},&quot;data&quot;:{&quot;url&quot;:&quot;https://vega.github.io/vega-lite/data/seattle-weather.csv&quot;},&quot;mark&quot;:&quot;bar&quot;}"></div></div><div class="overflow-x-auto"><div class="vega-lite vega-embed has-actions" data-config="{&quot;encoding&quot;:{&quot;x&quot;:{&quot;type&quot;:&quot;ordinal&quot;,&quot;field&quot;:&quot;date&quot;,&quot;timeUnit&quot;:&quot;month&quot;},&quot;y&quot;:{&quot;field&quot;:&quot;precipitation&quot;,&quot;aggregate&quot;:&quot;mean&quot;}},&quot;data&quot;:{&quot;url&quot;:&quot;https://vega.github.io/vega-lite/data/seattle-weather.csv&quot;},&quot;mark&quot;:&quot;bar&quot;}"></div></div></div></div></div></div></div></div> <div class="viewer viewer-html- w-full max-w-prose px-8"><div class="viewer-markdown"><h2 id="-flamegraphs">🔥 Flamegraphs</h2>
+<p>You can profile methods and generate flamegraphs.</p>
+</div></div> <div class="viewer viewer-code w-full max-w-wide"><div class="cm-editor"><div class="cm-scroller"><div class="cm-content whitespace-pre cm-success">Runnable arrayFilling = () -&gt; {
+  List&lt;Integer&gt; a = new ArrayList&lt;&gt;();
+  for (int i = 0; i &lt; 10000000; i++) {
+    a.add(i);
+  }
+};
+var profilePath = Nb.profile(arrayFilling);
+Nb.flame(profilePath);</div></div></div></div> <div class="viewer viewer-result w-full max-w-prose px-8"><div class="relative"><div class="overflow-y-hidden"><div><div class="overflow-x-auto"><div class="flame" data-profile="{&quot;name&quot;:&quot;ALL&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;java.lang.Thread::run&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jshell.execution.LocalExecutionControl$$Lambda$371+0x00000008011f6518.1272708038::run&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jshell.execution.LocalExecutionControl::lambda$invoke$1&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;java.lang.reflect.Method::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.internal.reflect.DelegatingMethodAccessorImpl::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.internal.reflect.NativeMethodAccessorImpl::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.internal.reflect.NativeMethodAccessorImpl::invoke0&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;::do_it$&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;::do_it$Aux&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;tech.catheu.jnotebook.Nb::profile&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;tech.catheu.jnotebook.Nb::profile&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;com.microsoft.jfr.Recording::stop&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;com.microsoft.jfr.FlightRecorderConnection::stopRecording&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;com.sun.jmx.mbeanserver.JmxMBeanServer::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;com.sun.jmx.interceptor.DefaultMBeanServerInterceptor::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;javax.management.StandardMBean::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;com.sun.jmx.mbeanserver.MBeanSupport::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;com.sun.jmx.mbeanserver.PerInterface::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;com.sun.jmx.mbeanserver.MBeanIntrospector::invokeM&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;com.sun.jmx.mbeanserver.MXBeanIntrospector::invokeM2&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;com.sun.jmx.mbeanserver.MXBeanIntrospector::invokeM2&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;com.sun.jmx.mbeanserver.ConvertingMethod::invokeWithOpenReturn&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;com.sun.jmx.mbeanserver.ConvertingMethod::invokeWithOpenReturn&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;sun.reflect.misc.MethodUtil::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;java.lang.reflect.Method::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.internal.reflect.DelegatingMethodAccessorImpl::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.internal.reflect.NativeMethodAccessorImpl::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.internal.reflect.NativeMethodAccessorImpl::invoke0&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;sun.reflect.misc.Trampoline::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;java.lang.reflect.Method::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.internal.reflect.DelegatingMethodAccessorImpl::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.internal.reflect.NativeMethodAccessorImpl::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.internal.reflect.NativeMethodAccessorImpl::invoke0&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.management.jfr.FlightRecorderMXBeanImpl::stopRecording&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.management.jfr.FlightRecorderMXBeanImpl::getExistingRecording&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.management.jfr.FlightRecorderMXBeanImpl::getRecording&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.FlightRecorder::getRecordings&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.PlatformRecorder::getRecordings&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;java.util.ArrayList::&lt;init&gt;&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;java.util.ArrayList::toArray&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;java.util.Arrays::copyOf&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;java.util.Arrays::copyOf&quot;,&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1},{&quot;name&quot;:&quot;tech.catheu.jnotebook.Nb$ProfiledRunnable::run&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;$Lambda$485+0x0000000801254820.1816144319::run&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;::lambda$do_it$$0&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;java.lang.Integer::valueOf&quot;,&quot;value&quot;:4},{&quot;name&quot;:&quot;java.util.ArrayList::add&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;java.util.ArrayList::add&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;java.util.ArrayList::grow&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;java.util.ArrayList::grow&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;java.util.Arrays::copyOf&quot;,&quot;value&quot;:11}],&quot;value&quot;:13}],&quot;value&quot;:13}],&quot;value&quot;:13}],&quot;value&quot;:13}],&quot;value&quot;:18}],&quot;value&quot;:18}],&quot;value&quot;:18},{&quot;name&quot;:&quot;com.microsoft.jfr.Recording::start&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;com.microsoft.jfr.FlightRecorderConnection::startRecording&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;com.sun.jmx.mbeanserver.JmxMBeanServer::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;com.sun.jmx.interceptor.DefaultMBeanServerInterceptor::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;javax.management.StandardMBean::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;com.sun.jmx.mbeanserver.MBeanSupport::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;com.sun.jmx.mbeanserver.PerInterface::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;com.sun.jmx.mbeanserver.MBeanIntrospector::invokeM&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;com.sun.jmx.mbeanserver.MXBeanIntrospector::invokeM2&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;com.sun.jmx.mbeanserver.MXBeanIntrospector::invokeM2&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;com.sun.jmx.mbeanserver.ConvertingMethod::invokeWithOpenReturn&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;com.sun.jmx.mbeanserver.ConvertingMethod::invokeWithOpenReturn&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;sun.reflect.misc.MethodUtil::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;java.lang.reflect.Method::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.internal.reflect.DelegatingMethodAccessorImpl::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.internal.reflect.NativeMethodAccessorImpl::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.internal.reflect.NativeMethodAccessorImpl::invoke0&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;sun.reflect.misc.Trampoline::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;java.lang.reflect.Method::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.internal.reflect.DelegatingMethodAccessorImpl::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.internal.reflect.NativeMethodAccessorImpl::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.internal.reflect.NativeMethodAccessorImpl::invoke0&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.management.jfr.FlightRecorderMXBeanImpl::startRecording&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.Recording::start&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.PlatformRecording::start&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.PlatformRecorder::start&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.PlatformRecorder::updateSettings&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.PlatformRecorder::updateSettingsButIgnoreRecording&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.MetadataRepository::setSettings&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.SettingsManager::setSettings&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.SettingsManager::updateRetransform&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.JVM::retransformClasses&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.JVMUpcalls::onRetransform&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.EventInstrumentation::buildInstrumented&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.EventInstrumentation::makeInstrumented&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.EventInstrumentation::updateMethod&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.EventInstrumentation$$Lambda$589+0x00000008012e3b38.712833462::accept&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.EventInstrumentation::lambda$makeInstrumented$3&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.internal.org.objectweb.asm.tree.MethodNode::visitFieldInsn&quot;,&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:20}],&quot;value&quot;:20}],&quot;value&quot;:20}],&quot;value&quot;:20}],&quot;value&quot;:20}],&quot;value&quot;:20}],&quot;value&quot;:20}],&quot;value&quot;:20}],&quot;value&quot;:20}],&quot;value&quot;:20}],&quot;value&quot;:20}],&quot;value&quot;:20}"></div></div></div></div></div></div> <div class="viewer viewer-html- w-full max-w-prose px-8"><div class="viewer-markdown"></div></div></div>
+        
+    </div>
+    <script defer>
+        tocbot.init({
+            // Where to render the table of contents.
+            tocSelector: '#toc',
+            // Where to grab the headings to build the table of contents.
+            contentSelector: '#notebook',
+            // Which headings to grab inside of the contentSelector element.
+            headingSelector: 'h1, h2, h3',
+            // For headings inside relative or absolute positioned containers within content.
+            hasInnerContainers: true,
+        });
+
+        function reRender() {
+            // render mermaid
+            mermaid.init({noteMargin: 10}, '.mermaid');
+
+            // render latex
+            var mathElems = document.getElementsByClassName("katex");
+            var elems = [];
+            for (const i in mathElems) {
+                if (mathElems.hasOwnProperty(i)) elems.push(mathElems[i]);
+            }
+            elems.forEach(elem => {
+                katex.render(elem.textContent, elem, {throwOnError: false, displayMode: elem.nodeName !== 'SPAN',});
+            });
+
+            // render code color
+            document.querySelectorAll('div.cm-content').forEach(el => {
+                hljs.highlightElement(el, {language: 'java'});
+            });
+
+            // render vega
+            document.querySelectorAll('div.vega-embed').forEach(el => {
+                vegaEmbed(el, JSON.parse(el.dataset.config))
+            });
+
+            // render plotly
+            document.querySelectorAll('div.js-plotly-plot').forEach(el => {
+                Plotly.newPlot(el, JSON.parse(el.dataset.data), JSON.parse(el.dataset.layout), JSON.parse(el.dataset.config));
+            });
+
+            // render flamegraphs
+            document.querySelectorAll(".flame").forEach(el => {
+                const chart = flamegraph().inverted(true).width(el.parentElement.offsetWidth);
+                d3.select(el).datum(JSON.parse(el.dataset.profile)).call(chart);
+            })
+
+            // refresh table of content
+            tocbot.refresh();
+        }
+    </script>
+    <script defer>reRender();</script>
+    
+</div>
+</body>
+</html>
