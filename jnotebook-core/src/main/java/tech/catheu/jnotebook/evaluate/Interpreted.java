@@ -13,10 +13,15 @@
  */
 package tech.catheu.jnotebook.evaluate;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
+import tech.catheu.jnotebook.ExecutionStatus;
+
 import java.nio.file.Path;
 import java.util.List;
 
 public record Interpreted(Path path,
                           List<String> lines,
-                          List<InterpretedSnippet> interpretedSnippets) {
+                          List<InterpretedSnippet> interpretedSnippets,
+                          @NonNull ExecutionStatus status) {
+
 }

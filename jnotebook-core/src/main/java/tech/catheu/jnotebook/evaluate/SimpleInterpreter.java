@@ -13,6 +13,7 @@
  */
 package tech.catheu.jnotebook.evaluate;
 
+import tech.catheu.jnotebook.ExecutionStatus;
 import tech.catheu.jnotebook.jshell.EvalResult;
 import tech.catheu.jnotebook.jshell.PowerJShell;
 import tech.catheu.jnotebook.jshell.ShellProvider;
@@ -54,7 +55,8 @@ public class SimpleInterpreter implements Interpreter {
 
     return new Interpreted(staticParsing.path(),
                            staticParsing.lines(),
-                           interpretedSnippets);
+                           interpretedSnippets,
+                           ExecutionStatus.ok());
   }
 
   private PowerJShell newShell(final Path path) {

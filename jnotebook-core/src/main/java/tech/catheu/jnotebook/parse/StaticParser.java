@@ -13,6 +13,7 @@
  */
 package tech.catheu.jnotebook.parse;
 
+import tech.catheu.jnotebook.ExecutionStatus;
 import tech.catheu.jnotebook.jshell.PowerJShell;
 import tech.catheu.jnotebook.jshell.ShellProvider;
 import tech.catheu.jnotebook.parse.StaticSnippet.Type;
@@ -45,13 +46,16 @@ public class StaticParser {
   }
 
   public StaticParsing staticSnippets(@NonNull final DirectoryChangeEvent event) {
-      final DirectoryChangeEvent.EventType type = event.eventType();
-      final Path filePath = event.path();
+    final DirectoryChangeEvent.EventType type = event.eventType();
+    final Path filePath = event.path();
     try {
       if (type.equals(CREATE)) {
         return snippetsOf(filePath);
       } else if (type.equals(DELETE)) {
-        return new StaticParsing(filePath, Collections.emptyList(), Collections.emptyList());
+        return new StaticParsing(filePath,
+                                 Collections.emptyList(),
+                                 Collections.emptyList(),
+                                 ExecutionStatus.ok());
       } else if (type.equals(MODIFY)) {
         return snippetsOf(filePath);
       } else if (type.equals(OVERFLOW)) {
@@ -61,15 +65,26 @@ public class StaticParser {
         throw new IllegalStateException("Unknown file event kind: " + type.name());
       }
     } catch (Exception e) {
-      LOG.error("Error during static parsing: " + e.getMessage(), e);
-      return new StaticParsing(filePath, Collections.emptyList(), Collections.emptyList());
+      final String errorMessage = String.format(
+              "Error during static parsing of file %s: %s",
+              filePath,
+              e.getMessage());
+      final ExecutionStatus errorStatus = ExecutionStatus.failure(errorMessage, e);
+      LOG.error(errorStatus.toString());
+      return new StaticParsing(filePath,
+                               Collections.emptyList(),
+                               Collections.emptyList(),
+                               errorStatus);
     }
   }
 
   public StaticParsing snippetsOf(final Path filePath) throws IOException {
     final List<String> lines = Files.readAllLines(filePath);
     if (lines.isEmpty()) {
-      return new StaticParsing(filePath, Collections.emptyList(), Collections.emptyList());
+      return new StaticParsing(filePath,
+                               Collections.emptyList(),
+                               Collections.emptyList(),
+                               ExecutionStatus.ok());
     }
 
     List<StaticSnippet> notebookSnippets = new ArrayList<>();
@@ -155,7 +170,7 @@ public class StaticParser {
       }
     }
 
-    return new StaticParsing(filePath, lines, notebookSnippets);
+    return new StaticParsing(filePath, lines, notebookSnippets, ExecutionStatus.ok());
   }
 
 

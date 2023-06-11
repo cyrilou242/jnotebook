@@ -23,6 +23,7 @@ import jdk.jshell.SnippetEvent;
 import jdk.jshell.SourceCodeAnalysis;
 import org.apache.commons.lang3.JavaVersion;
 import org.apache.commons.lang3.SystemUtils;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spoon.Launcher;
@@ -36,6 +37,7 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.support.compiler.VirtualFile;
+import tech.catheu.jnotebook.ExecutionStatus;
 import tech.catheu.jnotebook.Nb;
 import tech.catheu.jnotebook.jshell.EvalResult;
 import tech.catheu.jnotebook.jshell.PowerJShell;
@@ -84,6 +86,31 @@ public class GreedyInterpreter implements Interpreter {
 
   @Override
   public Interpreted interpret(final StaticParsing staticParsing) {
+    if (!staticParsing.executionStatus().isOk()) {
+      return new Interpreted(staticParsing.path(),
+                             Collections.emptyList(),
+                             Collections.emptyList(),
+                             staticParsing.executionStatus());
+    }
+
+    try {
+      return internalInterpret(staticParsing);
+    } catch (Exception e) {
+      final String errorMessage = String.format(
+              "Error during interpretation of file %s:\n%s",
+              staticParsing.path(),
+              e.getMessage());
+      final ExecutionStatus errorStatus = ExecutionStatus.failure(errorMessage, e);
+      LOG.error(errorMessage);
+      return new Interpreted(staticParsing.path(),
+                             Collections.emptyList(),
+                             Collections.emptyList(),
+                             errorStatus);
+    }
+  }
+
+  @NotNull
+  private Interpreted internalInterpret(StaticParsing staticParsing) {
     final PowerJShell shell =
             fileToShell.computeIfAbsent(staticParsing.path(), this::newShell);
     final Map<String, EvalResult> resultCache = fileToResultCache.computeIfAbsent(
@@ -114,9 +141,10 @@ public class GreedyInterpreter implements Interpreter {
 
     // clean outdated jshell snippets
     final List<String> toRemove = resultCache.keySet()
-                                       .stream()
-                                       .filter(fingerprint -> !fingerprintToSnippetIdx.containsKey(fingerprint))
-                                       .toList();
+                                             .stream()
+                                             .filter(fingerprint -> !fingerprintToSnippetIdx.containsKey(
+                                                     fingerprint))
+                                             .toList();
     for (final String fingerprint : toRemove) {
       for (SnippetEvent s : resultCache.get(fingerprint).events()) {
         // fixme cyril ? this uses jshell dependency mechanism but does not delete according to computed dependencies
@@ -156,10 +184,12 @@ public class GreedyInterpreter implements Interpreter {
 
     return new Interpreted(staticParsing.path(),
                            staticParsing.lines(),
-                           interpretedSnippets);
+                           interpretedSnippets,
+                           ExecutionStatus.ok());
   }
 
-  private void addAllDependencies(Set<Integer> snippetsIdxToRerun, DependencyGraph depGraph, Set<String> predecessors) {
+  private void addAllDependencies(Set<Integer> snippetsIdxToRerun,
+                                  DependencyGraph depGraph, Set<String> predecessors) {
     for (final String p : predecessors) {
       final CtTypeMember ctTypeMember = depGraph.graphKeyToMember().get(p);
       final Integer snippetId =
@@ -172,17 +202,19 @@ public class GreedyInterpreter implements Interpreter {
   }
 
   public static void main(String[] args) {
-    Nb.vega(Map.of(
-            "data", Map.of("url", "data/seattle-weather.csv"),
-            "mark", "bar",
-            "encoding", Map.of(
-                    "x", Map.of("timeUnit", "month", "field", "date", "type", "ordinal"),
-            "y", Map.of("aggregate", "mean", "field", "precipitation")
-          )
-        ));
+    Nb.vega(Map.of("data",
+                   Map.of("url", "data/seattle-weather.csv"),
+                   "mark",
+                   "bar",
+                   "encoding",
+                   Map.of("x",
+                          Map.of("timeUnit", "month", "field", "date", "type", "ordinal"),
+                          "y",
+                          Map.of("aggregate", "mean", "field", "precipitation"))));
   }
 
-  private SourceClass buildSourceClass(final StaticParsing staticParsing, final SourceCodeAnalysis ana) {
+  private SourceClass buildSourceClass(final StaticParsing staticParsing,
+                                       final SourceCodeAnalysis ana) {
     StringBuilder spoonCompatibleSource = new StringBuilder(CLASS_PREFIX);
     Map<Integer, Snippet> staticSnippetIdxToSnippet = new HashMap<>();
     for (int i = 0; i < staticParsing.snippets().size(); i++) {
@@ -190,11 +222,18 @@ public class GreedyInterpreter implements Interpreter {
       if (e.type().equals(StaticSnippet.Type.JAVA)) {
         final String snippetString = e.completionInfo().source();
         final Snippet preAnalysis;
-        try {
+        if (snippetString != null) {
           preAnalysis = ana.sourceToSnippets(snippetString).get(0);
-        } catch (NullPointerException err) {
-          // FIXME CYRIL implement better error handling
-          throw err;
+        } else {
+          // too many cases that are hard to recover from - for the moment surface the error to the top
+          throw new IllegalStateException(String.format(
+                  "Error trying to interpret JAVA code in lines [%s, %s]:\n%s\n" +
+                  "Code completeness: %s",
+                  e.start() + 1, // index from 1 for humans
+                  e.end(),
+                  e.completionInfo().remaining(),
+                  e.completionInfo().completeness()
+                  ));
         }
         staticSnippetIdxToSnippet.put(i, preAnalysis);
         switch (preAnalysis.kind()) {
@@ -349,7 +388,8 @@ public class GreedyInterpreter implements Interpreter {
                               .append(BLOCK_SUFFIX);
   }
 
-  private static StringBuilder methodVariableWrap(final int i, final String snippetString) {
+  private static StringBuilder methodVariableWrap(final int i,
+                                                  final String snippetString) {
     return new StringBuilder().append(idComment(i))
                               .append(methodPrefix(i))
                               .append("var $reserved$ = ")
