@@ -1,0 +1,28 @@
+name: Run tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      # don't use setup-java cache - hash file pattern has issues
+      - name: Cache local Maven repository
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: license-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml', 'LICENSE', 'HEADER') }}
+      - name: build and run test
+        run: ./mvnw -T 1C -B clean install
+
