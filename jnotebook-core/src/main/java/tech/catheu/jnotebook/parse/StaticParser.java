@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static tech.catheu.jnotebook.parse.StaticSnippet.Type.COMMENT;
@@ -44,13 +45,13 @@ public class StaticParser {
   }
 
   public StaticParsing staticSnippets(@NonNull final DirectoryChangeEvent event) {
-    try {
       final DirectoryChangeEvent.EventType type = event.eventType();
       final Path filePath = event.path();
+    try {
       if (type.equals(CREATE)) {
         return snippetsOf(filePath);
       } else if (type.equals(DELETE)) {
-        return new StaticParsing(filePath, null, null);
+        return new StaticParsing(filePath, Collections.emptyList(), Collections.emptyList());
       } else if (type.equals(MODIFY)) {
         return snippetsOf(filePath);
       } else if (type.equals(OVERFLOW)) {
@@ -61,7 +62,7 @@ public class StaticParser {
       }
     } catch (Exception e) {
       LOG.error("Error during static parsing: " + e.getMessage(), e);
-      return new StaticParsing(null, null, null);
+      return new StaticParsing(filePath, Collections.emptyList(), Collections.emptyList());
     }
   }
 
