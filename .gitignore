@@ -41,3 +41,7 @@ build/
 
 ### jfr logs generated with Nb.profile
 notebook-profile-*
+
+### pom release artefacts
+release.properties
+pom.xml.releaseBackup
