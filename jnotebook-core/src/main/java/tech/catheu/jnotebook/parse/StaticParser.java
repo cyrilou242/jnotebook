@@ -68,6 +68,10 @@ public class StaticParser {
 
   public StaticParsing snippetsOf(final Path filePath) throws IOException {
     final List<String> lines = Files.readAllLines(filePath);
+    if (lines.isEmpty()) {
+      return new StaticParsing(filePath, Collections.emptyList(), Collections.emptyList());
+    }
+
     List<StaticSnippet> notebookSnippets = new ArrayList<>();
     int lineIdx = 0;
     StringBuilder currentSnippet = new StringBuilder();

@@ -101,6 +101,10 @@ public class Renderer {
 
     // can only be run once
     public final DomContent render(final Interpreted interpreted) {
+      if (interpreted.interpretedSnippets().isEmpty()) {
+        return b(interpreted.path() + " is empty or was deleted.");
+      }
+
       for (final InterpretedSnippet snippet : interpreted.interpretedSnippets()) {
         if (snippet.staticSnippet().type().equals(StaticSnippet.Type.COMMENT)) {
           if (!groupedJavaSnippets.isEmpty()) {
