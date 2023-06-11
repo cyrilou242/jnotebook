@@ -23,6 +23,7 @@ import tech.catheu.jnotebook.jshell.ShellProvider;
 import tech.catheu.jnotebook.parse.StaticParser;
 import tech.catheu.jnotebook.parse.StaticParsing;
 import tech.catheu.jnotebook.render.Renderer;
+import tech.catheu.jnotebook.render.Rendering;
 import tech.catheu.jnotebook.server.HtmlTemplateEngine;
 
 import java.io.File;
@@ -61,9 +62,9 @@ public class NotebookRenderer {
     try {
       final StaticParsing staticParsing = staticParser.snippetsOf(filePath);
       final Interpreted interpreted = interpreter.interpret(staticParsing);
-      final String render = renderer.render(interpreted);
+      final Rendering render = renderer.render(interpreted);
       final HtmlTemplateEngine templateEngine = new HtmlTemplateEngine();
-      final String html = templateEngine.render(Map.of(TEMPLATE_KEY_RENDERED, render));
+      final String html = templateEngine.render(Map.of(TEMPLATE_KEY_RENDERED, render.html()));
       final File outputFile = FileUtils.getFile(config.outputPath);
       FileUtils.write(outputFile, html, StandardCharsets.UTF_8);
       LOG.info("Notebook rendered successfully and written to {}", outputFile);

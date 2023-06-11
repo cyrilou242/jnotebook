@@ -11,16 +11,11 @@
  * See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package tech.catheu.jnotebook.parse;
+package tech.catheu.jnotebook.render;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-import tech.catheu.jnotebook.ExecutionStatus;
+public record Rendering(String html) {
 
-import java.nio.file.Path;
-import java.util.List;
-
-public record StaticParsing(@NonNull Path path,
-                            @NonNull List<String> lines,
-                            @NonNull List<StaticSnippet> snippets,
-                            @NonNull ExecutionStatus executionStatus) {
+  public static Rendering of(final String html) {
+    return new Rendering(html);
+  }
 }
