@@ -265,6 +265,7 @@ public class GreedyInterpreter implements Interpreter {
             spoonCompatibleSource.append(methodWrap(i, snippetString));
             break;
           case ERRONEOUS:
+            // FIXME CYRIL - ensure count of { = count of } for the wrapping to work - see BUG 4
             final Snippet.Kind probableKind =
                     ((ErroneousSnippet) preAnalysis).probableKind();
             if (probableKind.equals(EXPRESSION)) {
