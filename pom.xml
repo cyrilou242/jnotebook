@@ -44,11 +44,11 @@
         <antlr.version>4.12.0</antlr.version>
     </properties>
 
+    <!-- used by maven-release-plugin -->
     <scm>
-        <!-- This is used by maven-release-plugin -->
         <url>https://github.com/cyrilou242/jnotebook.git</url>
-        <connection>scm:git:git@github.com:cyrilou242/jnotebook.git</connection>
-        <developerConnection>scm:git:git@github.com:cyrilou242/jnotebook.git</developerConnection>
+        <connection>scm:git:${project.scm.url}</connection>
+        <developerConnection>scm:git:${project.scm.url}</developerConnection>
         <tag>HEAD</tag>
     </scm>
 

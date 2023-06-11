@@ -1,8 +1,7 @@
-name: Publish doc
+name: Release
 
 on:
-  push:
-    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   build-and-publish:
@@ -21,8 +20,13 @@ jobs:
         with:
           path: ~/.m2/repository
           key: license-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml', 'LICENSE', 'HEADER') }}
-      - name: build and run test
-        run: ./mvnw -T 1C -B clean install
+      - name: set github user
+        run: |
+          git config --global user.name "jnotebook-ci"
+          git config --global user.email "jnotebook-ci@users.noreply.github.com"
+      - name: create release
+        run: |        
+          ./mvnw -T1C -B -V -ntp release:clean initialize release:prepare
       - name: generate doc
         id: generate_doc
         run: |
@@ -32,13 +36,11 @@ jobs:
           cat index.html >> $GITHUB_OUTPUT
           echo "$EOF" >> "$GITHUB_OUTPUT"
           rm index.html
-      - name: push doc
+      - name: publish doc
         run: |
           git pull
           git checkout website
           echo -e "${INDEX_HTML}" > index.html
-          git config --global user.name "jnotebook-ci"
-          git config --global user.email "jnotebook-ci@users.noreply.github.com"
           git add index.html
           git commit --allow-empty -m  "update doc" 
           git push
