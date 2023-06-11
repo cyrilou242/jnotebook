@@ -32,8 +32,8 @@ jobs:
           git config --global user.name "jnotebook-ci"
           git config --global user.email "jnotebook-ci@users.noreply.github.com"
       - name: create release
-        run: |        
-          ./mvnw -T1C -B -V -ntp -Prelease release:clean initialize release:prepare release:perform
+        run: |
+          ./mvnw -B -V -ntp -Prelease release:clean initialize release:prepare release:perform
         env:
           MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
