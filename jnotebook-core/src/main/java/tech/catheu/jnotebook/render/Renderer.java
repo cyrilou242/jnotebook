@@ -79,16 +79,16 @@ public class Renderer {
     renderer = HtmlRenderer.builder(options).build();
   }
 
-  public final String render(Interpreted interpreted) {
+  public final Rendering render(Interpreted interpreted) {
     if (!interpreted.status().isOk()) {
       // FIXME CYRIL - improve format
-      return pre(interpreted.status().failureMessage()).withClasses(RESULT_ERROR).render();
+      return new Rendering(pre(interpreted.status().failureMessage()).withClasses(RESULT_ERROR).render());
     }
 
     final LineAwareRenderer domRenderer = new LineAwareRenderer(interpreted.lines());
     final DomContent content = domRenderer.render(interpreted);
 
-    return content.render();
+    return new Rendering(content.render());
   }
 
   public void stop() {

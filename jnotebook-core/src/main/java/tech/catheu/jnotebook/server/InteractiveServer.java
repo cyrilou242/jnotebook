@@ -31,6 +31,7 @@ import org.xnio.Options;
 import org.xnio.Xnio;
 import org.xnio.XnioWorker;
 import tech.catheu.jnotebook.Main;
+import tech.catheu.jnotebook.render.Rendering;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -48,7 +49,7 @@ public class InteractiveServer {
   private Undertow server;
   private final List<WebSocketChannel> channels = new ArrayList<>();
   XnioWorker worker;
-  private String lastUpdate;
+  private Rendering lastUpdate;
 
   public InteractiveServer(final Main.InteractiveConfiguration configuration) {
     this.configuration = configuration;
@@ -114,10 +115,10 @@ public class InteractiveServer {
     sendMessage("status_" + status.toString());
   }
 
-  public void sendUpdate(final String html) {
+  public void sendUpdate(final Rendering rendering) {
     sendStatus(NotebookServerStatus.TRANSFER);
-    lastUpdate = html;
-    sendMessage(html);
+    lastUpdate = rendering;
+    sendMessage(rendering.html());
   }
 
   private void sendMessage(final String message) {
