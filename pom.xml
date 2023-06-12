@@ -21,7 +21,9 @@
     <artifactId>jnotebook</artifactId>
     <version>0.4.0-SNAPSHOT</version>
     <packaging>pom</packaging>
+    <name>jNotebook</name>
     <description>A notebook system for Java.</description>
+    <url>https://github.com/cyrilou242/jnotebook/</url>
     <developers>
         <developer>
             <name>Cyril de Catheu</name>
