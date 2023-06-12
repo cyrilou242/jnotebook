@@ -14,7 +14,8 @@
     the License.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>tech.catheu</groupId>
@@ -29,9 +30,11 @@
     </properties>
 
     <dependencies>
+        <!-- include jnotebook-utils as a jar to inject it in jshell classpath-->
         <dependency>
             <groupId>tech.catheu</groupId>
             <artifactId>jnotebook-utils</artifactId>
+            <scope>compile</scope>
         </dependency>
 
         <dependency>
@@ -93,5 +96,38 @@
         </dependency>
 
     </dependencies>
+
+    <build>
+        <plugins>
+            <!-- include jnotebook-utils as a jar to inject it in jshell classpath-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.6.0</version>
+                <executions>
+                    <execution>
+                        <id>copy-dependency</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>tech.catheu</groupId>
+                                    <artifactId>jnotebook-utils</artifactId>
+                                    <version>${project.version}</version>-->
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.build.outputDirectory}/utils</outputDirectory>
+                                    <destFileName>jnotebook-utils-${project.version}.jar</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
