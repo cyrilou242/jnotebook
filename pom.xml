@@ -356,6 +356,9 @@
                                 <goals>
                                     <goal>jar-no-fork</goal>
                                 </goals>
+                                <configuration>
+                                    <includePom>true</includePom>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
