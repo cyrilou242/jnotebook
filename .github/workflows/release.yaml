@@ -41,7 +41,7 @@ jobs:
       - name: generate doc
         id: generate_doc
         run: |
-          java -jar jnotebook-distribution/target/jnotebook-distribution-*.jar render doc/book.jsh index.html
+          java -jar jnotebook-distribution/target/jnotebook-distribution-*-SNAPSHOT.jar render doc/book.jsh index.html
           EOF="EOFLOL"
           echo "INDEX_HTML<<$EOF" >> "$GITHUB_OUTPUT"
           cat index.html >> $GITHUB_OUTPUT
