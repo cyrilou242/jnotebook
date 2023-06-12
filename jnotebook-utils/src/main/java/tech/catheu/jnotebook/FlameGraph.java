@@ -25,13 +25,18 @@ import java.util.stream.Stream;
 
 // totally inefficient way to transform jfr logs into d3 format
 // some pieces extracted from https://github.com/billybong/JavaFlames and https://github.com/spiermar/node-stack-convert
-public class FlameGraph {
+class FlameGraph {
+
+  private FlameGraph() {
+  }
+
   public static Map<String, Object> flameGraphD3(final Stream<String> flameGraphLog) {
     Node root = new Node("ALL");
     flameGraphLog.forEach(val -> {
       final String[] countSplit = val.split(" ");
       final var stackSplit = countSplit[0].split(";");
-      root.add(new ArrayList<>(List.of(stackSplit)), Integer.parseInt(countSplit[1].strip()));
+      root.add(new ArrayList<>(List.of(stackSplit)),
+               Integer.parseInt(countSplit[1].strip()));
     });
 
     return root.serialize();

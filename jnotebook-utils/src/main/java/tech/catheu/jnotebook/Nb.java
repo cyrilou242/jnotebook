@@ -40,6 +40,9 @@ public class Nb {
   private final static DateTimeFormatter DATE_TIME_FORMATTER =
           DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH-mm-ss-SSS");
 
+  private Nb() {
+  }
+
   public static DivTag vega(final Map<String, Object> data) {
     final JSONObject json = new JSONObject(data);
     return vega(json);
@@ -151,7 +154,7 @@ public class Nb {
   }
 
   /**
-   * Wrapper class that makes it easier to find the Runnable being profiled by {@link #profile(Runnable, long)}
+   * Wrapper class that makes it easier to find the Runnable being profiled by {@link #profile(Runnable)}
    * when inspecting the jfr logs.
    */
   private static class ProfiledRunnable implements Runnable {
