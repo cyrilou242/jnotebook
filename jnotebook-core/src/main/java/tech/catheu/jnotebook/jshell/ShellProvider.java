@@ -17,6 +17,7 @@ import tech.catheu.jnotebook.Main;
 import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tech.catheu.jnotebook.localstorage.LocalStorage;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -39,10 +40,12 @@ public class ShellProvider {
   private final Main.SharedConfiguration configuration;
 
   private String resolvedClasspath = null;
+  private final LocalStorage localStorage;
 
-  public ShellProvider(Main.SharedConfiguration configuration) {
+  public ShellProvider(final Main.SharedConfiguration configuration) {
     this.configuration = configuration;
     this.preparedShells = new ArrayDeque<>(2);
+    this.localStorage = LocalStorage.instanceFor(configuration);
 
     warmUp();
   }
@@ -89,6 +92,13 @@ public class ShellProvider {
       resolvedClasspath = configuration.classPath;
     }
 
+    if (configuration.noUtils) {
+      LOG.info("Skipping injection of notebook utils in the classpath.");
+    } else {
+      LOG.info("Injecting notebook utils in the classpath.");
+      resolvedClasspath += ":" + localStorage.getUtilsPath();
+    }
+
     return resolvedClasspath;
   }
 
@@ -123,7 +133,8 @@ public class ShellProvider {
   /**
    * Look for a file. If not found, look into the parent.
    */
-  private static File lookForFile(final String filename, final File startDirectory, final int depthLimit) {
+  private static File lookForFile(final String filename, final File startDirectory,
+                                  final int depthLimit) {
     final File absoluteDirectory = startDirectory.getAbsoluteFile();
     if (new File(absoluteDirectory, filename).exists()) {
       return new File(absoluteDirectory, filename);
