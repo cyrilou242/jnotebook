@@ -67,7 +67,7 @@ public class LocalStorage {
     final boolean isInLocalStorage = Files.exists(localStorageUtilsJarPath);
     if (isSnapshot || !isInLocalStorage) {
       LOG.info("Copying {} to local storage", localStorageUtilsJarName);
-      copyResourcesToFile(Paths.get(RESOURCES_JNOTEBOOK_UTILS_PATH),
+      copyResourcesToFile(RESOURCES_JNOTEBOOK_UTILS_PATH,
                           localStorageUtilsJarPath);
     }
     return localStorageUtilsJarPath.toString();
@@ -95,8 +95,8 @@ public class LocalStorage {
     }
   }
 
-  private static void copyResourcesToFile(final Path resourcesPath, final Path filePath) {
-    try (final InputStream in = LocalStorage.class.getResourceAsStream(resourcesPath.toString())) {
+  private static void copyResourcesToFile(final String resourcesPath, final Path filePath) {
+    try (final InputStream in = LocalStorage.class.getResourceAsStream(resourcesPath)) {
       checkState(in != null, "Failed reading %s from resources", resourcesPath);
       createIfNotExists(filePath.getParent());
       Files.copy(in, filePath, REPLACE_EXISTING);
