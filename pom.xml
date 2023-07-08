@@ -241,6 +241,9 @@
                             <exclude>**/*.json</exclude>
                             <exclude>**/*.schema</exclude>
 
+                            <!-- really executable java script -->
+                            <exclude>**/cross_platform_exec.sh</exclude>
+
                             <!-- Binary files -->
                             <exclude>**/*.avro</exclude>
                             <exclude>**/*.avsc</exclude>

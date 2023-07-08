@@ -74,6 +74,34 @@
                     </execution>
                 </executions>
             </plugin>
+            <!--Build a really executable jar - see https://github.com/brianm/really-executable-jars-maven-plugin -->
+            <plugin>
+                <groupId>org.skife.maven</groupId>
+                <artifactId>really-executable-jar-maven-plugin</artifactId>
+                <version>2.1.1</version>
+                <configuration>
+                    <!-- (optional) support other packaging formats than jar -->
+                    <allowOtherTypes>true</allowOtherTypes>
+                    <!-- (optional) name for a new binary executable, if not set will just
+                         make the original artifact executable -->
+                    <!--<programFile>nifty-executable</programFile>-->
+                    <!-- startup script(optional) name for a file that will define what script gets
+                         embedded into the executable jar.  This can be used to
+                         override the default startup script which is
+                         `#!/bin/sh
+
+                         exec java " + flags + " -jar "$0" "$@" -->
+                    <scriptFile>${basedir}/packaging/cross_platform_exec.sh</scriptFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>really-executable-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
