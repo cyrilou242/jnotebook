@@ -20,7 +20,9 @@ import picocli.CommandLine;
 import java.io.IOException;
 import java.nio.file.Paths;
 
-@CommandLine.Command(name = "jnotebook", subcommands = {Main.InteractiveServerCommand.class, Main.RenderCommand.class})
+@CommandLine.Command(name = "jnotebook",
+                     subcommands = {Main.InteractiveServerCommand.class,
+                                    Main.RenderCommand.class})
 public class Main {
 
   private static final Logger LOG = LoggerFactory.getLogger(Main.class);
@@ -55,15 +57,14 @@ public class Main {
   }
 
   public static class SharedConfiguration {
+    public static final String AUTO_CLASSPATH = "JNOTEBOOK_AUTO_CLASSPATH";
     // notebook runtime configs
     @CommandLine.Option(names = {"-cp", "-classpath", "--class-path"},
                         paramLabel = "<CLASSPATH>",
-                        description = "A : separated list of directories, JAR archives,\n and ZIP archives to search for class files.",
-                        defaultValue = "")
-    public String classPath = "";
+                        description = "A : separated list of directories, JAR archives,\n and ZIP archives to search for class files. \nIf not set, jnotebook looks for build system (eg maven) project files.")
+    public String classPath = AUTO_CLASSPATH;
 
-    @CommandLine.Option(names = {"--local-storage-path"},
-                        paramLabel = "<PATH>",
+    @CommandLine.Option(names = {"--local-storage-path"}, paramLabel = "<PATH>",
                         description = "The fullpath to a folder to use as jnotebook local storage, where extensions and states are cached.")
     public String localStoragePath = Paths.get(USER_HOME, ".jnotebook").toString();
 
@@ -78,8 +79,7 @@ public class Main {
                             defaultValue = "notebooks")
     public String notebookPath = "notebooks";
 
-    @CommandLine.Option(names = {"-p", "--port"},
-                        paramLabel = "<PORT>",
+    @CommandLine.Option(names = {"-p", "--port"}, paramLabel = "<PORT>",
                         description = "Port of the notebook server",
                         defaultValue = "5002")
     public Integer port;
@@ -100,7 +100,8 @@ public class Main {
 
   public static class RenderConfiguration extends SharedConfiguration {
 
-    @CommandLine.Parameters(index = "0", description = "The path to the notebook to render.")
+    @CommandLine.Parameters(index = "0",
+                            description = "The path to the notebook to render.")
     public String inputPath;
 
     @CommandLine.Parameters(index = "1", description = "The output path.")

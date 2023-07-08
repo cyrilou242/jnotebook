@@ -27,6 +27,8 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
 
+import static tech.catheu.jnotebook.Main.SharedConfiguration.AUTO_CLASSPATH;
+
 public class ShellProvider {
 
   private static final Logger LOG = LoggerFactory.getLogger(ShellProvider.class);
@@ -74,7 +76,7 @@ public class ShellProvider {
     if (resolvedClasspath != null) {
       return resolvedClasspath;
     }
-    if (!configuration.classPath.isEmpty()) {
+    if (!AUTO_CLASSPATH.equals(configuration.classPath)) {
       resolvedClasspath = configuration.classPath;
     } else if (new File(MAVEN_PROJECT_FILE).exists()) {
       try {
