@@ -77,6 +77,7 @@ public class ShellProvider {
       return resolvedClasspath;
     }
     if (!AUTO_CLASSPATH.equals(configuration.classPath)) {
+      LOG.info("Injecting provided classpath: " + configuration.classPath);
       resolvedClasspath = configuration.classPath;
     } else if (new File(MAVEN_PROJECT_FILE).exists()) {
       try {
