@@ -20,9 +20,12 @@ import picocli.CommandLine;
 import java.io.IOException;
 import java.nio.file.Paths;
 
-@CommandLine.Command(name = "jnotebook",
-                     subcommands = {Main.InteractiveServerCommand.class,
-                                    Main.RenderCommand.class})
+import static tech.catheu.jnotebook.Constants.VERSION;
+
+@CommandLine.Command(
+        name = "jnotebook",
+        subcommands = {Main.InteractiveServerCommand.class,
+                       Main.RenderCommand.class})
 public class Main {
 
   private static final Logger LOG = LoggerFactory.getLogger(Main.class);
@@ -34,7 +37,8 @@ public class Main {
   }
 
   @CommandLine.Command(name = "server", mixinStandardHelpOptions = true,
-                       description = "Start the interactive notebook server.")
+                       description = "Start the interactive notebook server.",
+                       versionProvider = Main.VersionProvider.class)
   public static class InteractiveServerCommand implements Runnable {
     @CommandLine.Mixin
     private InteractiveConfiguration config;
@@ -87,7 +91,8 @@ public class Main {
 
 
   @CommandLine.Command(name = "render", mixinStandardHelpOptions = true,
-                       description = "Render a notebook in a publishable format.")
+                       description = "Render a notebook in a publishable format.",
+                       versionProvider = Main.VersionProvider.class)
   public static class RenderCommand implements Runnable {
     @CommandLine.Mixin
     private RenderConfiguration config;
@@ -106,5 +111,14 @@ public class Main {
 
     @CommandLine.Parameters(index = "1", description = "The output path.")
     public String outputPath;
+  }
+
+  protected static class VersionProvider implements CommandLine.IVersionProvider {
+    public String[] getVersion() {
+      return new String[]{"Jnotebook: " + VERSION,
+                          "Picocli: " + picocli.CommandLine.VERSION,
+                          "JVM: ${java.version} (${java.vendor} ${java.vm.name} ${java.vm.version})",
+                          "OS: ${os.name} ${os.version} ${os.arch}"};
+    }
   }
 }

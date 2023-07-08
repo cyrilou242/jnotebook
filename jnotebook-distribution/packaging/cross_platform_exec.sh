@@ -5,7 +5,7 @@
 :;java_version=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}')
 :;major_version=$(echo "$java_version" | awk -F '.' '{print $1}')
 :;if [ "$major_version" -ge 17 ]; then
-:;  echo "Using java $java_version"
+:;  # do nothing
 :;else
 :;  echo "java version is $major_version. jnotebook requires java >= 17."
 :;  exit 1
