@@ -13,10 +13,9 @@
  */
 package tech.catheu.jnotebook.jshell;
 
-import tech.catheu.jnotebook.Main;
-import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tech.catheu.jnotebook.Main;
 import tech.catheu.jnotebook.localstorage.LocalStorage;
 
 import java.io.BufferedReader;
@@ -27,6 +26,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
 
+import static org.apache.commons.lang3.SystemUtils.IS_OS_WINDOWS;
 import static tech.catheu.jnotebook.Main.SharedConfiguration.AUTO_CLASSPATH;
 
 public class ShellProvider {
@@ -34,7 +34,7 @@ public class ShellProvider {
   private static final Logger LOG = LoggerFactory.getLogger(ShellProvider.class);
   private static final String MAVEN_PROJECT_FILE = "pom.xml";
   private static final String MAVEN_WRAPPER_FILE =
-          SystemUtils.IS_OS_WINDOWS ? "mvnw.cmd" : "mvnw";
+          IS_OS_WINDOWS ? "mvnw.cmd" : "mvnw";
   private static final String GRADLE_PROJECT_FILE = "build.gradle";
   public static final String MAVEN_DEPENDENCY_COMMAND =
           " -q exec:exec -Dexec.executable=echo -Dexec.args=\"%classpath\"";
@@ -91,7 +91,6 @@ public class ShellProvider {
     } else if (new File(GRADLE_PROJECT_FILE).exists()) {
       LOG.warn(
               "Automatic inclusion of classpath with gradle is not implemented. Use --class-path argument to pass manually.");
-      resolvedClasspath = configuration.classPath;
     }
 
     if (configuration.noUtils) {
@@ -105,6 +104,11 @@ public class ShellProvider {
   }
 
   private String computeMavenClasspath() throws IOException, InterruptedException {
+    if (IS_OS_WINDOWS) {
+      LOG.error(
+              "Cannot add maven dependencies automatically, this is not implemented for Windows platform yet. If you have a windows machine, please contribute!");
+      return "";
+    }
     final File mavenWrapper = lookForFile(MAVEN_WRAPPER_FILE, new File(""), 0);
     final String mavenExecutable;
     if (mavenWrapper != null) {
