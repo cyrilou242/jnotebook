@@ -98,6 +98,12 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources/maven-generated</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
             <!-- include jnotebook-utils as a jar to inject it in jshell classpath-->
             <plugin>
@@ -120,7 +126,7 @@
                                     <type>jar</type>
                                     <overWrite>true</overWrite>
                                     <outputDirectory>${project.build.outputDirectory}/utils</outputDirectory>
-                                    <destFileName>jnotebook-utils-${project.version}.jar</destFileName>
+                                    <destFileName>jnotebook-utils.jar</destFileName>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>

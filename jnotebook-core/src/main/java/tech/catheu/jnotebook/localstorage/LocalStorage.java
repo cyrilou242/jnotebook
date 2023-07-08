@@ -13,21 +13,17 @@
  */
 package tech.catheu.jnotebook.localstorage;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.catheu.jnotebook.Main;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
+import java.util.Scanner;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
@@ -36,11 +32,14 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 public class LocalStorage {
 
   private static final Logger LOG = LoggerFactory.getLogger(LocalStorage.class);
-  private static final String RESOURCES_UTILS_FOLDER = "/utils/";
+  private static final String RESOURCES_VERSION_FILE = "/version.txt";
+  private static final String RESOURCES_JNOTEBOOK_UTILS_PATH =
+          "/utils/jnotebook-utils.jar";
   private static final String LOCAL_STORAGE_UTILS_FOLDER = "utils";
 
   private static LocalStorage instance;
   private final Main.SharedConfiguration config;
+  private String version;
 
   private LocalStorage(final Main.SharedConfiguration config) {
     this.config = config;
@@ -59,20 +58,41 @@ public class LocalStorage {
    * If it does not exist in the local storage, attempts to create it.
    */
   public String getUtilsPath() {
-    final String resourceUtilsJarName = getUtilsJarName();
+    final String version = getVersion();
+    final String localStorageUtilsJarName = "jnotebook-utils-" + version + ".jar";
     final Path localStorageUtilsJarPath = Paths.get(config.localStoragePath,
                                                     LOCAL_STORAGE_UTILS_FOLDER,
-                                                    resourceUtilsJarName);
-    final boolean isSnapshot =
-            resourceUtilsJarName.toLowerCase(Locale.ENGLISH).contains("snapshot");
+                                                    localStorageUtilsJarName);
+    final boolean isSnapshot = version.toLowerCase(Locale.ENGLISH).contains("snapshot");
     final boolean isInLocalStorage = Files.exists(localStorageUtilsJarPath);
     if (isSnapshot || !isInLocalStorage) {
-      LOG.info("Copying {} to local storage", resourceUtilsJarName);
-      final Path resourcesUtilsJarPath =
-              Paths.get(RESOURCES_UTILS_FOLDER, resourceUtilsJarName);
-      copyResourcesToFile(resourcesUtilsJarPath, localStorageUtilsJarPath);
+      LOG.info("Copying {} to local storage", localStorageUtilsJarName);
+      copyResourcesToFile(Paths.get(RESOURCES_JNOTEBOOK_UTILS_PATH),
+                          localStorageUtilsJarPath);
     }
     return localStorageUtilsJarPath.toString();
+  }
+
+  private String getVersion() {
+    if (this.version == null) {
+      this.version = readResourcesFile(RESOURCES_VERSION_FILE).trim();
+    }
+    return version;
+  }
+
+  private String readResourcesFile(final String resourcesPath) {
+    try (InputStream inputStream = this.getClass()
+                                       .getResourceAsStream(resourcesPath); Scanner scanner = new Scanner(
+            inputStream).useDelimiter("\\A")) {
+      if (scanner.hasNext()) {
+        return scanner.next();
+      }
+      throw new IOException();
+    } catch (IOException e) {
+      throw new RuntimeException(String.format(
+              "Failed reading jnotebook version from resources %s",
+              RESOURCES_VERSION_FILE));
+    }
   }
 
   private static void copyResourcesToFile(final Path resourcesPath, final Path filePath) {
@@ -88,13 +108,6 @@ public class LocalStorage {
     }
   }
 
-  private String getUtilsJarName() {
-    // the resources utils folder should contain a single file jnotebook-utils-VERSION.jar
-    final List<String> files = listFiles(RESOURCES_UTILS_FOLDER);
-    checkState(files.size() == 1);
-    return files.get(0);
-  }
-
   private static void createIfNotExists(final Path folderPath) {
     try {
       if (!Files.exists(folderPath)) {
@@ -105,21 +118,6 @@ public class LocalStorage {
       LOG.error("Failed creating folder {}. Error: {}", folderPath, e.getMessage());
       throw new RuntimeException(e); // don't try to recover if the system is not able to create folders
     }
-  }
-
-  @NonNull
-  private static List<String> listFiles(final String resourcePath) {
-    final List<String> files = new ArrayList<>();
-    try (final InputStream in = LocalStorage.class.getResourceAsStream(resourcePath); final BufferedReader br = new BufferedReader(
-            new InputStreamReader(in))) {
-      String resource;
-      while ((resource = br.readLine()) != null) {
-        files.add(resource);
-      }
-    } catch (IOException e) {
-      throw new RuntimeException(String.format("Could not load alert json: %s", e));
-    }
-    return files;
   }
 
 }
