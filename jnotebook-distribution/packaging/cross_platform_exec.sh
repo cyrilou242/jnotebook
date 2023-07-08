@@ -13,5 +13,7 @@
 :;JNOTEBOOK_JAVA_OPTS=${JNOTEBOOK_JAVA_OPTS:-""}
 :;exec java $JNOTEBOOK_JAVA_OPTS -jar $0 "$@"
 
-:; # support for windows is limited -
-@echo off\r\njava -jar %%1 \"%%~f0\" %%*\r\ngoto :eof
+:; # support for windows is limited - no checks are performed
+@echo off
+java %JNOTEBOOK_JAVA_OPTS% -jar "%~f0" %*
+goto :eof
