@@ -43,23 +43,15 @@ jobs:
       - name: generate doc
         id: generate_doc
         run: |
-          ./mvnw -q -U clean install -DskipTests
-          ./jnotebook-distribution/target/jnotebook-distribution-*-SNAPSHOT.jar render -cp="" doc/book.jsh index.html
-          EOF="EOFLOL"
-          echo "INDEX_HTML<<$EOF" >> "$GITHUB_OUTPUT"
-          cat index.html >> $GITHUB_OUTPUT
-          echo "$EOF" >> "$GITHUB_OUTPUT"
-          rm index.html
-      - name: publish doc
-        run: |
-          git pull
-          git checkout website
-          echo -e "${INDEX_HTML}" > index.html
+          distribution=jnotebook-distribution/target/$(ls ./jnotebook-distribution/target/ | grep -E -i '^jnotebook-distribution-[0-9]+\.[0-9]+\.[0-9]+\.jar$')
+          ./$distribution render -cp="" doc/book.jsh index.html
           git add index.html
+          git stash
+          git fetch
+          git checkout website
+          git checkout stash -- index.html
           git commit --allow-empty -m  "update doc" 
           git push
-        env:
-          INDEX_HTML: ${{ steps.generate_doc.outputs.INDEX_HTML }}
       - name: Cache - save local Maven repository
         uses: actions/cache/save@v3
         # save to cache only if necessary + cache even if tests failed (useful if flakiness)
