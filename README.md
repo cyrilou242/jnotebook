@@ -31,7 +31,7 @@ jNotebook is a notebook library for Java that aims to address these problems by 
 ## Quickstart
 `jnotebook` requires Java 17 or higher.
 
-Download a portable single file binary.
+`jnotebook` is distributed in a single portable binary. Download it.
 ``` 
 curl -Ls https://repo1.maven.org/maven2/tech/catheu/jnotebook-distribution/0.6.0/jnotebook-distribution-0.6.0.jar -o jnotebook
 chmod +x jnotebook
@@ -46,7 +46,7 @@ Go to http://localhost:5002.
 By default, the notebook folder is `notebooks`. If it does not exist, it will be created with an example notebook.
 
 
-## Installation
+## Install
 `jnotebook` requires Java 17 or higher.
 
 ### Portable installation

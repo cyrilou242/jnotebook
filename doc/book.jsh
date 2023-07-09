@@ -20,8 +20,22 @@
 
 // ## 🚀 Getting Started
 
-// ### install
-// TODO CYRIL
+// ### Quickstart
+
+// `jnotebook` requires Java 17 or higher.
+// `jnotebook` is distributed in a single portable binary. Download it.
+// ```
+// curl -Ls https://repo1.maven.org/maven2/tech/catheu/jnotebook-distribution/0.6.0/jnotebook-distribution-0.6.0.jar -o jnotebook
+// chmod +x jnotebook
+// ```
+//
+// Then launch.
+// ```
+// ./jnotebook server
+// ```
+
+// ### Install
+// See detailed installation instruction for different platforms in the [github project](https://github.com/cyrilou242/jnotebook/#install).
 
 // ### 🤹 jNotebook Demo
 // TODO CYRIL
