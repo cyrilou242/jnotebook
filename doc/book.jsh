@@ -25,7 +25,7 @@
 // `jnotebook` requires Java 17 or higher.
 // `jnotebook` is distributed in a single portable binary. Download it.
 // ```
-// curl -Ls https://repo1.maven.org/maven2/tech/catheu/jnotebook-distribution/0.6.0/jnotebook-distribution-0.6.0.jar -o jnotebook
+// curl -Ls https://get.jnotebook.catheu.tech -o jnotebook
 // chmod +x jnotebook
 // ```
 //
