@@ -33,7 +33,7 @@ jNotebook is a notebook library for Java that aims to address these problems by 
 
 `jnotebook` is distributed in a single portable binary. Download it.
 ``` 
-curl -Ls https://repo1.maven.org/maven2/tech/catheu/jnotebook-distribution/0.6.0/jnotebook-distribution-0.6.0.jar -o jnotebook
+curl -Ls https://get.jnotebook.catheu.tech -o jnotebook
 chmod +x jnotebook
 ```
 
@@ -54,14 +54,14 @@ The `jnotebook` binary is a portable single file. Simply download it and get run
 
 #### Mac Os/Linux
 ```
-curl -Ls https://repo1.maven.org/maven2/tech/catheu/jnotebook-distribution/0.6.0/jnotebook-distribution-0.6.0.jar -o jnotebook
+curl -Ls https://get.jnotebook.catheu.tech -o jnotebook
 chmod +x jnotebook
 ./jnotebook server --help
 ```
 
 #### Windows
 ```
-curl -L https://repo1.maven.org/maven2/tech/catheu/jnotebook-distribution/0.6.0/jnotebook-distribution-0.6.0.jar -o jnotebook.bat
+curl -L https://get.jnotebook.catheu.tech -o jnotebook.bat
 icacls jnotebook.bat /grant Everyone:F
 jnotebook server --help
 ```
