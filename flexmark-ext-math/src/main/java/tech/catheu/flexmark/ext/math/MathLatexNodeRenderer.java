@@ -25,7 +25,7 @@ import com.vladsch.flexmark.util.data.DataHolder;
 import com.vladsch.flexmark.util.sequence.BasedSequence;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import tech.catheu.katex.Katex;
+import tech.catheu.js.katex.Katex;
 
 import java.util.Set;
 

@@ -36,7 +36,7 @@ import tech.catheu.jnotebook.evaluate.Interpreted;
 import tech.catheu.jnotebook.evaluate.InterpretedSnippet;
 import tech.catheu.jnotebook.jshell.EvalResult;
 import tech.catheu.jnotebook.parse.StaticSnippet;
-import tech.catheu.katex.Katex;
+import tech.catheu.js.katex.Katex;
 
 import java.util.*;
 

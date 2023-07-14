@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package tech.catheu.katex;
+package tech.catheu.js.katex;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -61,7 +61,6 @@ public class Katex {
     loadKatexScript();
 
     renderToStringCache = builder.build(CacheLoader.from(this::computeRenderToString));
-
   }
 
   private void loadKatexScript() {
@@ -97,7 +96,7 @@ public class Katex {
 
     try {
       return engine.eval(scriptString).toString();
-    } catch (Exception e) { // ScriptException
+    } catch (ScriptException e) {
       LOG.error("Failed running script {}. Input: {}", scriptString, config);
       throw new RuntimeException("Failed running katex script", e);
     }
