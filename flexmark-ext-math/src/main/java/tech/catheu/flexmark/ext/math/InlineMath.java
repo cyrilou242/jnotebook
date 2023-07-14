@@ -18,7 +18,7 @@ import com.vladsch.flexmark.util.ast.Node;
 import com.vladsch.flexmark.util.sequence.BasedSequence;
 import org.jetbrains.annotations.NotNull;
 
-// copy of InlineMath
+// copy of GitlabInlineMath
 public class InlineMath extends Node implements DelimitedNode {
 
   protected BasedSequence openingMarker = BasedSequence.NULL;

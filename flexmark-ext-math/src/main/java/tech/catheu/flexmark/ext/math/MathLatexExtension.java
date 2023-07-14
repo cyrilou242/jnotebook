@@ -19,7 +19,6 @@ import com.vladsch.flexmark.util.data.MutableDataHolder;
 import org.jetbrains.annotations.NotNull;
 import tech.catheu.katex.Katex;
 
-// for the moment, exploits GitlabExtension Parser.ParserExtension implementation for inline math parsing
 public class MathLatexExtension implements Parser.ParserExtension, HtmlRenderer.HtmlRendererExtension {
 
   private final Katex katex;
