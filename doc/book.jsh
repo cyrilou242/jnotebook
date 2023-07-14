@@ -108,7 +108,9 @@ throw new RuntimeException("Panic!");
 //     John-->>-Alice: I feel great!
 // ```
 // using
-//<code>\```mermaid<br>[MERMAID GRAPH CODE]<br>```</code>
+// <pre>```mermaid
+// [MERMAID GRAPH CODE]
+// ```</pre>
 // See [mermaid documentation](https://mermaid.js.org/intro/) for examples.
 
 // ## 🔍 Viewers
