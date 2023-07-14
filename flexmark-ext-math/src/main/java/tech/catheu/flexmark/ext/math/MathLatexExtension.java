@@ -17,7 +17,7 @@ import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.data.MutableDataHolder;
 import org.jetbrains.annotations.NotNull;
-import tech.catheu.katex.Katex;
+import tech.catheu.js.katex.Katex;
 
 public class MathLatexExtension implements Parser.ParserExtension, HtmlRenderer.HtmlRendererExtension {
 

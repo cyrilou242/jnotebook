@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package tech.catheu.katex;
+package tech.catheu.js.katex;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
