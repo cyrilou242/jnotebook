@@ -33,6 +33,7 @@ import java.nio.file.Paths;
 import java.util.Map;
 
 import static tech.catheu.jnotebook.server.HtmlTemplateEngine.TEMPLATE_KEY_RENDERED;
+import static tech.catheu.jnotebook.server.HtmlTemplateEngine.TEMPLATE_KEY_CONFIG;
 
 public class NotebookRenderer {
 
@@ -45,7 +46,7 @@ public class NotebookRenderer {
     final ShellProvider shellProvider = new ShellProvider(config);
     final StaticParser staticParser = new StaticParser(shellProvider);
     final SimpleInterpreter interpreter = new SimpleInterpreter(shellProvider);
-    final Renderer renderer = new Renderer();
+    final Renderer renderer = new Renderer(config);
     return new NotebookRenderer(staticParser, interpreter, renderer);
   }
 
@@ -64,7 +65,8 @@ public class NotebookRenderer {
       final Interpreted interpreted = interpreter.interpret(staticParsing);
       final Rendering render = renderer.render(interpreted);
       final HtmlTemplateEngine templateEngine = new HtmlTemplateEngine();
-      final String html = templateEngine.render(Map.of(TEMPLATE_KEY_RENDERED, render.html()));
+      final String html = templateEngine.render(Map.of(TEMPLATE_KEY_RENDERED, render.html(),
+                                                       TEMPLATE_KEY_CONFIG, config));
       final File outputFile = FileUtils.getFile(config.outputPath);
       FileUtils.write(outputFile, html, StandardCharsets.UTF_8);
       LOG.info("Notebook rendered successfully and written to {}", outputFile);

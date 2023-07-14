@@ -20,6 +20,7 @@ import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.ast.Node;
 import com.vladsch.flexmark.util.data.MutableDataSet;
+import com.vladsch.flexmark.util.misc.Extension;
 import j2html.tags.DomContent;
 import j2html.tags.UnescapedText;
 import j2html.tags.specialized.DivTag;
@@ -30,6 +31,7 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.catheu.flexmark.ext.math.MathLatexExtension;
+import tech.catheu.jnotebook.Main;
 import tech.catheu.jnotebook.evaluate.Interpreted;
 import tech.catheu.jnotebook.evaluate.InterpretedSnippet;
 import tech.catheu.jnotebook.jshell.EvalResult;
@@ -62,25 +64,29 @@ public class Renderer {
   public static final String VIEWER_RESULT = "viewer-result";
   public static final String W_FULL = "w-full";
   public static final String WHITESPACE_PRE = "whitespace-pre";
-
-  private static final Parser parser;
-  private static final HtmlRenderer renderer;
   public static final String RESULT_ERROR = "result-error";
 
-  static {
+  private final Parser parser;
+  private final HtmlRenderer renderer;
+
+
+  public Renderer(Main.SharedConfiguration configuration) {
     final MutableDataSet options = new MutableDataSet();
-    options.set(Parser.EXTENSIONS,
-                Arrays.asList(TablesExtension.create(),
-                              GitLabExtension.create(),
-                              FootnoteExtension.create(),
-                              MathLatexExtension.create(Katex.newInstance())));
+    final List<Extension> extensions = new ArrayList<>();
+    extensions.add(TablesExtension.create());
+    extensions.add(FootnoteExtension.create());
+    extensions.add(GitLabExtension.create());
+    if (configuration.htmlLatexServerSide) {
+      // disable math in gitlabExtension and let in-server extension do it
+      options.set(GitLabExtension.RENDER_BLOCK_MATH, false);
+      options.set(GitLabExtension.INLINE_MATH_PARSER, false);
+      extensions.add(MathLatexExtension.create(Katex.newInstance()));
+    }
+    options.set(Parser.EXTENSIONS, extensions);
     // convert soft-breaks to hard breaks
     options.set(HtmlRenderer.SOFT_BREAK, "<br />\n");
     options.set(HtmlRenderer.GENERATE_HEADER_ID, true);
     options.set(HtmlRenderer.RENDER_HEADER_ID, true);
-    // MathLatexExtension is taking care of inline and block math
-    options.set(GitLabExtension.RENDER_BLOCK_MATH, false);
-    options.set(GitLabExtension.INLINE_MATH_PARSER, false);
     parser = Parser.builder(options).build();
     renderer = HtmlRenderer.builder(options).build();
   }
@@ -100,7 +106,7 @@ public class Renderer {
   public void stop() {
   }
 
-  private static class LineAwareRenderer {
+  private class LineAwareRenderer {
     private final List<DomContent> elems = new ArrayList<>();
     private final List<InterpretedSnippet> groupedJavaSnippets = new ArrayList<>();
     private final List<String> lines;
@@ -325,7 +331,7 @@ public class Renderer {
                                              PX_8);
     }
 
-    private static String markdownToHtml(final String markdown) {
+    private String markdownToHtml(final String markdown) {
       final Node document = parser.parse(markdown);
       return renderer.render(document);
     }

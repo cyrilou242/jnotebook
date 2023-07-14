@@ -44,7 +44,7 @@ jobs:
         id: generate_doc
         run: |
           distribution=jnotebook-distribution/target/$(ls ./jnotebook-distribution/target/ | grep -E -i '^jnotebook-distribution-[0-9]+\.[0-9]+\.[0-9]+\.jar$')
-          ./$distribution render -cp="" doc/book.jsh index.html
+          ./$distribution render -cp="" --html-latex-server-side doc/book.jsh index.html
           git add index.html
           git stash
           git fetch

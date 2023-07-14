@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static tech.catheu.jnotebook.server.HtmlTemplateEngine.TEMPLATE_KEY_INTERACTIVE;
 import static tech.catheu.jnotebook.server.HtmlTemplateEngine.TEMPLATE_KEY_CONFIG;
 
 public class InteractiveServer {
@@ -100,7 +101,8 @@ public class InteractiveServer {
     TemplatedHttpHandler(final Main.InteractiveConfiguration configuration) {
       this.configuration = configuration;
       this.templateEngine = new HtmlTemplateEngine();
-      this.context = Map.of(TEMPLATE_KEY_CONFIG, this.configuration);
+      this.context = Map.of(TEMPLATE_KEY_INTERACTIVE, true,
+                            TEMPLATE_KEY_CONFIG, this.configuration);
     }
 
     @Override

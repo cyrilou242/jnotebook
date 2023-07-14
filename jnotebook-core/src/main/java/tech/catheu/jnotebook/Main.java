@@ -73,8 +73,12 @@ public class Main {
     public String localStoragePath = Paths.get(USER_HOME, ".jnotebook").toString();
 
     @CommandLine.Option(names = {"--no-utils"},
-                        description = "Flag to disable the injection of jnotebook-utils jar.")
+                        description = "If passed, disable the injection of jnotebook-utils jar.")
     public boolean noUtils = false;
+
+    @CommandLine.Option(names= {"--html-latex-server-side"},
+                        description = "If passed, latex html is generated server side. Default behavior is to generate in the browser with a javascript library. Recommended for static rendering.")
+    public boolean htmlLatexServerSide = false;
   }
 
 
