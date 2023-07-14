@@ -32,9 +32,8 @@ import java.util.concurrent.ExecutionException;
  * katex javascript library adapter.
  * See https://katex.org/.
  * Can transform latex into html.
- * <p>
  * A cache is used. Caching is around 300 times faster than re-evaluating.
- * For load patterns that may often re-evaluate the same input (like jnotebook),
+ * In case the function often re-evaluates the same input (like jnotebook),
  * caching is important.
  */
 public class Katex {

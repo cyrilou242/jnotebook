@@ -45,6 +45,5 @@ public class MathLatexExtension implements HtmlRenderer.HtmlRendererExtension {
     if (htmlRendererBuilder.isRendererType("HTML")) {
       htmlRendererBuilder.nodeRendererFactory(new MathLatexNodeRenderer.Factory(katex));
     }
-    // other types not implemented
   }
 }

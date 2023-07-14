@@ -52,7 +52,6 @@ public class MathLatexNodeRenderer implements NodeRenderer {
     final String latexExpression = node.getText().unescape();
     final String katexHtml = katex.renderToString(latexExpression, false);
     html.raw(katexHtml);
-    //html.append(katexHtml);
   }
 
   private <N extends Node> void render(@NotNull FencedCodeBlock node,
