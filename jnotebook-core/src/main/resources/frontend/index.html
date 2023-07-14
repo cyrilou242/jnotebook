@@ -22,12 +22,6 @@
     <title>Notebook</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css"
           integrity="sha384-vKruj+a13U8yHIkAyGgK1J3ArTLzrFGBbBc0tDp4ad/EyewESeXE/Iv67Aj8gKZ0" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.js"
-            integrity="sha384-PwRUT/YqbnEjkZO0zZxNqcxACrXe+j766U2amXcgMg5457rve2Y7I6ZJSm2A0mS4"
-            crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/contrib/auto-render.min.js"
-            integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
-            onload="renderMathInElement(document.body);"></script>
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"
             onload="mermaid.initialize({startOnLoad:true});"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
@@ -661,16 +655,6 @@
         function reRender() {
             // render mermaid
             mermaid.init({noteMargin: 10}, '.mermaid');
-
-            // render latex
-            var mathElems = document.getElementsByClassName("katex");
-            var elems = [];
-            for (const i in mathElems) {
-                if (mathElems.hasOwnProperty(i)) elems.push(mathElems[i]);
-            }
-            elems.forEach(elem => {
-                katex.render(elem.textContent, elem, {throwOnError: false, displayMode: elem.nodeName !== 'SPAN',});
-            });
 
             // render code color
             document.querySelectorAll('div.cm-content').forEach(el => {
