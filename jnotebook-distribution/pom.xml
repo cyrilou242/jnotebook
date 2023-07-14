@@ -62,6 +62,8 @@
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <mainClass>tech.catheu.jnotebook.Main</mainClass>
                                 </transformer>
+                                <!-- https://github.com/oracle/graaljs/issues/125#issuecomment-791906004 -->
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                             </transformers>
                             <artifactSet>
                                 <!-- below can be used to exclude the logger in the distribution
