@@ -14,12 +14,13 @@
 package tech.catheu.flexmark.ext.math;
 
 import com.vladsch.flexmark.html.HtmlRenderer;
+import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.data.MutableDataHolder;
 import org.jetbrains.annotations.NotNull;
 import tech.catheu.katex.Katex;
 
 // for the moment, exploits GitlabExtension Parser.ParserExtension implementation for inline math parsing
-public class MathLatexExtension implements HtmlRenderer.HtmlRendererExtension {
+public class MathLatexExtension implements Parser.ParserExtension, HtmlRenderer.HtmlRendererExtension {
 
   private final Katex katex;
 
@@ -45,5 +46,15 @@ public class MathLatexExtension implements HtmlRenderer.HtmlRendererExtension {
     if (htmlRendererBuilder.isRendererType("HTML")) {
       htmlRendererBuilder.nodeRendererFactory(new MathLatexNodeRenderer.Factory(katex));
     }
+  }
+
+  @Override
+  public void parserOptions(MutableDataHolder mutableDataHolder) {
+
+  }
+
+  @Override
+  public void extend(Parser.Builder builder) {
+    builder.customInlineParserExtensionFactory(new InlineMathParser.Factory());
   }
 }

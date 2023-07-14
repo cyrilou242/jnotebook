@@ -36,12 +36,6 @@
             <artifactId>flexmark</artifactId>
         </dependency>
 
-        <!--FIXME CYRIL TO BE REMOVED ONCE detection is moved to this one-->
-        <dependency>
-            <groupId>com.vladsch.flexmark</groupId>
-            <artifactId>flexmark-ext-gitlab</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>tech.catheu</groupId>
             <artifactId>java-katex</artifactId>

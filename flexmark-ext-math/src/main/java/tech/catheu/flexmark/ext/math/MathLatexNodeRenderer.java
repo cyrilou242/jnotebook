@@ -14,7 +14,6 @@
 package tech.catheu.flexmark.ext.math;
 
 import com.vladsch.flexmark.ast.FencedCodeBlock;
-import com.vladsch.flexmark.ext.gitlab.GitLabInlineMath;
 import com.vladsch.flexmark.html.HtmlRendererOptions;
 import com.vladsch.flexmark.html.HtmlWriter;
 import com.vladsch.flexmark.html.renderer.NodeRenderer;
@@ -41,13 +40,13 @@ public class MathLatexNodeRenderer implements NodeRenderer {
 
   @Override
   public @Nullable Set<NodeRenderingHandler<?>> getNodeRenderingHandlers() {
-    return Set.of(new NodeRenderingHandler<>(GitLabInlineMath.class,
+    return Set.of(new NodeRenderingHandler<>(InlineMath.class,
                                              MathLatexNodeRenderer.this::render),
                   new NodeRenderingHandler<>(FencedCodeBlock.class,
                                              MathLatexNodeRenderer.this::render));
   }
 
-  private void render(@NotNull GitLabInlineMath node,
+  private void render(@NotNull InlineMath node,
                       @NotNull NodeRendererContext context, @NotNull HtmlWriter html) {
     final String latexExpression = node.getText().unescape();
     final String katexHtml = katex.renderToString(latexExpression, false);
