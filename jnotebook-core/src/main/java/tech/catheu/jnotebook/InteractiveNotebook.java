@@ -45,7 +45,7 @@ public class InteractiveNotebook {
     final ShellProvider shellProvider = new ShellProvider(configuration);
     this.staticParser = new StaticParser(shellProvider);
     this.interpreter = new GreedyInterpreter(shellProvider);
-    this.renderer = new Renderer();
+    this.renderer = new Renderer(configuration);
     this.server = new InteractiveServer(configuration);
   }
 

@@ -20,8 +20,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Notebook</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css"
-          integrity="sha384-vKruj+a13U8yHIkAyGgK1J3ArTLzrFGBbBc0tDp4ad/EyewESeXE/Iv67Aj8gKZ0" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" integrity="sha384-GvrOXuhMATgEsSwCs4smul74iXGOixntILdUW9XmUC6+HX0sLNAK3q71HotJqlAn" crossorigin="anonymous">
+    <script th:unless="${jnb_config.htmlLatexServerSide}" src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js" integrity="sha384-cpW21h6RZv/phavutF+AuVYrr+dA8xD9zs6FwLpaCct6O9ctzYFfFr4dgmgccOTx" crossorigin="anonymous"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"
             onload="mermaid.initialize({startOnLoad:true});"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
@@ -611,7 +612,7 @@
         </svg>
         <span class="tracking-wider ml-1 font-bold text-[12px]">ToC</span>
     </button>
-    <div th:if="${interactive_config}" x-bind:class="tocOpen ? 'ml-52' : ''" class="status-header">
+    <div th:if="${jnb_interactive}" x-bind:class="tocOpen ? 'ml-52' : ''" class="status-header">
         <span id="status-message" data-status="" class="status-info"></span>
     </div>
     <aside x-show="tocOpen" class="h-screen z-20 flex-shrink-0 fixed bg-slate-100 font-sans border-r border-t w-52">
@@ -628,13 +629,13 @@
         <div id="toc"></div>
     </aside>
     <div x-bind:class="tocOpen ? 'ml-52' : ''" class="flex-auto h-screen overflow-y-auto scroll-container">
-        <div th:if="${rendered}" th:utext="${rendered}" id="notebook" class="flex flex-col items-center viewer-notebook flex-auto">
+        <div th:if="${jnb_rendered}" th:utext="${jnb_rendered}" id="notebook" class="flex flex-col items-center viewer-notebook flex-auto">
         </div>
-        <div th:unless="${rendered}" id="notebook" class="flex flex-col items-center viewer-notebook flex-auto">
+        <div th:unless="${jnb_rendered}" id="notebook" class="flex flex-col items-center viewer-notebook flex-auto">
             <div id="helper" class="viewer viewer-result w-full max-w-prose px-8">
                 <div class="relative">
                     <div class="overflow-y-hidden">
-                        <p>Save a file in your <code>[[${interactive_config.notebookPath}]]</code> folder to make your notebook
+                        <p>Save a file in your <code>[[${jnb_config.notebookPath}]]</code> folder to make your notebook
                             appear…</p></div>
                 </div>
             </div>
@@ -655,6 +656,18 @@
         function reRender() {
             // render mermaid
             mermaid.init({noteMargin: 10}, '.mermaid');
+
+             /*[# th:unless="${jnb_config.htmlLatexServerSide}"]*/
+            // render latex
+            var mathElems = document.getElementsByClassName("katex");
+            var elems = [];
+            for (const i in mathElems) {
+                if (mathElems.hasOwnProperty(i)) elems.push(mathElems[i]);
+            }
+            elems.forEach(elem => {
+                katex.render(elem.textContent, elem, {throwOnError: false, displayMode: elem.nodeName !== 'SPAN',});
+            });
+            /*[/]*/
 
             // render code color
             document.querySelectorAll('div.cm-content').forEach(el => {
@@ -682,7 +695,7 @@
         }
     </script>
     <script defer>reRender();</script>
-    <script defer th:if="${interactive_config}" th:inline="javascript">
+    <script defer th:if="${jnb_interactive}" th:inline="javascript">
         function update(eventData) {
             document.getElementById("notebook").innerHTML = eventData;
             reRender();
@@ -717,7 +730,7 @@
             };
         }
 
-        const port = /*[[${interactive_config.port}]];*/ "5002";
+        const port = /*[[${jnb_config.port}]];*/ "5002";
         if (port !== null) {
             startWebSocketServer(port);
         }

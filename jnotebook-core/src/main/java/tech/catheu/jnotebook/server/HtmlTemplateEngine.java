@@ -21,8 +21,9 @@ import java.util.Map;
 
 public class HtmlTemplateEngine {
 
-  public final static String TEMPLATE_KEY_CONFIG = "interactive_config";
-  public final static String TEMPLATE_KEY_RENDERED = "rendered";
+  public final static String TEMPLATE_KEY_CONFIG = "jnb_config";
+  public final static String TEMPLATE_KEY_INTERACTIVE = "jnb_interactive";
+  public final static String TEMPLATE_KEY_RENDERED = "jnb_rendered";
 
   private final TemplateEngine delegate;
 
