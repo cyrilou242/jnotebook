@@ -78,7 +78,8 @@ public class Renderer {
     options.set(HtmlRenderer.SOFT_BREAK, "<br />\n");
     options.set(HtmlRenderer.GENERATE_HEADER_ID, true);
     options.set(HtmlRenderer.RENDER_HEADER_ID, true);
-    options.set(GitLabExtension.RENDER_BLOCK_MATH, false); // MathLatexExtension is doing it
+    // MathLatexExtension is taking care of inline and block math
+    options.set(GitLabExtension.RENDER_BLOCK_MATH, false);
     parser = Parser.builder(options).build();
     renderer = HtmlRenderer.builder(options).build();
   }
