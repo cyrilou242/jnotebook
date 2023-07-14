@@ -11,9 +11,9 @@
 :;  exit 1
 :;fi
 :;JNOTEBOOK_JAVA_OPTS=${JNOTEBOOK_JAVA_OPTS:-""}
-:;exec java $JNOTEBOOK_JAVA_OPTS -jar "$0" "$@"
+:;exec java -Dpolyglot.engine.WarnInterpreterOnly=false $JNOTEBOOK_JAVA_OPTS -jar "$0" "$@"
 
 :; # support for windows is limited - no checks are performed
 @echo off
-java %JNOTEBOOK_JAVA_OPTS% -jar "%~f0" %*
+java -Dpolyglot.engine.WarnInterpreterOnly=false %JNOTEBOOK_JAVA_OPTS% -jar "%~f0" %*
 goto :eof

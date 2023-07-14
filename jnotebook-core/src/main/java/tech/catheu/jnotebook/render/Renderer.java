@@ -29,10 +29,12 @@ import jdk.jshell.SnippetEvent;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tech.catheu.flexmark.ext.math.MathLatexExtension;
 import tech.catheu.jnotebook.evaluate.Interpreted;
 import tech.catheu.jnotebook.evaluate.InterpretedSnippet;
 import tech.catheu.jnotebook.jshell.EvalResult;
 import tech.catheu.jnotebook.parse.StaticSnippet;
+import tech.catheu.katex.Katex;
 
 import java.util.*;
 
@@ -66,15 +68,19 @@ public class Renderer {
   public static final String RESULT_ERROR = "result-error";
 
   static {
-    MutableDataSet options = new MutableDataSet();
+    final MutableDataSet options = new MutableDataSet();
     options.set(Parser.EXTENSIONS,
                 Arrays.asList(TablesExtension.create(),
                               GitLabExtension.create(),
-                              FootnoteExtension.create()));
+                              FootnoteExtension.create(),
+                              MathLatexExtension.create(Katex.newInstance())));
     // convert soft-breaks to hard breaks
     options.set(HtmlRenderer.SOFT_BREAK, "<br />\n");
     options.set(HtmlRenderer.GENERATE_HEADER_ID, true);
     options.set(HtmlRenderer.RENDER_HEADER_ID, true);
+    // MathLatexExtension is taking care of inline and block math
+    options.set(GitLabExtension.RENDER_BLOCK_MATH, false);
+    options.set(GitLabExtension.INLINE_MATH_PARSER, false);
     parser = Parser.builder(options).build();
     renderer = HtmlRenderer.builder(options).build();
   }

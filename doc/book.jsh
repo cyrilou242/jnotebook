@@ -87,15 +87,17 @@ invalidJava();
 throw new RuntimeException("Panic!");
 
 // ### Markdown
-// Latex is supported inline: $`a^2+b^2=c^2`$
-// using ```$`a^2+b^2=c^2`$```.
-// and on a separate line:
+// Latex is supported inline: <pre>\$\`a^2+b^2=c^2\`\$</pre> → will render as $`a^2+b^2=c^2`$.
+// and as block:
+// <pre>
 // ```math
 // a^2+b^2=c^2
 // ```
-// using
-//<code>\```math<br>a^2+b^2=c^2<br>```</code>
-
+// </pre>
+// ```math
+// a^2+b^2=c^2
+// ```
+//
 // ### Mermaid
 // Mermaid graphs are supported
 // ```mermaid
@@ -106,7 +108,9 @@ throw new RuntimeException("Panic!");
 //     John-->>-Alice: I feel great!
 // ```
 // using
-//<code>\```mermaid<br>[MERMAID GRAPH CODE]<br>```</code>
+// <pre>```mermaid
+// [MERMAID GRAPH CODE]
+// ```</pre>
 // See [mermaid documentation](https://mermaid.js.org/intro/) for examples.
 
 // ## 🔍 Viewers

@@ -34,6 +34,8 @@
         <module>jnotebook-core</module>
         <module>jnotebook-distribution</module>
         <module>jnotebook-utils</module>
+        <module>java-katex</module>
+        <module>flexmark-ext-math</module>
     </modules>
 
     <properties>
@@ -45,6 +47,8 @@
 
         <undertow.version>2.3.5.Final</undertow.version>
         <antlr.version>4.12.0</antlr.version>
+        <flexmark.version>0.64.8</flexmark.version>
+        <graalvm.js.version>22.3.2</graalvm.js.version>
     </properties>
 
     <!-- used by maven-release-plugin -->
@@ -80,6 +84,18 @@
                 <artifactId>jnotebook-utils</artifactId>
                 <version>${project.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>tech.catheu</groupId>
+                <artifactId>java-katex</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>tech.catheu</groupId>
+                <artifactId>flexmark-ext-math</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
 
             <dependency>
                 <groupId>io.methvin</groupId>
@@ -137,15 +153,28 @@
 
             <dependency>
                 <groupId>com.vladsch.flexmark</groupId>
-                <artifactId>flexmark-all</artifactId>
-                <version>0.64.0</version>
-                <exclusions>
-                    <!--this dependency is broken I don't know why-->
-                    <exclusion>
-                        <groupId>com.openhtmltopdf</groupId>
-                        <artifactId>openhtmltopdf-core</artifactId>
-                    </exclusion>
-                </exclusions>
+                <artifactId>flexmark</artifactId>
+                <version>${flexmark.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.vladsch.flexmark</groupId>
+                <artifactId>flexmark-core</artifactId>
+                <version>${flexmark.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.vladsch.flexmark</groupId>
+                <artifactId>flexmark-ext-gitlab</artifactId>
+                <version>${flexmark.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.vladsch.flexmark</groupId>
+                <artifactId>flexmark-ext-footnotes</artifactId>
+                <version>${flexmark.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.vladsch.flexmark</groupId>
+                <artifactId>flexmark-ext-tables</artifactId>
+                <version>${flexmark.version}</version>
             </dependency>
 
             <dependency>
@@ -163,6 +192,19 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-simple</artifactId>
                 <version>2.0.7</version>
+            </dependency>
+
+
+            <!-- javascript engine dependencies -->
+            <dependency>
+                <groupId>org.graalvm.js</groupId>
+                <artifactId>js</artifactId>
+                <version>${graalvm.js.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.graalvm.js</groupId>
+                <artifactId>js-scriptengine</artifactId>
+                <version>${graalvm.js.version}</version>
             </dependency>
 
             <!-- utils dependency -->

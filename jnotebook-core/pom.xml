@@ -84,9 +84,28 @@
             <artifactId>spoon-core</artifactId>
         </dependency>
 
+        <!-- markdown to html rendering-->
         <dependency>
             <groupId>com.vladsch.flexmark</groupId>
-            <artifactId>flexmark-all</artifactId>
+            <artifactId>flexmark</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.vladsch.flexmark</groupId>
+            <artifactId>flexmark-ext-gitlab</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.vladsch.flexmark</groupId>
+            <artifactId>flexmark-ext-footnotes</artifactId>
+            <version>${flexmark.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.vladsch.flexmark</groupId>
+            <artifactId>flexmark-ext-tables</artifactId>
+            <version>${flexmark.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>tech.catheu</groupId>
+            <artifactId>flexmark-ext-math</artifactId>
         </dependency>
 
         <dependency>
