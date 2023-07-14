@@ -80,6 +80,7 @@ public class Renderer {
     options.set(HtmlRenderer.RENDER_HEADER_ID, true);
     // MathLatexExtension is taking care of inline and block math
     options.set(GitLabExtension.RENDER_BLOCK_MATH, false);
+    options.set(GitLabExtension.INLINE_MATH_PARSER, false);
     parser = Parser.builder(options).build();
     renderer = HtmlRenderer.builder(options).build();
   }
