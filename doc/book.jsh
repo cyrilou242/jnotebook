@@ -29,13 +29,17 @@
 // chmod +x jnotebook
 // ```
 //
-// Then launch.
+// Launch it.
 // ```
 // ./jnotebook server
+//
+// # or
+// java -jar jnotebook server
 // ```
+// Then go to <a href="http://localhost:5002" target="_blank">http://localhost:5002</a>
 
 // ### Install
-// See detailed installation instruction for different platforms in the [github project](https://github.com/cyrilou242/jnotebook/#install).
+// See detailed installation instruction for different platforms in the <a href="https://github.com/cyrilou242/jnotebook/#install" target="_blank">github project</a>.
 
 // ### 🤹 jNotebook Demo
 // TODO CYRIL

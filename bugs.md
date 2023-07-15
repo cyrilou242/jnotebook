@@ -49,3 +49,20 @@ Nb.vega(Map.of(
         );
 ```
 catch these cases
+
+
+Rendering is incorrect with this input: 
+
+// ```
+// # linux / mac os
+// ./jnotebook server 
+//
+// # windows
+// java -jar jnotebook server
+// ```
+
+line retun is not correct 
+
+BUG : writing the following "haha no way" does not break and is not interpreted either
+are multi-statements in one line even managed? 
+int y =3; haha no way 

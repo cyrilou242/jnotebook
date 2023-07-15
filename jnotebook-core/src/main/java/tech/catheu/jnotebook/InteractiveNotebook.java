@@ -65,7 +65,7 @@ public class InteractiveNotebook {
                            .filter(e -> e.path().toString().endsWith(JSHELL_SUFFIX));
     //.subscribe(s -> server.sendReload()); to subscribe on a side scheduler
 
-    LOG.info("Notebook server started on http://localhost:" + configuration.port);
+    LOG.info("Notebook server started. Go to http://localhost:" + configuration.port);
 
     notebookEvents
             .doOnEach(e -> server.sendStatus(NotebookServerStatus.COMPUTE))

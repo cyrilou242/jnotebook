@@ -39,7 +39,11 @@ chmod +x jnotebook
 
 Then launch.
 ```
+# linux / mac os
 ./jnotebook server
+
+# windows
+java -jar jnotebook server
 ```
 
 Go to http://localhost:5002.
@@ -61,9 +65,8 @@ chmod +x jnotebook
 
 #### Windows
 ```
-curl -L https://get.jnotebook.catheu.tech -o jnotebook.bat
-icacls jnotebook.bat /grant Everyone:F
-jnotebook server --help
+curl -Ls https://get.jnotebook.catheu.tech -o jnotebook.jar
+java -jar jnotebook.jar server --help
 ```
 
 #### Optional - Put the binary in your path
