@@ -61,7 +61,6 @@ public class Katex {
     loadKatexScript();
 
     renderToStringCache = builder.build(CacheLoader.from(this::computeRenderToString));
-
   }
 
   private void loadKatexScript() {
@@ -97,7 +96,7 @@ public class Katex {
 
     try {
       return engine.eval(scriptString).toString();
-    } catch (Exception e) { // ScriptException
+    } catch (ScriptException e) {
       LOG.error("Failed running script {}. Input: {}", scriptString, config);
       throw new RuntimeException("Failed running katex script", e);
     }
