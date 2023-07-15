@@ -10,11 +10,6 @@ String s2 = "World";
 String s3 = "!";
 String greeting = s1 + " " + s2 + s3;
 
-// but System.out is always returned.
-
-System.out.println("Hello Alice");
-String s4 = "Hello Bob";
-
 // ## markdown
 // ### is
 // #### supported
