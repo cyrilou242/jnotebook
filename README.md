@@ -1,10 +1,9 @@
-# jNotebook
+# `jnotebook`
 A modern notebook system for java.
-## Live notebooks for Java.   
 
-[Book of jNotebook](https://jnotebook.catheu.tech/) - [Quickstart](#quickstart) - [Roadmap](https://github.com/cyrilou242/jnotebook/discussions/1)
+[Book of jnotebook](https://jnotebook.catheu.tech/) - [Quickstart](#quickstart) - [Roadmap](https://github.com/cyrilou242/jnotebook/discussions/1)
 
-jNotebook interprets Java JShell files and render them as notebook.
+`jnotebook` interprets Java JShell files and render them as notebook.
 
 ![readme_screenshot.png](./assets/readme_screenshot.png)
 
@@ -12,7 +11,7 @@ jNotebook interprets Java JShell files and render them as notebook.
 
 Computational notebooks allow arguing from evidence by mixing prose with executable code. For a good overview of problems users encounter in traditional notebooks like Jupyter, see [I don't like notebooks](https://www.youtube.com/watch?v=7jiPeIFXb6U) and [What’s Wrong with Computational Notebooks? Pain Points, Needs, and Design Opportunities](https://austinhenley.com/pubs/Chattopadhyay2020CHI_NotebookPainpoints.pdf).
 
-Specifically jNotebook wants to address the following problems:
+Specifically `jnotebook` wants to address the following problems:
 
 - notebook editors are less helpful than IDE editors
 - notebook code is hard to reuse
@@ -20,12 +19,12 @@ Specifically jNotebook wants to address the following problems:
 - notebook code is hard to version control
 - the Java ecosystem does not provide a great experience for visualization and document formatting
 
-jNotebook is a notebook library for Java that aims to address these problems by doing less, namely:
+`jnotebook` is a notebook library for Java that aims to address these problems by doing less, namely:
 
 - no editing environment: you can keep the code editor you know and love
-- (almost) no new format: jNotebook interprets JShell files and renders them as notebook.
-    Because jNotebook is not required to run JShell files, you can create JShell scripts interactively with jNotebook, you won't depend on jNotebook in production later.
-- no out-of-order execution: jNotebook always evaluates from top to bottom. jNotebook builds a dependency graph of Java statements and only recomputes the needed changes to keep the feedback loop fast.
+- (almost) no new format: `jnotebook` interprets JShell files and renders them as notebook.
+    Because `jnotebook` is not required to run JShell files, you can create JShell scripts interactively with jNotebook, you won't depend on jNotebook in production later.
+- no out-of-order execution: jNotebook always evaluates from top to bottom. `jnotebook` builds a dependency graph of Java statements and only recomputes the needed changes to keep the feedback loop fast.
 - cells outputs are interpreted as html. This gives access to great visualization libraries and standard html for formatting.
 
 ## Quickstart
