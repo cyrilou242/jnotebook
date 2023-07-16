@@ -1,4 +1,7 @@
 // # 📖 Book of jnotebook
+// `jnotebook` is a modern notebook system for Java
+// `jnotebook` interprets Java JShell files and render them as notebooks.
+
 // ## ⚖️ Rationale
 // Computational notebooks allow arguing from evidence by mixing prose with executable code. For a good overview of problems users encounter in traditional notebooks like Jupyter, see [I don't like notebooks](https://www.youtube.com/watch?v=7jiPeIFXb6U) and [What’s Wrong with Computational Notebooks? Pain Points, Needs, and Design Opportunities](https://austinhenley.com/pubs/Chattopadhyay2020CHI_NotebookPainpoints.pdf).
 //
@@ -36,7 +39,7 @@
 // java -jar jnotebook server
 // ```
 // Then go to <a href="http://localhost:5002" target="_blank">http://localhost:5002</a>.
-// By default, the notebook folder is `notebooks`. If it does not exist, it will be created with an example notebook. 
+// By default, the notebook folder is `notebooks`. If it does not exist, it will be created with an example notebook.
 // `jnotebook` automatically detects when a `.jsh` file in the `notebooks` folder is edited
 // and renders it in the web app.
 
