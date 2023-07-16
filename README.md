@@ -1,5 +1,5 @@
 # jNotebook
-
+A modern notebook system for java.
 ## Live notebooks for Java.   
 
 [Book of jNotebook](https://jnotebook.catheu.tech/) - [Quickstart](#quickstart) - [Roadmap](https://github.com/cyrilou242/jnotebook/discussions/1)
