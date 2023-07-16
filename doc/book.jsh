@@ -1,9 +1,8 @@
-// # 📖 Book of jNotebook
-// *Disclaimer: this documentation is directly copying some content from the [book of Clerk](https://book.clerk.vision/#rationale), a notebook system for Clojure.*
+// # 📖 Book of jnotebook
 // ## ⚖️ Rationale
 // Computational notebooks allow arguing from evidence by mixing prose with executable code. For a good overview of problems users encounter in traditional notebooks like Jupyter, see [I don't like notebooks](https://www.youtube.com/watch?v=7jiPeIFXb6U) and [What’s Wrong with Computational Notebooks? Pain Points, Needs, and Design Opportunities](https://austinhenley.com/pubs/Chattopadhyay2020CHI_NotebookPainpoints.pdf).
 //
-// Specifically jNotebook wants to address the following problems:
+// `jnotebook` tries to address the following problems:
 //
 // * notebook editors are less helpful than IDE editors
 // * notebook code is hard to reuse
@@ -11,11 +10,11 @@
 // * notebook code is hard to version control
 // * the Java ecosystem does not provide a great experience for visualization and document formatting
 //
-// jNotebook is a notebook library for Java that aims to address these problems by doing less, namely:
+// `jnotebook` is a notebook library for Java that address these problems by doing less, namely:
 // * no editing environment: you can keep the code editor you know and love
-// * (almost) no new format: jNotebook interprets [JShell files](https://docs.oracle.com/en/java/javase/20/JShell/scripts.html#GUID-C3A41878-9A9A-4D31-BBDF-909729848A3E) and renders them as notebook.
-//   Because jNotebook is not required to run JShell files, you can create JShell scripts interactively with jNotebook, you won't depend on jNotebook in production later.
-// * no out-of-order execution: jNotebook always evaluates from top to bottom. jNotebook builds a dependency graph of Java statements and only recomputes the needed changes to keep the feedback loop fast.
+// * (almost) no new format: `jnotebook` interprets [JShell files](https://docs.oracle.com/en/java/javase/20/JShell/scripts.html#GUID-C3A41878-9A9A-4D31-BBDF-909729848A3E) and renders them as notebook.
+//   Because `jnotebook` is not required to run JShell files, it does not introduce a dependency if you wish to run the JShell file in production.
+// * no out-of-order execution: `jnotebook` always evaluates from top to bottom. `jnotebook` builds a dependency graph of Java statements and only recomputes the needed changes to keep the feedback loop fast.
 // * cells outputs are interpreted as html. This gives access to great visualization libraries and standard html for formatting.
 
 // ## 🚀 Getting Started
@@ -37,19 +36,36 @@
 // java -jar jnotebook server
 // ```
 // Then go to <a href="http://localhost:5002" target="_blank">http://localhost:5002</a>
+// `jnotebook` automatically detects when a `.jsh` file in the `notebooks` folder is edited
+// and renders it in the web app.
+
+// Once your notebook is ready to be published, render it in a single html file with:
+// ```
+// ./jnotebook render notebooks/my_notebook.jsh my_notebook.html
+// ```
 
 // ### Install
 // See detailed installation instruction for different platforms in the <a href="https://github.com/cyrilou242/jnotebook/#install" target="_blank">github project</a>.
 
-// ### 🤹 jNotebook Demo
-// TODO CYRIL
+// ### 🤹 Demo notebooks
+// *Coming soon.*
 
 // ### 🔌 In an Existing Project
-// TODO CYRIL
+// #### Maven
+// When launched within a maven project, `jnotebook` automatically injects the project
+// dependencies in the classpath. If launched in a submodule, only the submodule
+// dependencies are injected.
 
-// ### Editor integration
-// Make sure your editor is configured to work with JShell files.
-// TODO CYRIL
+// #### Manual
+// Dependencies can be injected manually with the `-cp=<CLASSPATH>` parameter.
+
+// ### IDE integration
+// #### IntelliJ
+// Enable IntelliSense highlighting and code utilities for JShell `.jsh` files:
+// 1. Go to **Settings** | **Editor** | **File Types**
+// 2. Click on **JShell snippet**
+// 3. In **file name patterns**, click **+** (**add**)
+// 4. Add `*.jsh`.
 
 // ## 💡 Editor principle
 // Cells are delimited by blank lines
@@ -68,7 +84,7 @@ String message = s1 + " " + s2 + s3 + s4;
 
 System.out.println("Hello John");
 System.out.println("Hello Jane");
-String s4 = "Hello Alex";
+String s5 = "Hello Alex";
 
 // html in return values is interpreted. (see [custom html](#custom-html) for more html manipulation)
 String sayHello() {
@@ -84,7 +100,7 @@ List.of(1,2,3);
 Map.of("key", "value");
 Thread.sleep(1);
 
-// Mistakes happen! jNotebook tries its best to give helpful error messages.
+// Mistakes happen! `jnotebook` tries its best to give helpful error messages.
 invalidJava();
 //
 // Exceptions happen too!
@@ -119,7 +135,7 @@ throw new RuntimeException("Panic!");
 
 // ## 🔍 Viewers
 
-// jNotebook provides viewers and utils for data, tables, plots, flamegraphs etc.
+// `jnotebook` provides viewers and utils for data, tables, plots, flamegraphs etc.
 // These utils are packaged in a separate dependency `jnotebook-utils`. By default, `jnotebook-utils` is in the classpath.
 // All utils are available as static method in `tech.catheu.jnotebook.Nb`.
 
@@ -129,14 +145,14 @@ import tech.catheu.jnotebook.Nb;
 // *coming soon*
 
 // ## 📊 Plotly
-// jNotebook has built-in support for Plotly's low-ceremony plotting. See Plotly's JavaScript [docs](https://plotly.com/javascript/) for more examples and [options](https://plotly.com/javascript/configuration-options/).
+// `jnotebook` has built-in support for Plotly's low-ceremony plotting. See Plotly's JavaScript [docs](https://plotly.com/javascript/) for more examples and [options](https://plotly.com/javascript/configuration-options/).
 Nb.plotly(List.of(
           Map.of("z", List.of(List.of(1, 2, 3), List.of(3, 2, 1)), "type", "surface")),
           Map.of(),
           Map.of());
 
 // ## 🗺 Vega Lite
-// jNotebook also supports [Vega Lite](https://vega.github.io/vega-lite/).
+// `jnotebook` also supports [Vega Lite](https://vega.github.io/vega-lite/).
 Nb.vega(Map.of(
             "data", Map.of("url", "https://vega.github.io/vega-lite/data/seattle-weather.csv"),
             "mark", "bar",
@@ -204,6 +220,9 @@ Runnable arrayFilling = () -> {
 };
 var profilePath = Nb.profile(arrayFilling);
 Nb.flame(profilePath);
+
+// ## Credits
+// This documentation is directly copying some content from the [book of Clerk](https://book.clerk.vision/#rationale), a notebook system for Clojure.
 
 
 
