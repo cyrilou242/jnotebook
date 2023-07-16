@@ -35,7 +35,8 @@
 // # or
 // java -jar jnotebook server
 // ```
-// Then go to <a href="http://localhost:5002" target="_blank">http://localhost:5002</a>
+// Then go to <a href="http://localhost:5002" target="_blank">http://localhost:5002</a>.
+// By default, the notebook folder is `notebooks`. If it does not exist, it will be created with an example notebook. 
 // `jnotebook` automatically detects when a `.jsh` file in the `notebooks` folder is edited
 // and renders it in the web app.
 
