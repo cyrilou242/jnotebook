@@ -17,6 +17,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import org.apache.commons.io.FileUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -38,11 +39,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.net.ServerSocket;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 import static tech.catheu.jnotebook.server.HtmlTemplateEngine.TEMPLATE_KEY_CONFIG;
 import static tech.catheu.jnotebook.server.HtmlTemplateEngine.TEMPLATE_KEY_RENDERED;
 
@@ -94,49 +98,71 @@ public class NotebookRenderer {
   }
 
   private String optimizeHtml(String html) {
+    // remove scripts that cannot be optimized
     final Document originalDoc = Jsoup.parse(html);
     originalDoc.outputSettings().prettyPrint(false);
     final Elements noOptiScripts = originalDoc.head().select(".jnb-no-opti").remove();
     final String htmlForOpti = originalDoc.outerHtml();
 
-    final byte[] htmlForOptiBytes = htmlForOpti.getBytes(StandardCharsets.UTF_8);
-    // serve the page
-    final int PORT = 8123; // FIXME CYRIL - pick less used port
-    HttpServer server = null;
-    try {
-      server = HttpServer.create(new InetSocketAddress(PORT), 0);
-    } catch (IOException e) {
-      throw new RuntimeException();
-    }
-    server.createContext("/", new HttpHandler() {
-      @Override
-      public void handle(HttpExchange exchange) throws IOException {
-        exchange.getResponseHeaders().set("Content-Type", "text/html");
-        exchange.sendResponseHeaders(200, htmlForOptiBytes.length);
-        OutputStream responseStream = exchange.getResponseBody();
-        responseStream.write(htmlForOptiBytes);
-        responseStream.close();
-      }
-    });
-    server.start();
-
-    // render it with the chrome browser
+    // serve file
+    HtmlFileServer miniServer = getMiniServer(htmlForOpti);
+    miniServer.server.start();
+    // use selenium to render the file with javascript in a browser and parse the content
     final WebDriver webDriver = new ChromeDriver();
-    webDriver.get("http://localhost:" + PORT);
-    String htmlWithOpti = webDriver.getPageSource();
+    webDriver.get(miniServer.url);
+    final String htmlWithOpti = webDriver.getPageSource();
     webDriver.quit();
-    server.stop(0);
+    miniServer.server().stop(0);
 
+    // remove scripts that were optimized
     final Document notebookWithOpti = Jsoup.parse(htmlWithOpti);
     notebookWithOpti.outputSettings().prettyPrint(false);
     // remove the scripts that are not necessary anymore
     notebookWithOpti.head().select(".jnb-opti").remove();
 
-    // put back scripts that can't be optimized
+    // put back scripts that cannot be optimized
     // TODO - filter scripts and stylesheet that are not used
     notebookWithOpti.head().appendChildren(noOptiScripts);
 
-    // Get the modified HTML let's go
     return "<!DOCTYPE html>\n" + notebookWithOpti.outerHtml();
+  }
+
+  @NotNull
+  private NotebookRenderer.HtmlFileServer getMiniServer(final String htmlFile) {
+    final byte[] htmlBytes = htmlFile.getBytes(StandardCharsets.UTF_8);
+    HttpServer server = null;
+    try {
+      final int port = getFreePort();
+      server = HttpServer.create(new InetSocketAddress(port), 0);
+      server.createContext("/", new HttpHandler() {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+          exchange.getResponseHeaders().set("Content-Type", "text/html");
+          exchange.sendResponseHeaders(200, htmlBytes.length);
+          OutputStream responseStream = exchange.getResponseBody();
+          responseStream.write(htmlBytes);
+          responseStream.close();
+        }
+      });
+      HtmlFileServer result = new HtmlFileServer("http://localhost:" + port, server);
+      return result;
+    } catch (Exception e) {
+      LOG.error("Failed to create a server: ", e);
+      throw new RuntimeException("Failed to create a server.", e);
+    }
+  }
+
+  private int getFreePort() {
+    try (ServerSocket serverSocket = new ServerSocket(0)) {
+      checkNotNull(serverSocket,
+                   "Failed to find a free port: failed creating a ServerSocket instance.");
+      checkState(serverSocket.getLocalPort() > 0, "Failed to find a free port.");
+      return serverSocket.getLocalPort();
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to find a free port", e);
+    }
+  }
+
+  private record HtmlFileServer(String url, HttpServer server) {
   }
 }
