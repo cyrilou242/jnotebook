@@ -137,6 +137,6 @@ public class NotebookRenderer {
     notebookWithOpti.head().appendChildren(noOptiScripts);
 
     // Get the modified HTML let's go
-    return notebookWithOpti.outerHtml();
+    return "<!DOCTYPE html>\n" + notebookWithOpti.outerHtml();
   }
 }
