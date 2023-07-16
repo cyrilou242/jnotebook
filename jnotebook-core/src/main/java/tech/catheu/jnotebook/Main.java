@@ -75,10 +75,6 @@ public class Main {
     @CommandLine.Option(names = {"--no-utils"},
                         description = "If passed, disable the injection of jnotebook-utils jar.")
     public boolean noUtils = false;
-
-    @CommandLine.Option(names= {"--html-latex-server-side"},
-                        description = "If passed, latex html is generated server side. Default behavior is to generate in the browser with a javascript library. Recommended for static rendering.")
-    public boolean htmlLatexServerSide = false;
   }
 
 
@@ -115,6 +111,10 @@ public class Main {
 
     @CommandLine.Parameters(index = "1", description = "The output path.")
     public String outputPath;
+
+    @CommandLine.Option(names= {"--no-optimize"},
+                        description = "If passed, skips the html optimization. The optimization uses a headless browser to pre-render some components, and attempts to remove unused libraries.")
+    public boolean noOptimize = false;
   }
 
   protected static class VersionProvider implements CommandLine.IVersionProvider {
