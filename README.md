@@ -48,6 +48,13 @@ java -jar jnotebook server
 
 Go to http://localhost:5002.
 By default, the notebook folder is `notebooks`. If it does not exist, it will be created with an example notebook.
+`jnotebook` automatically detects when a `.jsh` file in the `notebooks` folder is edited
+and renders it in the web app.
+Once your notebook is ready to be published, render it in a single html file with:
+
+```
+./jnotebook render notebooks/my_notebook.jsh my_notebook.html
+```
 
 
 ## Install
