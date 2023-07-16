@@ -30,13 +30,11 @@ import jdk.jshell.SnippetEvent;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tech.catheu.flexmark.ext.math.MathLatexExtension;
 import tech.catheu.jnotebook.Main;
 import tech.catheu.jnotebook.evaluate.Interpreted;
 import tech.catheu.jnotebook.evaluate.InterpretedSnippet;
 import tech.catheu.jnotebook.jshell.EvalResult;
 import tech.catheu.jnotebook.parse.StaticSnippet;
-import tech.catheu.js.katex.Katex;
 
 import java.util.*;
 
@@ -76,12 +74,6 @@ public class Renderer {
     extensions.add(TablesExtension.create());
     extensions.add(FootnoteExtension.create());
     extensions.add(GitLabExtension.create());
-    if (configuration.htmlLatexServerSide) {
-      // disable math in gitlabExtension and let in-server extension do it
-      options.set(GitLabExtension.RENDER_BLOCK_MATH, false);
-      options.set(GitLabExtension.INLINE_MATH_PARSER, false);
-      extensions.add(MathLatexExtension.create(Katex.newInstance()));
-    }
     options.set(Parser.EXTENSIONS, extensions);
     // convert soft-breaks to hard breaks
     options.set(HtmlRenderer.SOFT_BREAK, "<br />\n");

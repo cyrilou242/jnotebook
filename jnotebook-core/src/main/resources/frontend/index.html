@@ -19,7 +19,7 @@
     <meta charset="UTF-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Notebook</title>
+    <title>jnotebook</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📓</text></svg>">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" integrity="sha384-GvrOXuhMATgEsSwCs4smul74iXGOixntILdUW9XmUC6+HX0sLNAK3q71HotJqlAn" crossorigin="anonymous">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
@@ -27,9 +27,20 @@
           href="https://cdn.jsdelivr.net/npm/d3-flame-graph@4.1.3/dist/d3-flamegraph.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.18.2/tocbot.css">
     <script th:inline="javascript">
+        function initTocBot() {
+            tocbot.init({
+                // Where to render the table of contents.
+                tocSelector: '#toc',
+                // Where to grab the headings to build the table of contents.
+                contentSelector: '#notebook',
+                // Which headings to grab inside of the contentSelector element.
+                headingSelector: 'h1, h2, h3',
+                // For headings inside relative or absolute positioned containers within content.
+                hasInnerContainers: true,
+            })
+        }
+
         function renderLatex() {
-            /*[# th:unless="${jnb_config.htmlLatexServerSide}"]*/
-            // render latex
             var mathElems = document.getElementsByClassName("katex");
             var elems = [];
             for (const i in mathElems) {
@@ -38,7 +49,6 @@
             elems.forEach(elem => {
                 katex.render(elem.textContent, elem, {throwOnError: false, displayMode: elem.nodeName !== 'SPAN',});
             });
-            /*[/]*/
         }
 
         function renderMermaid() {
@@ -79,8 +89,8 @@
         }
 
     </script>
-    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
-    <script>tailwind.config = {
+    <script class="jnb-opti" src="https://cdn.tailwindcss.com?plugins=typography"></script>
+    <script class="jnb-opti" >tailwind.config = {
         darkMode: "class",
         content: ["./tw/viewer.js", "./tw/**/*.edn"],
         safelist: ['dark'],
@@ -97,7 +107,7 @@
         },
         plugins: [],
     }</script>
-    <style type="text/tailwindcss">@tailwind base;
+    <style class="jnb-opti" type="text/tailwindcss">@tailwind base;
     @tailwind components;
     @tailwind utilities;
 
@@ -295,6 +305,11 @@
     .task-list-item + .task-list-item,
     .viewer-markdown ul ul {
         @apply mt-1 mb-0;
+    }
+
+    /* TOC related */
+    .toc-offset {
+        @apply ml-52;
     }
 
     /* compact TOC */
@@ -642,31 +657,23 @@
 
     </style>
 
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.1/dist/cdn.min.js"></script>
-    <script defer src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js", onload="renderCodeColor()"></script>
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.18.2/tocbot.min.js", onload="tocbot.init({
-            // Where to render the table of contents.
-            tocSelector: '#toc',
-            // Where to grab the headings to build the table of contents.
-            contentSelector: '#notebook',
-            // Which headings to grab inside of the contentSelector element.
-            headingSelector: 'h1, h2, h3',
-            // For headings inside relative or absolute positioned containers within content.
-            hasInnerContainers: true,
-        });"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/vega@5"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/vega-embed@6" onload="renderVega()"></script>
-    <script defer type="text/javascript" src="https://d3js.org/d3.v7.js"></script>
-    <script defer type="text/javascript"
+    <script defer class="jnb-no-opti" src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.1/dist/cdn.min.js"></script>
+    <script async class="jnb-opti" defer src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js", onload="whenDomLoaded(renderCodeColor)"></script>
+    <script async class="jnb-opti" defer src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.18.2/tocbot.min.js", onload="whenDomLoaded(initTocBot);"></script>
+    <!--/* vega-embed depends on the 2 previous scripts */-->
+    <script defer class="jnb-no-opti" src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+    <script defer class="jnb-no-opti" src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+    <script defer class="jnb-no-opti" src="https://cdn.jsdelivr.net/npm/vega-embed@6" onload="renderVega()"></script>
+    <!--/* d3-flamegraph depends on d3js*/-->
+    <script defer class="jnb-no-opti" type="text/javascript" src="https://d3js.org/d3.v7.js"></script>
+    <script defer class="jnb-no-opti" type="text/javascript"
             src="https://cdn.jsdelivr.net/npm/d3-flame-graph@4.1.3/dist/d3-flamegraph.min.js" onload="renderFlamegraphs()"></script>
-
-    <script async th:unless="${jnb_config.htmlLatexServerSide}" src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"
+    <script async class="jnb-opti" src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"
             integrity="sha384-cpW21h6RZv/phavutF+AuVYrr+dA8xD9zs6FwLpaCct6O9ctzYFfFr4dgmgccOTx" crossorigin="anonymous"
             onload="whenDomLoaded(renderLatex);"></script>
-    <script async src="https://cdn.jsdelivr.net/npm/mermaid@10.2.4/dist/mermaid.min.js"
+    <script async class="jnb-opti" src="https://cdn.jsdelivr.net/npm/mermaid@10.2.4/dist/mermaid.min.js"
             onload="whenDomLoaded(renderMermaid);"></script>
-    <script async src="https://cdn.plot.ly/plotly-latest.min.js" onload="whenDomLoaded(renderPlotly)"></script>
+    <script async class="jnb-no-opti" src="https://cdn.plot.ly/plotly-latest.min.js" onload="whenDomLoaded(renderPlotly)"></script>
 </head>
 <body>
 <div x-data="{ tocOpen: window.innerWidth >= 768 ? true : false, notebookStatus: 'Connected'}" class="flex">
@@ -678,7 +685,7 @@
         </svg>
         <span class="tracking-wider ml-1 font-bold text-[12px]">ToC</span>
     </button>
-    <div th:if="${jnb_interactive}" x-bind:class="tocOpen ? 'ml-52' : ''" class="status-header">
+    <div th:if="${jnb_interactive}" x-bind:class="tocOpen ? 'toc-offset' : ''" class="status-header">
         <span id="status-message" data-status="" class="status-info"></span>
     </div>
     <aside x-show="tocOpen" class="h-screen z-20 flex-shrink-0 fixed bg-slate-100 font-sans border-r border-t w-52">
@@ -694,7 +701,7 @@
         </div>
         <div id="toc"></div>
     </aside>
-    <div x-bind:class="tocOpen ? 'ml-52' : ''" class="flex-auto h-screen overflow-y-auto scroll-container">
+    <div x-bind:class="tocOpen ? 'toc-offset' : ''" class="flex-auto h-screen overflow-y-auto scroll-container">
         <div th:if="${jnb_rendered}" th:utext="${jnb_rendered}" id="notebook" class="flex flex-col items-center viewer-notebook flex-auto">
         </div>
         <div th:unless="${jnb_rendered}" id="notebook" class="flex flex-col items-center viewer-notebook flex-auto">
