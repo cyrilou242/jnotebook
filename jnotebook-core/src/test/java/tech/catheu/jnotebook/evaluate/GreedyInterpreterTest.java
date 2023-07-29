@@ -108,7 +108,7 @@ public class GreedyInterpreterTest {
             staticParser.snippetsOf(filePath, edit1.lines().toList());
     final Interpreted out1 = interpreter.interpret(staticParsing1);
     assertThat(out1.interpretedSnippets()).hasSize(3);
-    assertThat(firstDiagnosticMessage(out1.interpretedSnippets().get(0))).contains("cannot find symbol");
+    assertThat(firstUnresolvedDepsMessage(out1.interpretedSnippets().get(0))).contains("variable text1");
     assertThat(firstDiagnostics(out1.interpretedSnippets().get(1))).isEmpty();
     // the function can run because text1 is defined at the time of the call
     assertThat(firstDiagnostics(out1.interpretedSnippets().get(1))).isEmpty();
@@ -130,6 +130,16 @@ public class GreedyInterpreterTest {
     return firstDiagnostics(interpretedSnippet)
             .get(0)
             .getMessage(Locale.ENGLISH);
+  }
+
+  private static List<String> firstUnresolvedDeps(InterpretedSnippet interpretedSnippet) {
+    return interpretedSnippet.evalResult()
+                             .unresolvedDeps()
+                             .get(0);
+  }
+
+  private static String firstUnresolvedDepsMessage(InterpretedSnippet interpretedSnippet) {
+    return firstUnresolvedDeps(interpretedSnippet).get(0);
   }
 
   // todo add recursive function
