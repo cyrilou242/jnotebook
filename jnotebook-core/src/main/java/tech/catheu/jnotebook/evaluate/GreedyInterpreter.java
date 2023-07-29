@@ -71,14 +71,14 @@ public class GreedyInterpreter implements Interpreter {
     @Override
     public <T> void visitCtMethod(CtMethod<T> m) {
       if (m.getSimpleName().startsWith(SYNTHETIC_METHOD_NAME)) {
-        m.setSimpleName(SYNTHETIC_METHOD_NAME);
+        m.setSimpleName(SYNTHETIC_METHOD_NAME); // FIXME causes issues
       }
       super.visitCtMethod(m);
     }
   };
 
   final Map<Path, PowerJShell> fileToShell = new HashMap<>();
-  final Map<Path, Map<String, EvalResult>> fileToResultCache = new HashMap<>();
+  final Map<Path, State> fileToState = new HashMap<>();
   private final ShellProvider shellProvider;
 
   public GreedyInterpreter(final ShellProvider shellProvider) {
@@ -114,9 +114,9 @@ public class GreedyInterpreter implements Interpreter {
   private Interpreted internalInterpret(StaticParsing staticParsing) {
     final PowerJShell shell =
             fileToShell.computeIfAbsent(staticParsing.path(), this::newShell);
-    final Map<String, EvalResult> fingerprintToEvalResultCache = fileToResultCache.computeIfAbsent(
+    final State state = fileToState.computeIfAbsent(
             staticParsing.path(),
-            ignored -> new HashMap<>());
+            ignored -> new State(new HashMap<>(), new HashMap<>()));
 
     final SourceClass source =
             buildSourceClass(staticParsing, shell.sourceCodeAnalysis());
@@ -126,14 +126,16 @@ public class GreedyInterpreter implements Interpreter {
     // resolve diff and dependencies
     final BiMap<String, Integer> fingerprintToSnippetIdx = HashBiMap.create();
     final Set<Integer> snippetsIdxToRun = new HashSet<>();
+    final HashMap<String, String> newSimpleNameToFingerprint = new HashMap<>();
     for (final String simpleName : depGraph.dependencies.nodes()) {
-      final CtTypeMember l = depGraph.simpleNameToMember.get(simpleName);
-      final Integer snippetId = Integer.valueOf(l.getComments().get(0).getContent());
-      l.accept(FINGERPRINT_PREPARATOR);
+      final CtTypeMember ctMember = depGraph.simpleNameToMember.get(simpleName);
+      final Integer snippetId = Integer.valueOf(ctMember.getComments().get(0).getContent());
+      ctMember.accept(FINGERPRINT_PREPARATOR);
       final Set<String> predecessors = depGraph.dependencies.predecessors(simpleName);
-      final String fingerprint = l.toString() + predecessors.hashCode();
+      final String fingerprint = ctMember.toString() + predecessors.hashCode();
       fingerprintToSnippetIdx.put(fingerprint, snippetId);
-      if (!fingerprintToEvalResultCache.containsKey(fingerprint)) {
+      newSimpleNameToFingerprint.put(simpleName, fingerprint);
+      if (!state.fingerprintToEvalResult.containsKey(fingerprint)) {
         snippetsIdxToRun.add(snippetId);
         addAllDependencies(snippetsIdxToRun,
                            depGraph,
@@ -144,18 +146,24 @@ public class GreedyInterpreter implements Interpreter {
     }
 
     // clean outdated jshell snippets
-    final List<String> toRemove = fingerprintToEvalResultCache.keySet()
+    final List<String> toRemove = new ArrayList<>(state.fingerprintToEvalResult.keySet()
                                              .stream()
                                              .filter(fingerprint -> !fingerprintToSnippetIdx.containsKey(fingerprint))
-                                             .toList();
+                                             .toList());
+    depGraph.forwardReferences.forEach(f -> toRemove.add(state.simpleNameToFingerprint.get(f)));
     for (final String fingerprint : toRemove) {
-      for (SnippetEvent s : fingerprintToEvalResultCache.get(fingerprint).events()) {
-        // fixme cyril ? this uses jshell dependency mechanism but does not delete according to computed dependencies
-        LOG.debug("Dropping outdated snippet: {}", s.snippet().source().trim());
-        shell.drop(s.snippet());
+      final EvalResult evalResult = state.fingerprintToEvalResult.get(fingerprint);
+      if (evalResult != null) {
+        for (SnippetEvent s : evalResult.events()) {
+          // fixme cyril ? this uses jshell dependency mechanism but does not delete according to computed dependencies
+          LOG.debug("Dropping outdated snippet: {}", s.snippet().source().trim());
+          shell.drop(s.snippet());
+        }
+        state.fingerprintToEvalResult.remove(fingerprint);
       }
-      fingerprintToEvalResultCache.remove(fingerprint);
     }
+    state.simpleNameToFingerprint.clear(); // not the cleanest way to implement this
+    state.simpleNameToFingerprint.putAll(newSimpleNameToFingerprint);
 
     // build result snippets
     final List<InterpretedSnippet> interpretedSnippets = new ArrayList<>();
@@ -171,12 +179,12 @@ public class GreedyInterpreter implements Interpreter {
         } else if (snippetsIdxToRun.contains(i)) {
           LOG.debug("Evaluating: " + s.completionInfo().source().strip());
           final EvalResult res = shell.eval(s.completionInfo().source());
-          fingerprintToEvalResultCache.put(fingerprint, res);
+          state.fingerprintToEvalResult.put(fingerprint, res);
           interpretedSnippets.add(new InterpretedSnippet(s, res));
         } else {
           // use cached result
           LOG.debug("Using cache for: " + s.completionInfo().source().strip());
-          final EvalResult res = fingerprintToEvalResultCache.get(fingerprint);
+          final EvalResult res = state.fingerprintToEvalResult.get(fingerprint);
           interpretedSnippets.add(new InterpretedSnippet(s, res));
         }
       } else {
@@ -431,4 +439,6 @@ public class GreedyInterpreter implements Interpreter {
   private record SourceClass(String classCode,
                              Map<Integer, Snippet> staticSnippetIdxToSnippet) {
   }
+
+  private record State(Map<String, EvalResult> fingerprintToEvalResult, Map<String, String> simpleNameToFingerprint) {}
 }
