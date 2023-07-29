@@ -38,7 +38,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.support.compiler.VirtualFile;
 import tech.catheu.jnotebook.ExecutionStatus;
-import tech.catheu.jnotebook.Nb;
 import tech.catheu.jnotebook.jshell.EvalResult;
 import tech.catheu.jnotebook.jshell.PowerJShell;
 import tech.catheu.jnotebook.jshell.ShellProvider;
@@ -210,18 +209,6 @@ public class GreedyInterpreter implements Interpreter {
                          depGraph,
                          depGraph.dependencies.successors(s));
     }
-  }
-
-  public static void main(String[] args) {
-    Nb.vega(Map.of("data",
-                   Map.of("url", "data/seattle-weather.csv"),
-                   "mark",
-                   "bar",
-                   "encoding",
-                   Map.of("x",
-                          Map.of("timeUnit", "month", "field", "date", "type", "ordinal"),
-                          "y",
-                          Map.of("aggregate", "mean", "field", "precipitation"))));
   }
 
   private SourceClass buildSourceClass(final StaticParsing staticParsing,
