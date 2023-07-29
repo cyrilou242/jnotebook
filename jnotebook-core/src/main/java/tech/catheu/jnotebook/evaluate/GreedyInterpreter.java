@@ -47,6 +47,7 @@ import tech.catheu.jnotebook.parse.StaticSnippet;
 
 import java.nio.file.Path;
 import java.util.*;
+import java.util.function.BiConsumer;
 
 import static jdk.jshell.Snippet.Kind.*;
 
@@ -113,7 +114,7 @@ public class GreedyInterpreter implements Interpreter {
   private Interpreted internalInterpret(StaticParsing staticParsing) {
     final PowerJShell shell =
             fileToShell.computeIfAbsent(staticParsing.path(), this::newShell);
-    final Map<String, EvalResult> resultCache = fileToResultCache.computeIfAbsent(
+    final Map<String, EvalResult> fingerprintToEvalResultCache = fileToResultCache.computeIfAbsent(
             staticParsing.path(),
             ignored -> new HashMap<>());
 
@@ -125,37 +126,39 @@ public class GreedyInterpreter implements Interpreter {
     // resolve diff and dependencies
     final BiMap<String, Integer> fingerprintToSnippetIdx = HashBiMap.create();
     final Set<Integer> snippetsIdxToRun = new HashSet<>();
-    for (final String node : depGraph.dependencies.nodes()) {
-      final CtTypeMember l = depGraph.graphKeyToMember.get(node);
+    for (final String simpleName : depGraph.dependencies.nodes()) {
+      final CtTypeMember l = depGraph.simpleNameToMember.get(simpleName);
       final Integer snippetId = Integer.valueOf(l.getComments().get(0).getContent());
       l.accept(FINGERPRINT_PREPARATOR);
-      final String fingerprint = l.toString();
+      final Set<String> predecessors = depGraph.dependencies.predecessors(simpleName);
+      final String fingerprint = l.toString() + predecessors.hashCode();
       fingerprintToSnippetIdx.put(fingerprint, snippetId);
-      if (!resultCache.containsKey(fingerprint)) {
+      if (!fingerprintToEvalResultCache.containsKey(fingerprint)) {
         snippetsIdxToRun.add(snippetId);
         addAllDependencies(snippetsIdxToRun,
                            depGraph,
-                           depGraph.dependencies.predecessors(node));
+                           depGraph.dependencies.successors(simpleName));
+      } else if (depGraph.forwardReferences.contains(simpleName)) {
+        snippetsIdxToRun.add(snippetId);
       }
     }
 
     // clean outdated jshell snippets
-    final List<String> toRemove = resultCache.keySet()
+    final List<String> toRemove = fingerprintToEvalResultCache.keySet()
                                              .stream()
-                                             .filter(fingerprint -> !fingerprintToSnippetIdx.containsKey(
-                                                     fingerprint))
+                                             .filter(fingerprint -> !fingerprintToSnippetIdx.containsKey(fingerprint))
                                              .toList();
     for (final String fingerprint : toRemove) {
-      for (SnippetEvent s : resultCache.get(fingerprint).events()) {
+      for (SnippetEvent s : fingerprintToEvalResultCache.get(fingerprint).events()) {
         // fixme cyril ? this uses jshell dependency mechanism but does not delete according to computed dependencies
         LOG.debug("Dropping outdated snippet: {}", s.snippet().source().trim());
         shell.drop(s.snippet());
       }
-      resultCache.remove(fingerprint);
+      fingerprintToEvalResultCache.remove(fingerprint);
     }
 
     // build result snippets
-    final List<InterpretedSnippet> interpretedSnippets1 = new ArrayList<>();
+    final List<InterpretedSnippet> interpretedSnippets = new ArrayList<>();
     for (int i = 0; i < staticParsing.snippets().size(); i++) {
       final StaticSnippet s = staticParsing.snippets().get(i);
       final String fingerprint = fingerprintToSnippetIdx.inverse().get(i);
@@ -164,23 +167,22 @@ public class GreedyInterpreter implements Interpreter {
           // imports are not fingerprinted and always re-evaluated for the moment
           LOG.debug("Evaluating: " + s.completionInfo().source().strip());
           final EvalResult res = shell.eval(s.completionInfo().source());
-          interpretedSnippets1.add(new InterpretedSnippet(s, res));
+          interpretedSnippets.add(new InterpretedSnippet(s, res));
         } else if (snippetsIdxToRun.contains(i)) {
           LOG.debug("Evaluating: " + s.completionInfo().source().strip());
           final EvalResult res = shell.eval(s.completionInfo().source());
-          resultCache.put(fingerprint, res);
-          interpretedSnippets1.add(new InterpretedSnippet(s, res));
+          fingerprintToEvalResultCache.put(fingerprint, res);
+          interpretedSnippets.add(new InterpretedSnippet(s, res));
         } else {
           // use cached result
           LOG.debug("Using cache for: " + s.completionInfo().source().strip());
-          final EvalResult res = resultCache.get(fingerprint);
-          interpretedSnippets1.add(new InterpretedSnippet(s, res));
+          final EvalResult res = fingerprintToEvalResultCache.get(fingerprint);
+          interpretedSnippets.add(new InterpretedSnippet(s, res));
         }
       } else {
-        interpretedSnippets1.add(new InterpretedSnippet(s, null));
+        interpretedSnippets.add(new InterpretedSnippet(s, null));
       }
     }
-    final List<InterpretedSnippet> interpretedSnippets = interpretedSnippets1;
 
     return new Interpreted(staticParsing.path(),
                            staticParsing.lines(),
@@ -188,16 +190,17 @@ public class GreedyInterpreter implements Interpreter {
                            ExecutionStatus.ok());
   }
 
-  private void addAllDependencies(Set<Integer> snippetsIdxToRerun,
-                                  DependencyGraph depGraph, Set<String> predecessors) {
-    for (final String p : predecessors) {
-      final CtTypeMember ctTypeMember = depGraph.graphKeyToMember().get(p);
+  private void addAllDependencies(final Set<Integer> snippetsIdxToRerun,
+                                  final DependencyGraph depGraph,
+                                  final Set<String> successors) {
+    for (final String s : successors) {
+      final CtTypeMember ctTypeMember = depGraph.simpleNameToMember().get(s);
       final Integer snippetId =
               Integer.valueOf(ctTypeMember.getComments().get(0).getContent());
       snippetsIdxToRerun.add(snippetId);
       addAllDependencies(snippetsIdxToRerun,
                          depGraph,
-                         depGraph.dependencies.predecessors(p));
+                         depGraph.dependencies.successors(s));
     }
   }
 
@@ -227,13 +230,12 @@ public class GreedyInterpreter implements Interpreter {
         } else {
           // too many cases that are hard to recover from - for the moment surface the error to the top
           throw new IllegalStateException(String.format(
-                  "Error trying to interpret JAVA code in lines [%s, %s]:\n%s\n" +
-                  "Code completeness: %s",
-                  e.start() + 1, // index from 1 for humans
+                  "Error trying to interpret JAVA code in lines [%s, %s]:\n%s\n" + "Code completeness: %s",
+                  e.start() + 1,
+                  // index from 1 for humans
                   e.end(),
                   e.completionInfo().remaining(),
-                  e.completionInfo().completeness()
-                  ));
+                  e.completionInfo().completeness()));
         }
         staticSnippetIdxToSnippet.put(i, preAnalysis);
         switch (preAnalysis.kind()) {
@@ -296,9 +298,19 @@ public class GreedyInterpreter implements Interpreter {
 
   private static DependencyGraph buildDependenciesGraph(CtClass<?> res) {
     final List<CtTypeMember> typeMembers = res.getTypeMembers();
-    MutableGraph<String> dependencies =
+    final MutableGraph<String> dependencies =
             GraphBuilder.directed().allowsSelfLoops(false).build();
     final Map<String, CtTypeMember> simpleNameToMember = new HashMap<>();
+    final Set<String> forwardReferences = new HashSet<>();
+    // order means top to bottom order
+    final BiConsumer<String, String> orderSafePutEdge = (member, reference) -> {
+      if (dependencies.nodes().contains(reference)) {
+        dependencies.putEdge(reference, member);
+      } else {
+        // forward reference will make the code break with undefined errors
+        forwardReferences.add(reference);
+      }
+    };
     for (int i = 1; i < typeMembers.size(); i++) {
       final CtTypeMember member = typeMembers.get(i);
       dependencies.addNode(member.getSimpleName());
@@ -307,9 +319,9 @@ public class GreedyInterpreter implements Interpreter {
         @Override
         public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
           if (reference.getDeclaringType() != null) {
-            final var declaringType = reference.getDeclaringType();
+            final CtTypeReference<?> declaringType = reference.getDeclaringType();
             if (declaringType.getSimpleName().equals(SYNTHETIC_CLASS_NAME)) {
-              dependencies.putEdge(member.getSimpleName(), reference.getSimpleName());
+              orderSafePutEdge.accept(member.getSimpleName(), reference.getSimpleName());
             }
           }
         }
@@ -317,9 +329,9 @@ public class GreedyInterpreter implements Interpreter {
         @Override
         public <T> void visitCtExecutableReference(CtExecutableReference<T> reference) {
           if (reference.getDeclaringType() != null) {
-            final var declaringType = reference.getDeclaringType();
+            final CtTypeReference<?> declaringType = reference.getDeclaringType();
             if (declaringType.getSimpleName().equals(SYNTHETIC_CLASS_NAME)) {
-              dependencies.putEdge(member.getSimpleName(), reference.getSimpleName());
+              orderSafePutEdge.accept(member.getSimpleName(), reference.getSimpleName());
             }
           }
         }
@@ -327,9 +339,9 @@ public class GreedyInterpreter implements Interpreter {
         @Override
         public <T> void visitCtArrayTypeReference(CtArrayTypeReference<T> reference) {
           if (reference.getDeclaringType() != null) {
-            final var declaringType = reference.getDeclaringType();
+            final CtTypeReference<?> declaringType = reference.getDeclaringType();
             if (declaringType.getSimpleName().equals(SYNTHETIC_CLASS_NAME)) {
-              dependencies.putEdge(member.getSimpleName(), reference.getSimpleName());
+              orderSafePutEdge.accept(member.getSimpleName(), reference.getSimpleName());
             }
           }
         }
@@ -337,9 +349,9 @@ public class GreedyInterpreter implements Interpreter {
         @Override
         public <T> void visitCtTypeReference(CtTypeReference<T> reference) {
           if (reference.getDeclaringType() != null) {
-            final var declaringType = reference.getDeclaringType();
+            final CtTypeReference<?> declaringType = reference.getDeclaringType();
             if (declaringType.getSimpleName().equals(SYNTHETIC_CLASS_NAME)) {
-              dependencies.putEdge(member.getSimpleName(), reference.getSimpleName());
+              orderSafePutEdge.accept(member.getSimpleName(), reference.getSimpleName());
             }
           }
         }
@@ -348,7 +360,7 @@ public class GreedyInterpreter implements Interpreter {
       });
     }
 
-    return new DependencyGraph(dependencies, simpleNameToMember);
+    return new DependencyGraph(dependencies, simpleNameToMember, forwardReferences);
   }
 
   private PowerJShell newShell(final Path path) {
@@ -369,9 +381,11 @@ public class GreedyInterpreter implements Interpreter {
     if (SystemUtils.isJavaVersionAtLeast(JavaVersion.JAVA_17)) {
       return 17;
     } else if (SystemUtils.isJavaVersionAtLeast(JavaVersion.JAVA_16)) {
+      LOG.warn("Running on an unsupported version of Java: " + JavaVersion.JAVA_16);
       return 16;
     }
-    return 11;
+    throw new RuntimeException(
+            "Running on an unsupported version of Java. Jnotebook requires Java >=17.");
   }
 
   private static StringBuilder methodPrefix(final int i) {
@@ -410,7 +424,8 @@ public class GreedyInterpreter implements Interpreter {
   }
 
   private record DependencyGraph(MutableGraph<String> dependencies,
-                                 Map<String, CtTypeMember> graphKeyToMember) {
+                                 Map<String, CtTypeMember> simpleNameToMember,
+                                 Set<String> forwardReferences) {
   }
 
   private record SourceClass(String classCode,
