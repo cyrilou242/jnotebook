@@ -13,16 +13,16 @@
  */
 package tech.catheu.jnotebook.parse;
 
+import io.methvin.watcher.DirectoryChangeEvent;
+import jdk.jshell.SourceCodeAnalysis.Completeness;
+import jdk.jshell.SourceCodeAnalysis.CompletionInfo;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tech.catheu.jnotebook.ExecutionStatus;
 import tech.catheu.jnotebook.jshell.PowerJShell;
 import tech.catheu.jnotebook.jshell.ShellProvider;
 import tech.catheu.jnotebook.parse.StaticSnippet.Type;
-import io.methvin.watcher.DirectoryChangeEvent;
-import io.reactivex.rxjava3.annotations.NonNull;
-import jdk.jshell.SourceCodeAnalysis.Completeness;
-import jdk.jshell.SourceCodeAnalysis.CompletionInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -31,10 +31,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static tech.catheu.jnotebook.parse.StaticSnippet.Type.COMMENT;
-import static tech.catheu.jnotebook.parse.StaticSnippet.Type.JAVA;
 import static io.methvin.watcher.DirectoryChangeEvent.EventType.*;
 import static jdk.jshell.SourceCodeAnalysis.Completeness.EMPTY;
+import static tech.catheu.jnotebook.parse.StaticSnippet.Type.COMMENT;
+import static tech.catheu.jnotebook.parse.StaticSnippet.Type.JAVA;
 
 public class StaticParser {
 
@@ -80,13 +80,17 @@ public class StaticParser {
 
   public StaticParsing snippetsOf(final Path filePath) throws IOException {
     final List<String> lines = Files.readAllLines(filePath);
+    return snippetsOf(filePath, lines);
+  }
+
+  @NonNull
+  public StaticParsing snippetsOf(@NonNull Path filePath, @NonNull List<String> lines) {
     if (lines.isEmpty()) {
       return new StaticParsing(filePath,
                                Collections.emptyList(),
                                Collections.emptyList(),
                                ExecutionStatus.ok());
     }
-
     List<StaticSnippet> notebookSnippets = new ArrayList<>();
     int lineIdx = 0;
     StringBuilder currentSnippet = new StringBuilder();

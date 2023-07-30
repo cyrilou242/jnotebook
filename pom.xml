@@ -43,9 +43,15 @@
 
         <sonatype.url>https://s01.oss.sonatype.org</sonatype.url>
 
+        <!-- plugins -->
+        <maven-surefire-plugin.version>3.1.2</maven-surefire-plugin.version>
+
+        <!-- dependencies -->
         <undertow.version>2.3.5.Final</undertow.version>
         <antlr.version>4.12.0</antlr.version>
         <flexmark.version>0.64.8</flexmark.version>
+        <junit.jupiter.version>5.9.3</junit.jupiter.version>
+        <assertj.version>3.24.2</assertj.version>
     </properties>
 
     <!-- used by maven-release-plugin -->
@@ -205,6 +211,26 @@
                 <version>1.2.0</version>
             </dependency>
 
+            <!-- test dependencies -->
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>${junit.jupiter.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-params</artifactId>
+                <version>${junit.jupiter.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>${assertj.version}</version>
+                <scope>test</scope>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -228,6 +254,10 @@
 
     <build>
         <plugins>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven-surefire-plugin.version}</version>
+            </plugin>
             <plugin>
                 <groupId>com.mycila</groupId>
                 <artifactId>license-maven-plugin</artifactId>
