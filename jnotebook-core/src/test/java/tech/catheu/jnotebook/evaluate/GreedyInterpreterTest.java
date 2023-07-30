@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class GreedyInterpreterTest {
 
   private static final ShellProvider shellProvider = getTestShellProvider();
-  private final StaticParser staticParser = new StaticParser(shellProvider);
+  private static final StaticParser staticParser = new StaticParser(shellProvider);
 
   // TODO basic assert on error case
   // comments, all kind of ops class, record, loops, if else statement
@@ -397,7 +397,7 @@ public class GreedyInterpreterTest {
   @Test
   public void testRecursiveFunction() {
     final GreedyInterpreter interpreter = new GreedyInterpreter(shellProvider);
-    final Path filePath = Paths.get("testMethodStateBehavesLikeJShellWhenVariableIsUndeclared");
+    final Path filePath = Paths.get("testRecursiveFunction");
 
     final String edit1 = """
             static int recursive(int n) {
@@ -441,7 +441,7 @@ public class GreedyInterpreterTest {
   @Test
   public void testMutationRequiresRerunUpStream() {
     final GreedyInterpreter interpreter = new GreedyInterpreter(shellProvider);
-    final Path filePath = Paths.get("testDuplicatedNonReturningCalls");
+    final Path filePath = Paths.get("testMutationRequiresRerunUpStream");
     final String edit1 = """
             Map<String, String> m = new HashMap<>();
             m.put("key", "value");

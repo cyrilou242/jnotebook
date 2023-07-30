@@ -28,6 +28,7 @@ import java.util.List;
 
 import static org.apache.commons.lang3.SystemUtils.IS_OS_WINDOWS;
 import static tech.catheu.jnotebook.Main.SharedConfiguration.AUTO_CLASSPATH;
+import static tech.catheu.jnotebook.utils.JavaUtils.optional;
 
 public class ShellProvider {
 
@@ -59,10 +60,7 @@ public class ShellProvider {
   }
 
   public PowerJShell getShell() {
-    if (!preparedShells.isEmpty()) {
-      return preparedShells.pop();
-    }
-    return newShell();
+    return optional(preparedShells.poll()).orElse(this.newShell());
   }
 
   private PowerJShell newShell() {
