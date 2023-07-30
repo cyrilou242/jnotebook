@@ -76,7 +76,6 @@ public class GreedyInterpreter implements Interpreter {
     }
   };
 
-  final Map<Path, PowerJShell> fileToShell = new HashMap<>();
   final Map<Path, State> fileToState = new HashMap<>();
   private final ShellProvider shellProvider;
 
@@ -110,15 +109,13 @@ public class GreedyInterpreter implements Interpreter {
   }
 
   @NotNull
-  private Interpreted internalInterpret(StaticParsing staticParsing) {
-    final PowerJShell shell =
-            fileToShell.computeIfAbsent(staticParsing.path(), this::newShell);
+  private Interpreted internalInterpret(final StaticParsing staticParsing) {
     final State state = fileToState.computeIfAbsent(
             staticParsing.path(),
-            ignored -> new State(new HashMap<>(), new HashMap<>()));
+            path -> new State(new HashMap<>(), new HashMap<>(), newShell(path)));
 
     final SourceClass source =
-            buildSourceClass(staticParsing, shell.sourceCodeAnalysis());
+            buildSourceClass(staticParsing, state.shell.sourceCodeAnalysis());
     final CtClass<?> ast = parseClassCode(source.classCode());
     final DependencyGraph depGraph = buildDependenciesGraph(ast);
 
@@ -165,7 +162,7 @@ public class GreedyInterpreter implements Interpreter {
         for (SnippetEvent s : evalResult.events()) {
           // fixme cyril ? this uses jshell dependency mechanism but does not delete according to computed dependencies
           LOG.debug("Dropping outdated snippet: {}", s.snippet().source().trim());
-          shell.drop(s.snippet());
+          state.shell.drop(s.snippet());
         }
         state.fingerprintToEvalResult.remove(fingerprint);
       }
@@ -182,11 +179,11 @@ public class GreedyInterpreter implements Interpreter {
         if (fingerprint == null) {
           // imports are not fingerprinted and always re-evaluated for the moment
           LOG.debug("Evaluating: " + s.completionInfo().source().strip());
-          final EvalResult res = shell.eval(s.completionInfo().source());
+          final EvalResult res = state.shell.eval(s.completionInfo().source());
           interpretedSnippets.add(new InterpretedSnippet(s, res));
         } else if (snippetsIdxToRun.contains(i)) {
           LOG.debug("Evaluating: " + s.completionInfo().source().strip());
-          final EvalResult res = shell.eval(s.completionInfo().source());
+          final EvalResult res = state.shell.eval(s.completionInfo().source());
           state.fingerprintToEvalResult.put(fingerprint, res);
           interpretedSnippets.add(new InterpretedSnippet(s, res));
         } else {
@@ -421,12 +418,12 @@ public class GreedyInterpreter implements Interpreter {
 
   @Override
   public void stop() {
-    for (Path path : fileToShell.keySet()) {
-      final var sh = fileToShell.get(path);
+    for (final Path path : fileToState.keySet()) {
+      final PowerJShell sh = fileToState.get(path).shell;
       if (sh != null) {
         sh.close();
       }
-      fileToShell.remove(path);
+      fileToState.remove(path);
     }
   }
 
@@ -439,5 +436,5 @@ public class GreedyInterpreter implements Interpreter {
                              Map<Integer, Snippet> staticSnippetIdxToSnippet) {
   }
 
-  private record State(Map<String, EvalResult> fingerprintToEvalResult, Map<String, String> simpleNameToFingerprint) {}
+  private record State(Map<String, EvalResult> fingerprintToEvalResult, Map<String, String> simpleNameToFingerprint, PowerJShell shell) {}
 }
