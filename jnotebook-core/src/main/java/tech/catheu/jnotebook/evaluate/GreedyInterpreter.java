@@ -70,7 +70,7 @@ public class GreedyInterpreter implements Interpreter {
     @Override
     public <T> void visitCtMethod(CtMethod<T> m) {
       if (m.getSimpleName().startsWith(SYNTHETIC_METHOD_NAME)) {
-        m.setSimpleName(SYNTHETIC_METHOD_NAME); // FIXME causes issues
+        m.setSimpleName(SYNTHETIC_METHOD_NAME);
       }
       super.visitCtMethod(m);
     }
