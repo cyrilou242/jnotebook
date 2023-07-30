@@ -37,6 +37,7 @@ public class GreedyInterpreterTest {
   // todo basic asserts of input/output
   //  basic assert on error case
   // comments, all kind of ops (import, function, class, etc...)
+  // test multi file
 
   @Test
   public void testValueStateIsDeletedCorrectlyWhenForwardReferenceBecomesCorrectReference() {
