@@ -85,8 +85,7 @@ public class Renderer {
 
   public final Rendering render(Interpreted interpreted) {
     if (!interpreted.status().isOk()) {
-      // FIXME CYRIL - improve format
-      return new Rendering(pre(interpreted.status().failureMessage()).withClasses(RESULT_ERROR).render());
+      return new Rendering(div(pre(interpreted.status().failureMessage())).withClasses(VIEWER_RESULT, RESULT_ERROR).render());
     }
 
     final LineAwareRenderer domRenderer = new LineAwareRenderer(interpreted.lines());
