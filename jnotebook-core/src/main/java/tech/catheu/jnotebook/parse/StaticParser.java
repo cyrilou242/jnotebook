@@ -83,9 +83,6 @@ public class StaticParser {
     return snippetsOf(filePath, lines);
   }
 
-  /**
-   * Note: for testing purpose, filepath can be set to a dummy path
-   * */
   @NonNull
   public StaticParsing snippetsOf(@NonNull Path filePath, @NonNull List<String> lines) {
     if (lines.isEmpty()) {
