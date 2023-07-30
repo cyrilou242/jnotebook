@@ -27,6 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spoon.Launcher;
+import spoon.reflect.code.CtComment;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
@@ -110,9 +111,10 @@ public class GreedyInterpreter implements Interpreter {
 
   @NotNull
   private Interpreted internalInterpret(final StaticParsing staticParsing) {
-    final State state = fileToState.computeIfAbsent(
-            staticParsing.path(),
-            path -> new State(new HashMap<>(), new HashMap<>(), newShell(path)));
+    final State state = fileToState.computeIfAbsent(staticParsing.path(),
+                                                    path -> new State(new HashMap<>(),
+                                                                      new HashMap<>(),
+                                                                      newShell(path)));
 
     final SourceClass source =
             buildSourceClass(staticParsing, state.shell.sourceCodeAnalysis());
@@ -125,37 +127,41 @@ public class GreedyInterpreter implements Interpreter {
     final HashMap<String, String> newSimpleNameToFingerprint = new HashMap<>();
     for (final String simpleName : depGraph.dependencies.nodes()) {
       final CtTypeMember ctMember = depGraph.simpleNameToMember.get(simpleName);
-      final Integer snippetId = Integer.valueOf(ctMember.getComments().get(0).getContent());
+      final Integer snippetId =
+              Integer.valueOf(ctMember.getComments().get(0).getContent());
+      // save top level comments - it contains the snippet id
+      final List<CtComment> comments = ctMember.getComments();
       ctMember.accept(FINGERPRINT_PREPARATOR);
       final Set<String> predecessors = depGraph.dependencies.predecessors(simpleName);
       final String fingerprint = ctMember.toString() + predecessors.hashCode();
-      fingerprintToSnippetIdx.put(fingerprint, snippetId);
+      // put back top level comments - it may be used by consumers downstream
+      ctMember.setComments(comments);
+      final Integer duplicateFingerPrintSnippetIdx =
+              fingerprintToSnippetIdx.put(fingerprint, snippetId);
       newSimpleNameToFingerprint.put(simpleName, fingerprint);
       if (!state.fingerprintToEvalResult.containsKey(fingerprint)) {
         snippetsIdxToRun.add(snippetId);
-        addAllDependencies(snippetsIdxToRun,
-                           depGraph,
-                           depGraph.dependencies.successors(simpleName));
+        addAllSuccessorsAndPredecessors(snippetsIdxToRun, depGraph, simpleName);
       } else if (depGraph.forwardReferences.contains(simpleName)) {
         snippetsIdxToRun.add(snippetId);
-      } else if (fingerprintToSnippetIdx.containsKey(fingerprint)) {
+      } else if (duplicateFingerPrintSnippetIdx != null) {
         // with the current architecture, it's not possible to know what to do when a fingerprint is duplicated
         // I don't think it is possible without a perfect diff computer - because of java mutability
         // a duplicated fingerprint should always be re-run
         snippetsIdxToRun.add(snippetId);
-        addAllDependencies(snippetsIdxToRun,
-                           depGraph,
-                           depGraph.dependencies.successors(simpleName));
-        snippetsIdxToRun.add(fingerprintToSnippetIdx.get(fingerprint));
+        addAllSuccessorsAndPredecessors(snippetsIdxToRun, depGraph, simpleName);
+        snippetsIdxToRun.add(duplicateFingerPrintSnippetIdx);
       }
     }
 
     // clean outdated jshell snippets
     final List<String> toRemove = new ArrayList<>(state.fingerprintToEvalResult.keySet()
-                                             .stream()
-                                             .filter(fingerprint -> !fingerprintToSnippetIdx.containsKey(fingerprint))
-                                             .toList());
-    depGraph.forwardReferences.forEach(f -> toRemove.add(state.simpleNameToFingerprint.get(f)));
+                                                                               .stream()
+                                                                               .filter(fingerprint -> !fingerprintToSnippetIdx.containsKey(
+                                                                                       fingerprint))
+                                                                               .toList());
+    depGraph.forwardReferences.forEach(f -> toRemove.add(state.simpleNameToFingerprint.get(
+            f)));
     for (final String fingerprint : toRemove) {
       final EvalResult evalResult = state.fingerprintToEvalResult.get(fingerprint);
       if (evalResult != null) {
@@ -203,17 +209,20 @@ public class GreedyInterpreter implements Interpreter {
                            ExecutionStatus.ok());
   }
 
-  private void addAllDependencies(final Set<Integer> snippetsIdxToRerun,
-                                  final DependencyGraph depGraph,
-                                  final Set<String> successors) {
-    for (final String s : successors) {
-      final CtTypeMember ctTypeMember = depGraph.simpleNameToMember().get(s);
+  private void addAllSuccessorsAndPredecessors(final Set<Integer> snippetsIdxToRerun,
+                                               final DependencyGraph depGraph,
+                                               final String nodeSimpleName) {
+    final Set<String> related =
+            new HashSet<>(depGraph.dependencies.successors(nodeSimpleName));
+    related.addAll(depGraph.dependencies.predecessors(nodeSimpleName));
+    for (final String simpleName : related) {
+      final CtTypeMember ctTypeMember = depGraph.simpleNameToMember().get(simpleName);
       final Integer snippetId =
               Integer.valueOf(ctTypeMember.getComments().get(0).getContent());
-      snippetsIdxToRerun.add(snippetId);
-      addAllDependencies(snippetsIdxToRerun,
-                         depGraph,
-                         depGraph.dependencies.successors(s));
+      if (!snippetsIdxToRerun.contains(snippetId)) {
+        snippetsIdxToRerun.add(snippetId);
+        addAllSuccessorsAndPredecessors(snippetsIdxToRerun, depGraph, simpleName);
+      }
     }
   }
 
@@ -436,5 +445,8 @@ public class GreedyInterpreter implements Interpreter {
                              Map<Integer, Snippet> staticSnippetIdxToSnippet) {
   }
 
-  private record State(Map<String, EvalResult> fingerprintToEvalResult, Map<String, String> simpleNameToFingerprint, PowerJShell shell) {}
+  private record State(Map<String, EvalResult> fingerprintToEvalResult,
+                       Map<String, String> simpleNameToFingerprint,
+                       PowerJShell shell) {
+  }
 }

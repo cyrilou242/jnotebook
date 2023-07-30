@@ -36,11 +36,20 @@ public class GreedyInterpreterTest {
   private static final ShellProvider shellProvider = getTestShellProvider();
   private final StaticParser staticParser = new StaticParser(shellProvider);
 
-  // todo basic asserts of input/output
-  // basic assert on error case
+  // TODO basic assert on error case
   // comments, all kind of ops class, record, loops, if else statement
   // test comments in the middle
   // test multi file
+
+  // TODO add such test and validate that one part can be recomputed independently of the others
+  // Map<String, String> m = new HashMap<>();
+  //m.put("lala", "hihaaaaa");
+  //System.out.println(m);
+  //
+  //
+  //Map<String, String> anotherMap = new HashMap<>();
+  //anotherMap.put("rohiii", "roh");
+  //System.out.println(anotherMap);
 
   @Test
   public void testPrimitiveInstantiationAndUpdate() {
@@ -424,6 +433,43 @@ public class GreedyInterpreterTest {
     assertThat(out2.status().isOk()).isTrue();
     assertThat(out2.interpretedSnippets()).hasSize(2);
     assertThat(out2.interpretedSnippets().get(1).evalResult().events().get(0).value()).isEqualTo("41");
+  }
+
+  // this is the main use case that make partial recomputation pretty inefficient in Java, compared to languages that have immutability only
+  // any action on/with a reference can imply that the reference has to be refreshed from the start
+  // hence when a reference is touched, any predecessors of successors of this reference has to be recomputed
+  @Test
+  public void testMutationRequiresRerunUpStream() {
+    final GreedyInterpreter interpreter = new GreedyInterpreter(shellProvider);
+    final Path filePath = Paths.get("testDuplicatedNonReturningCalls");
+    final String edit1 = """
+            Map<String, String> m = new HashMap<>();
+            m.put("key", "value");
+            System.out.println(m);
+            """;
+    final StaticParsing staticParsing1 =
+            staticParser.snippetsOf(filePath, edit1.lines().toList());
+    final Interpreted out1 = interpreter.interpret(staticParsing1);
+    assertThat(out1.status().isOk()).isTrue();
+    assertThat(out1.interpretedSnippets()).hasSize(3);
+    assertThat(out1.interpretedSnippets().get(0).evalResult().events().get(0).value()).isEqualTo("{}");
+    assertThat(out1.interpretedSnippets().get(1).evalResult().events().get(0).value()).isEqualTo("null");
+    assertThat(out1.interpretedSnippets().get(2).evalResult().out().trim()).isEqualTo("{key=value}");
+
+    // m.put(...) is changed - the system should re-instantiate m
+    final String edit2 = """
+            Map<String, String> m = new HashMap<>();
+            m.put("newKey", "anotherValue");
+            System.out.println(m);
+            """;
+    final StaticParsing staticParsing2 =
+            staticParser.snippetsOf(filePath, edit2.lines().toList());
+    final Interpreted out2 = interpreter.interpret(staticParsing2);
+    assertThat(out2.status().isOk()).isTrue();
+    assertThat(out2.interpretedSnippets()).hasSize(3);
+    assertThat(out2.interpretedSnippets().get(0).evalResult().events().get(0).value()).isEqualTo("{}");
+    assertThat(out2.interpretedSnippets().get(1).evalResult().events().get(0).value()).isEqualTo("null");
+    assertThat(out2.interpretedSnippets().get(2).evalResult().out().trim()).isEqualTo("{newKey=anotherValue}");
   }
 
   private static List<Diag> firstDiagnostics(InterpretedSnippet interpretedSnippet) {
