@@ -34,7 +34,6 @@
         <module>jnotebook-core</module>
         <module>jnotebook-distribution</module>
         <module>jnotebook-utils</module>
-        <module>jnotebook-drafts</module>
     </modules>
 
     <properties>
