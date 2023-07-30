@@ -141,6 +141,15 @@ public class GreedyInterpreter implements Interpreter {
                            depGraph.dependencies.successors(simpleName));
       } else if (depGraph.forwardReferences.contains(simpleName)) {
         snippetsIdxToRun.add(snippetId);
+      } else if (fingerprintToSnippetIdx.containsKey(fingerprint)) {
+        // with the current architecture, it's not possible to know what to do when a fingerprint is duplicated
+        // I don't think it is possible without a perfect diff computer - because of java mutability
+        // a duplicated fingerprint should always be re-run
+        snippetsIdxToRun.add(snippetId);
+        addAllDependencies(snippetsIdxToRun,
+                           depGraph,
+                           depGraph.dependencies.successors(simpleName));
+        snippetsIdxToRun.add(fingerprintToSnippetIdx.get(fingerprint));
       }
     }
 
@@ -300,23 +309,26 @@ public class GreedyInterpreter implements Interpreter {
     // order means top to bottom order
     final BiConsumer<String, String> orderSafePutEdge = (member, reference) -> {
       if (dependencies.nodes().contains(reference)) {
-        dependencies.putEdge(reference, member);
+        // no need to add self-references - (eg recursive functions)
+        if (!reference.equals(member)) {
+          dependencies.putEdge(reference, member);
+        }
       } else {
-        // forward reference will make the code break with undefined errors
         forwardReferences.add(reference);
       }
     };
     for (int i = 1; i < typeMembers.size(); i++) {
       final CtTypeMember member = typeMembers.get(i);
-      dependencies.addNode(member.getSimpleName());
-      simpleNameToMember.put(member.getSimpleName(), member);
+      final String memberSimpleName = member.getSimpleName();
+      dependencies.addNode(memberSimpleName);
+      simpleNameToMember.put(memberSimpleName, member);
       member.accept(new CtScanner() {
         @Override
         public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
           if (reference.getDeclaringType() != null) {
             final CtTypeReference<?> declaringType = reference.getDeclaringType();
             if (declaringType.getSimpleName().equals(SYNTHETIC_CLASS_NAME)) {
-              orderSafePutEdge.accept(member.getSimpleName(), reference.getSimpleName());
+              orderSafePutEdge.accept(memberSimpleName, reference.getSimpleName());
             }
           }
         }
@@ -326,7 +338,7 @@ public class GreedyInterpreter implements Interpreter {
           if (reference.getDeclaringType() != null) {
             final CtTypeReference<?> declaringType = reference.getDeclaringType();
             if (declaringType.getSimpleName().equals(SYNTHETIC_CLASS_NAME)) {
-              orderSafePutEdge.accept(member.getSimpleName(), reference.getSimpleName());
+              orderSafePutEdge.accept(memberSimpleName, reference.getSimpleName());
             }
           }
         }
@@ -336,7 +348,7 @@ public class GreedyInterpreter implements Interpreter {
           if (reference.getDeclaringType() != null) {
             final CtTypeReference<?> declaringType = reference.getDeclaringType();
             if (declaringType.getSimpleName().equals(SYNTHETIC_CLASS_NAME)) {
-              orderSafePutEdge.accept(member.getSimpleName(), reference.getSimpleName());
+              orderSafePutEdge.accept(memberSimpleName, reference.getSimpleName());
             }
           }
         }
@@ -346,7 +358,7 @@ public class GreedyInterpreter implements Interpreter {
           if (reference.getDeclaringType() != null) {
             final CtTypeReference<?> declaringType = reference.getDeclaringType();
             if (declaringType.getSimpleName().equals(SYNTHETIC_CLASS_NAME)) {
-              orderSafePutEdge.accept(member.getSimpleName(), reference.getSimpleName());
+              orderSafePutEdge.accept(memberSimpleName, reference.getSimpleName());
             }
           }
         }

@@ -30,15 +30,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 public class GreedyInterpreterTest {
-  // todo basic asserts of input/output
-  //  basic assert on error case
 
   private static final ShellProvider shellProvider = getTestShellProvider();
+  private final StaticParser staticParser = new StaticParser(shellProvider);
+
+  // todo basic asserts of input/output
+  //  basic assert on error case
+  // comments, all kind of ops (import, function, class, etc...)
 
   @Test
   public void testValueStateIsDeletedCorrectlyWhenForwardReferenceBecomesCorrectReference() {
     final GreedyInterpreter interpreter = new GreedyInterpreter(shellProvider);
-    final StaticParser staticParser = new StaticParser(shellProvider);
     // should not conflict with other tests
     final Path filePath = Paths.get("testValueStateIsDeletedCorrectlyWhenForwardReferenceBecomesCorrectReference");
 
@@ -87,13 +89,12 @@ public class GreedyInterpreterTest {
   // eg we could delete the snippet in the JShell instance if we find the result of
   // the execution mentions that a variable is not defined.
   // for the moment we keep the behaviour of jshell
-  // TODO CYRIL - return the jshell info instead of the unresolved dependencies info
+  // TODO CYRIL - return the jshell info message instead of the unresolved dependencies info
   //  eg return created method doSomething(), however, it cannot be invoked until variable text is declared
   //  instead of Unresolved dependencies: variable text
   @Test
   public void testMethodStateBehavesLikeJShellWhenVariableIsUndeclared() {
     final GreedyInterpreter interpreter = new GreedyInterpreter(shellProvider);
-    final StaticParser staticParser = new StaticParser(shellProvider);
     // should not conflict with other tests
     final Path filePath = Paths.get("testMethodStateBehavesLikeJShellWhenVariableIsUndeclared");
 
@@ -112,12 +113,140 @@ public class GreedyInterpreterTest {
     assertThat(firstDiagnostics(out1.interpretedSnippets().get(1))).isEmpty();
     // the function can run because text1 is defined at the time of the call
     assertThat(firstDiagnostics(out1.interpretedSnippets().get(1))).isEmpty();
-
   }
 
-  // todo manage primitive and object mutations somehow
-  // detect exact ref in a linear way: is it even possible?
-  // get last statement of simpleName - rerun based on this? - maintain in fingerprints?
+  @Test
+  public void testDuplicatedNonReturningCalls() {
+    final GreedyInterpreter interpreter = new GreedyInterpreter(shellProvider);
+    // should not conflict with other tests
+    final Path filePath = Paths.get("testDuplicatedNonReturningCalls");
+    final String edit1 = """
+            int lol = 7;
+            System.out.println(lol);
+            lol = 11;
+            System.out.println(lol);
+            lol = 5;
+            System.out.println("Response: " + lol);
+            lol;
+            """;
+    final StaticParsing staticParsing1 =
+            staticParser.snippetsOf(filePath, edit1.lines().toList());
+    final Interpreted out1 = interpreter.interpret(staticParsing1);
+    assertThat(out1.interpretedSnippets()).hasSize(7);
+    assertThat(out1.interpretedSnippets().get(0).evalResult().events().get(0).value()).isEqualTo("7");
+    assertThat(out1.interpretedSnippets().get(1).evalResult().out().trim()).isEqualTo("7");
+    assertThat(out1.interpretedSnippets().get(2).evalResult().events().get(0).value()).isEqualTo("11");
+    assertThat(out1.interpretedSnippets().get(3).evalResult().out().trim()).isEqualTo("11");
+    assertThat(out1.interpretedSnippets().get(4).evalResult().events().get(0).value()).isEqualTo("5");
+    assertThat(out1.interpretedSnippets().get(5).evalResult().out().trim()).isEqualTo("Response: 5");
+    assertThat(out1.interpretedSnippets().get(6).evalResult().events().get(0).value()).isEqualTo("5");
+
+    // update the value of the first instantiation of lol
+    final String edit2 = """
+            int lol = 0;
+            System.out.println(lol);
+            lol = 11;
+            System.out.println(lol);
+            lol = 5;
+            System.out.println("Response: " + lol);
+            lol;
+            """;
+    final StaticParsing staticParsing2 =
+            staticParser.snippetsOf(filePath, edit2.lines().toList());
+    final Interpreted out2 = interpreter.interpret(staticParsing2);
+    assertThat(out2.interpretedSnippets()).hasSize(7);
+    assertThat(out2.interpretedSnippets().get(0).evalResult().events().get(0).value()).isEqualTo("0");
+    assertThat(out2.interpretedSnippets().get(1).evalResult().out().trim()).isEqualTo("0");
+    assertThat(out2.interpretedSnippets().get(2).evalResult().events().get(0).value()).isEqualTo("11");
+    assertThat(out2.interpretedSnippets().get(3).evalResult().out().trim()).isEqualTo("11");
+    assertThat(out2.interpretedSnippets().get(4).evalResult().events().get(0).value()).isEqualTo("5");
+    assertThat(out2.interpretedSnippets().get(5).evalResult().out().trim()).isEqualTo("Response: 5");
+    assertThat(out2.interpretedSnippets().get(6).evalResult().events().get(0).value()).isEqualTo("5");
+
+    // update the value of lol in the middle
+    final String edit3 = """
+            int lol = 0;
+            System.out.println(lol);
+            lol = 100;
+            System.out.println(lol);
+            lol = 5;
+            System.out.println("Response: " + lol);
+            lol;
+            """;
+    final StaticParsing staticParsing3 =
+            staticParser.snippetsOf(filePath, edit3.lines().toList());
+    final Interpreted out3 = interpreter.interpret(staticParsing3);
+    assertThat(out3.interpretedSnippets()).hasSize(7);
+    assertThat(out3.interpretedSnippets().get(0).evalResult().events().get(0).value()).isEqualTo("0");
+    assertThat(out3.interpretedSnippets().get(1).evalResult().out().trim()).isEqualTo("0");
+    assertThat(out3.interpretedSnippets().get(2).evalResult().events().get(0).value()).isEqualTo("100");
+    assertThat(out3.interpretedSnippets().get(3).evalResult().out().trim()).isEqualTo("100");
+    assertThat(out3.interpretedSnippets().get(4).evalResult().events().get(0).value()).isEqualTo("5");
+    assertThat(out3.interpretedSnippets().get(5).evalResult().out().trim()).isEqualTo("Response: 5");
+    assertThat(out3.interpretedSnippets().get(6).evalResult().events().get(0).value()).isEqualTo("5");
+
+    // update the value of lol at the end
+    final String edit4 = """
+            int lol = 0;
+            System.out.println(lol);
+            lol = 100;
+            System.out.println(lol);
+            lol = 667;
+            System.out.println("Response: " + lol);
+            lol;
+            """;
+    final StaticParsing staticParsing4 =
+            staticParser.snippetsOf(filePath, edit4.lines().toList());
+    final Interpreted out4 = interpreter.interpret(staticParsing4);
+    assertThat(out4.interpretedSnippets()).hasSize(7);
+    assertThat(out4.interpretedSnippets().get(0).evalResult().events().get(0).value()).isEqualTo("0");
+    assertThat(out4.interpretedSnippets().get(1).evalResult().out().trim()).isEqualTo("0");
+    assertThat(out4.interpretedSnippets().get(2).evalResult().events().get(0).value()).isEqualTo("100");
+    assertThat(out4.interpretedSnippets().get(3).evalResult().out().trim()).isEqualTo("100");
+    assertThat(out4.interpretedSnippets().get(4).evalResult().events().get(0).value()).isEqualTo("667");
+    assertThat(out4.interpretedSnippets().get(5).evalResult().out().trim()).isEqualTo("Response: 667");
+    assertThat(out4.interpretedSnippets().get(6).evalResult().events().get(0).value()).isEqualTo("667");
+  }
+
+  @Test
+  public void testRecursiveFunction() {
+    final GreedyInterpreter interpreter = new GreedyInterpreter(shellProvider);
+    // should not conflict with other tests
+    final Path filePath = Paths.get("testMethodStateBehavesLikeJShellWhenVariableIsUndeclared");
+
+    final String edit1 = """
+            static int recursive(int n) {
+            if (n == 1) {
+              return 1;
+              } else {
+                return n * recursive(n-1);
+              }
+            }
+            recursive(4);
+            """;
+    final StaticParsing staticParsing1 =
+            staticParser.snippetsOf(filePath, edit1.lines().toList());
+    final Interpreted out1 = interpreter.interpret(staticParsing1);
+    assertThat(out1.interpretedSnippets()).hasSize(2);
+    assertThat(out1.interpretedSnippets().get(1).evalResult().events().get(0).value()).isEqualTo("24");
+
+    // edit the recursive function
+    final String edit2 = """
+            static int recursive(int n) {
+            if (n == 1) {
+              return 1;
+              } else {
+                return n * recursive(n-1) + 1;
+              }
+            }
+            recursive(4);
+            """;
+    final StaticParsing staticParsing2 =
+            staticParser.snippetsOf(filePath, edit2.lines().toList());
+    final Interpreted out2 = interpreter.interpret(staticParsing2);
+    assertThat(out2.interpretedSnippets()).hasSize(2);
+    assertThat(out2.interpretedSnippets().get(1).evalResult().events().get(0).value()).isEqualTo("41");
+  }
 
   private static List<Diag> firstDiagnostics(InterpretedSnippet interpretedSnippet) {
     return interpretedSnippet.evalResult()
@@ -141,8 +270,6 @@ public class GreedyInterpreterTest {
   private static String firstUnresolvedDepsMessage(InterpretedSnippet interpretedSnippet) {
     return firstUnresolvedDeps(interpretedSnippet).get(0);
   }
-
-  // todo add recursive function
 
   @NotNull
   private static ShellProvider getTestShellProvider() {
