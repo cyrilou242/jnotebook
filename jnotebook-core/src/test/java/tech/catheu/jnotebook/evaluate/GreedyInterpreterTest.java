@@ -14,9 +14,11 @@
 package tech.catheu.jnotebook.evaluate;
 
 import jdk.jshell.Diag;
+import jdk.jshell.SnippetEvent;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import tech.catheu.jnotebook.Main;
+import tech.catheu.jnotebook.jshell.EvalResult;
 import tech.catheu.jnotebook.jshell.ShellProvider;
 import tech.catheu.jnotebook.parse.StaticParser;
 import tech.catheu.jnotebook.parse.StaticParsing;
@@ -35,14 +37,182 @@ public class GreedyInterpreterTest {
   private final StaticParser staticParser = new StaticParser(shellProvider);
 
   // todo basic asserts of input/output
-  //  basic assert on error case
-  // comments, all kind of ops (import, function, class, etc...)
+  // basic assert on error case
+  // comments, all kind of ops class, record, loops, if else statement
+  // test comments in the middle
   // test multi file
+
+  @Test
+  public void testPrimitiveInstantiationAndUpdate() {
+    final GreedyInterpreter interpreter = new GreedyInterpreter(shellProvider);
+    final Path filePath = Paths.get("testPrimitiveInstantiationAndUpdate");
+    final String edit1 = """
+            int z = 5;
+            """;
+    final StaticParsing staticParsing1 =
+            staticParser.snippetsOf(filePath, edit1.lines().toList());
+    final Interpreted out1 = interpreter.interpret(staticParsing1);
+    assertThat(out1.status().isOk()).isTrue();
+    assertThat(out1.interpretedSnippets()).hasSize(1);
+    final EvalResult evalResult1 = out1.interpretedSnippets().get(0).evalResult();
+    assertThat(evalResult1.out()).isEmpty();
+    assertThat(evalResult1.err()).isEmpty();
+    assertNoDiagnostics(evalResult1);
+    assertNoUnresolvedDeps(evalResult1);
+
+    assertThat(evalResult1.events()).hasSize(1);
+    final SnippetEvent snippetEvent1 = evalResult1.events().get(0);
+    assertThat(snippetEvent1.value()).isEqualTo("5");
+
+    final String edit2 = """
+            int z = 667;
+            """;
+    final StaticParsing staticParsing2 =
+            staticParser.snippetsOf(filePath, edit2.lines().toList());
+    final Interpreted out2 = interpreter.interpret(staticParsing2);
+    assertThat(out2.status().isOk()).isTrue();
+    assertThat(out2.interpretedSnippets()).hasSize(1);
+    final EvalResult evalResult2 = out2.interpretedSnippets().get(0).evalResult();
+    assertThat(evalResult2.out()).isEmpty();
+    assertThat(evalResult2.err()).isEmpty();
+    assertNoDiagnostics(evalResult2);
+    assertNoUnresolvedDeps(evalResult2);
+
+    assertThat(evalResult2.events()).hasSize(1);
+    final SnippetEvent snippetEvent2 = evalResult2.events().get(0);
+    // NONEXISTENT because greedy interpreter deletes outdated snippet as much as possible
+    // not a hard expected behaviour here - could change
+    assertThat(snippetEvent2.value()).isEqualTo("667");
+  }
+
+  @Test
+  public void testObjectInstantiationAndUpdate() {
+    final GreedyInterpreter interpreter = new GreedyInterpreter(shellProvider);
+    final Path filePath = Paths.get("testObjectInstantiationAndUpdate");
+    final String edit1 = """
+            String z = "lol";
+            """;
+    final StaticParsing staticParsing1 =
+            staticParser.snippetsOf(filePath, edit1.lines().toList());
+    final Interpreted out1 = interpreter.interpret(staticParsing1);
+    assertThat(out1.status().isOk()).isTrue();
+    assertThat(out1.interpretedSnippets()).hasSize(1);
+    final EvalResult evalResult1 = out1.interpretedSnippets().get(0).evalResult();
+    assertThat(evalResult1.out()).isEmpty();
+    assertThat(evalResult1.err()).isEmpty();
+    assertNoDiagnostics(evalResult1);
+    assertNoUnresolvedDeps(evalResult1);
+
+    assertThat(evalResult1.events()).hasSize(1);
+    final SnippetEvent snippetEvent1 = evalResult1.events().get(0);
+    assertThat(snippetEvent1.value()).isEqualTo("\"lol\"");
+
+    final String edit2 = """
+            String z = "haha";
+            """;
+    final StaticParsing staticParsing2 =
+            staticParser.snippetsOf(filePath, edit2.lines().toList());
+    final Interpreted out2 = interpreter.interpret(staticParsing2);
+    assertThat(out2.status().isOk()).isTrue();
+    assertThat(out2.interpretedSnippets()).hasSize(1);
+    final EvalResult evalResult2 = out2.interpretedSnippets().get(0).evalResult();
+    assertThat(evalResult2.out()).isEmpty();
+    assertThat(evalResult2.err()).isEmpty();
+    assertNoDiagnostics(evalResult2);
+    assertNoUnresolvedDeps(evalResult2);
+
+    assertThat(evalResult2.events()).hasSize(1);
+    final SnippetEvent snippetEvent2 = evalResult2.events().get(0);
+    assertThat(snippetEvent2.value()).isEqualTo("\"haha\"");
+  }
+
+  @Test
+  public void testMethodInstantiationAndUpdate() {
+    final GreedyInterpreter interpreter = new GreedyInterpreter(shellProvider);
+    final Path filePath = Paths.get("testMethodInstantiationAndUpdate");
+    final String edit1 = """
+            static int simple(int n) {
+             return n*2;
+            }
+            simple(2);
+            """;
+    final StaticParsing staticParsing1 =
+            staticParser.snippetsOf(filePath, edit1.lines().toList());
+    final Interpreted out1 = interpreter.interpret(staticParsing1);
+    assertThat(out1.status().isOk()).isTrue();
+    assertThat(out1.interpretedSnippets()).hasSize(2);
+    final EvalResult evalResult1 = out1.interpretedSnippets().get(0).evalResult();
+    assertThat(evalResult1.out()).isEmpty();
+    assertThat(evalResult1.err()).isEmpty();
+    assertNoDiagnostics(evalResult1);
+    assertNoUnresolvedDeps(evalResult1);
+    assertThat(evalResult1.events()).hasSize(1);
+    final SnippetEvent snippetEvent1 = evalResult1.events().get(0);
+    assertThat(snippetEvent1.value()).isNull();
+    // check function call output
+    assertThat(out1.interpretedSnippets().get(1).evalResult().events().get(0).value()).isEqualTo("4");
+
+    final String edit2 = """
+            static int simple(int n) {
+             return n*2 + 1;
+            }
+            simple(2);
+            """;
+    final StaticParsing staticParsing2 =
+            staticParser.snippetsOf(filePath, edit2.lines().toList());
+    final Interpreted out2 = interpreter.interpret(staticParsing2);
+    assertThat(out2.status().isOk()).isTrue();
+    assertThat(out2.interpretedSnippets()).hasSize(2);
+    final EvalResult evalResult2 = out2.interpretedSnippets().get(0).evalResult();
+    assertThat(evalResult2.out()).isEmpty();
+    assertThat(evalResult2.err()).isEmpty();
+    assertNoDiagnostics(evalResult2);
+    assertNoUnresolvedDeps(evalResult2);
+
+    assertThat(evalResult2.events()).hasSize(1);
+    final SnippetEvent snippetEvent2 = evalResult2.events().get(0);
+    assertThat(snippetEvent2.value()).isNull();
+    // check function call output
+    assertThat(out2.interpretedSnippets().get(1).evalResult().events().get(0).value()).isEqualTo("5");
+  }
+
+  @Test
+  public void testImport() {
+    final GreedyInterpreter interpreter = new GreedyInterpreter(shellProvider);
+    final Path filePath = Paths.get("testImport");
+    final String edit1 = """
+            import java.util.List;
+            """;
+    final StaticParsing staticParsing1 =
+            staticParser.snippetsOf(filePath, edit1.lines().toList());
+    final Interpreted out1 = interpreter.interpret(staticParsing1);
+    assertThat(out1.status().isOk()).isTrue();
+    assertThat(out1.interpretedSnippets()).hasSize(1);
+    final EvalResult evalResult1 = out1.interpretedSnippets().get(0).evalResult();
+    assertThat(evalResult1.out()).isEmpty();
+    assertThat(evalResult1.err()).isEmpty();
+    assertNoDiagnostics(evalResult1);
+    // FIXME don't think this is the expected behaviour
+    assertThat(evalResult1.unresolvedDeps()).isEmpty();
+    assertThat(evalResult1.events()).hasSize(1);
+    final SnippetEvent snippetEvent1 = evalResult1.events().get(0);
+    assertThat(snippetEvent1.value()).isNull();
+  }
+
+  private static void assertNoUnresolvedDeps(EvalResult evalResult1) {
+    assertThat(evalResult1.unresolvedDeps()).hasSize(1);
+    assertThat(evalResult1.unresolvedDeps().get(0)).isEmpty();
+  }
+
+  private static void assertNoDiagnostics(EvalResult evalResult1) {
+    assertThat(evalResult1.diagnostics()).hasSize(1);
+    assertThat(evalResult1.diagnostics().get(0)).isEmpty();
+  }
+
 
   @Test
   public void testValueStateIsDeletedCorrectlyWhenForwardReferenceBecomesCorrectReference() {
     final GreedyInterpreter interpreter = new GreedyInterpreter(shellProvider);
-    // should not conflict with other tests
     final Path filePath = Paths.get("testValueStateIsDeletedCorrectlyWhenForwardReferenceBecomesCorrectReference");
 
     final String edit1 = """
@@ -53,6 +223,7 @@ public class GreedyInterpreterTest {
     final StaticParsing staticParsing1 =
             staticParser.snippetsOf(filePath, edit1.lines().toList());
     final Interpreted out1 = interpreter.interpret(staticParsing1);
+    assertThat(out1.status().isOk()).isTrue();
     assertThat(out1.interpretedSnippets()).hasSize(3);
     assertThat(firstDiagnosticMessage(out1.interpretedSnippets().get(0))).contains("cannot find symbol");
     assertThat(firstDiagnostics(out1.interpretedSnippets().get(1))).isEmpty();
@@ -67,6 +238,7 @@ public class GreedyInterpreterTest {
     final StaticParsing staticParsing2 =
             staticParser.snippetsOf(filePath, edit2.lines().toList());
     final Interpreted out2 = interpreter.interpret(staticParsing2);
+    assertThat(out2.status().isOk()).isTrue();
     assertThat(out2.interpretedSnippets()).hasSize(3);
     assertThat(firstDiagnostics(out2.interpretedSnippets().get(0))).isEmpty();
     assertThat(firstDiagnostics(out2.interpretedSnippets().get(1))).isEmpty();
@@ -81,6 +253,7 @@ public class GreedyInterpreterTest {
     final StaticParsing staticParsing3 =
             staticParser.snippetsOf(filePath, edit3.lines().toList());
     final Interpreted out3 = interpreter.interpret(staticParsing3);
+    assertThat(out3.status().isOk()).isTrue();
     assertThat(firstDiagnosticMessage(out3.interpretedSnippets().get(0))).contains("cannot find symbol");
     assertThat(firstDiagnostics(out3.interpretedSnippets().get(1))).isEmpty();
     assertThat(firstDiagnosticMessage(out3.interpretedSnippets().get(2))).contains("cannot find symbol");
@@ -96,7 +269,6 @@ public class GreedyInterpreterTest {
   @Test
   public void testMethodStateBehavesLikeJShellWhenVariableIsUndeclared() {
     final GreedyInterpreter interpreter = new GreedyInterpreter(shellProvider);
-    // should not conflict with other tests
     final Path filePath = Paths.get("testMethodStateBehavesLikeJShellWhenVariableIsUndeclared");
 
     final String edit1 = """
@@ -109,6 +281,7 @@ public class GreedyInterpreterTest {
     final StaticParsing staticParsing1 =
             staticParser.snippetsOf(filePath, edit1.lines().toList());
     final Interpreted out1 = interpreter.interpret(staticParsing1);
+    assertThat(out1.status().isOk()).isTrue();
     assertThat(out1.interpretedSnippets()).hasSize(3);
     assertThat(firstUnresolvedDepsMessage(out1.interpretedSnippets().get(0))).contains("variable text1");
     assertThat(firstDiagnostics(out1.interpretedSnippets().get(1))).isEmpty();
@@ -119,7 +292,6 @@ public class GreedyInterpreterTest {
   @Test
   public void testDuplicatedNonReturningCalls() {
     final GreedyInterpreter interpreter = new GreedyInterpreter(shellProvider);
-    // should not conflict with other tests
     final Path filePath = Paths.get("testDuplicatedNonReturningCalls");
     final String edit1 = """
             int lol = 7;
@@ -133,6 +305,7 @@ public class GreedyInterpreterTest {
     final StaticParsing staticParsing1 =
             staticParser.snippetsOf(filePath, edit1.lines().toList());
     final Interpreted out1 = interpreter.interpret(staticParsing1);
+    assertThat(out1.status().isOk()).isTrue();
     assertThat(out1.interpretedSnippets()).hasSize(7);
     assertThat(out1.interpretedSnippets().get(0).evalResult().events().get(0).value()).isEqualTo("7");
     assertThat(out1.interpretedSnippets().get(1).evalResult().out().trim()).isEqualTo("7");
@@ -155,6 +328,7 @@ public class GreedyInterpreterTest {
     final StaticParsing staticParsing2 =
             staticParser.snippetsOf(filePath, edit2.lines().toList());
     final Interpreted out2 = interpreter.interpret(staticParsing2);
+    assertThat(out2.status().isOk()).isTrue();
     assertThat(out2.interpretedSnippets()).hasSize(7);
     assertThat(out2.interpretedSnippets().get(0).evalResult().events().get(0).value()).isEqualTo("0");
     assertThat(out2.interpretedSnippets().get(1).evalResult().out().trim()).isEqualTo("0");
@@ -177,6 +351,7 @@ public class GreedyInterpreterTest {
     final StaticParsing staticParsing3 =
             staticParser.snippetsOf(filePath, edit3.lines().toList());
     final Interpreted out3 = interpreter.interpret(staticParsing3);
+    assertThat(out3.status().isOk()).isTrue();
     assertThat(out3.interpretedSnippets()).hasSize(7);
     assertThat(out3.interpretedSnippets().get(0).evalResult().events().get(0).value()).isEqualTo("0");
     assertThat(out3.interpretedSnippets().get(1).evalResult().out().trim()).isEqualTo("0");
@@ -199,6 +374,7 @@ public class GreedyInterpreterTest {
     final StaticParsing staticParsing4 =
             staticParser.snippetsOf(filePath, edit4.lines().toList());
     final Interpreted out4 = interpreter.interpret(staticParsing4);
+    assertThat(out4.status().isOk()).isTrue();
     assertThat(out4.interpretedSnippets()).hasSize(7);
     assertThat(out4.interpretedSnippets().get(0).evalResult().events().get(0).value()).isEqualTo("0");
     assertThat(out4.interpretedSnippets().get(1).evalResult().out().trim()).isEqualTo("0");
@@ -212,7 +388,6 @@ public class GreedyInterpreterTest {
   @Test
   public void testRecursiveFunction() {
     final GreedyInterpreter interpreter = new GreedyInterpreter(shellProvider);
-    // should not conflict with other tests
     final Path filePath = Paths.get("testMethodStateBehavesLikeJShellWhenVariableIsUndeclared");
 
     final String edit1 = """
@@ -228,6 +403,7 @@ public class GreedyInterpreterTest {
     final StaticParsing staticParsing1 =
             staticParser.snippetsOf(filePath, edit1.lines().toList());
     final Interpreted out1 = interpreter.interpret(staticParsing1);
+    assertThat(out1.status().isOk()).isTrue();
     assertThat(out1.interpretedSnippets()).hasSize(2);
     assertThat(out1.interpretedSnippets().get(1).evalResult().events().get(0).value()).isEqualTo("24");
 
@@ -245,6 +421,7 @@ public class GreedyInterpreterTest {
     final StaticParsing staticParsing2 =
             staticParser.snippetsOf(filePath, edit2.lines().toList());
     final Interpreted out2 = interpreter.interpret(staticParsing2);
+    assertThat(out2.status().isOk()).isTrue();
     assertThat(out2.interpretedSnippets()).hasSize(2);
     assertThat(out2.interpretedSnippets().get(1).evalResult().events().get(0).value()).isEqualTo("41");
   }
