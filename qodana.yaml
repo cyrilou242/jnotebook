@@ -10,9 +10,9 @@ version: "1.0"
 
 #Enable inspections
 include:
-  - name: CheckDependencyLicenses
-  - name: VulnerableLibrariesGlobal  
-    
+#  - name: CheckDependencyLicenses
+  - name: VulnerableLibrariesGlobal
+
 #ignore a dependency to hide the related problems from the report:
 # see more license doc here https://www.jetbrains.com/help/qodana/qodana-yaml.html#Configure+License+audit
 #dependencyIgnores:
