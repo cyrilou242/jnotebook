@@ -155,8 +155,8 @@ public class StaticParser {
     }
 
     final boolean needFlush =
-            notebookSnippets.size() == 0 || notebookSnippets.get(notebookSnippets.size() - 1)
-                                                            .end() != lineIdx;
+            notebookSnippets.isEmpty() || notebookSnippets.get(notebookSnippets.size() - 1)
+                                                          .end() != lineIdx;
     if (needFlush) {
       // need to flush the last block
       if (codeStartIndex != Integer.MAX_VALUE) {

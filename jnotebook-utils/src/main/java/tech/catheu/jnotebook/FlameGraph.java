@@ -84,7 +84,7 @@ class FlameGraph {
 
     public void add(List<String> frames, int value) {
       this.value += value;
-      if (frames != null && frames.size() > 0) {
+      if (frames != null && !frames.isEmpty()) {
         String head = frames.get(0);
         Node child = this.children.get(head);
         if (child == null) {
@@ -104,7 +104,7 @@ class FlameGraph {
       for (Node child : this.children.values()) {
         children.add(child.serialize());
       }
-      if (children.size() > 0) {
+      if (!children.isEmpty()) {
         res.put("children", children);
       }
       return res;

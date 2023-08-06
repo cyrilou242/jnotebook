@@ -166,7 +166,7 @@ public class Renderer {
     }
 
     private DomContent renderGroupedJava(final List<InterpretedSnippet> snippets) {
-      checkArgument(snippets.size() > 0);
+      checkArgument(!snippets.isEmpty());
 
       final String codeLines = combineCodeLines(snippets);
       final EvalHtmlOutputs htmlOuputs = combineOutputs(snippets);
