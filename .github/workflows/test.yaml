@@ -23,6 +23,10 @@ jobs:
         with:
           path: ~/.m2/repository
           key: license-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml', 'LICENSE', 'HEADER') }}
+      - name: 'Qodana Scan'
+        uses: JetBrains/qodana-action@main
+        env:
+          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
       - name: build and run test
         run: ./mvnw -T 1C -B clean install
 
