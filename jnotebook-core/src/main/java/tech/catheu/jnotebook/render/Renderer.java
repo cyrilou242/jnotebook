@@ -85,7 +85,9 @@ public class Renderer {
 
   public final Rendering render(Interpreted interpreted) {
     if (!interpreted.status().isOk()) {
-      return new Rendering(div(pre(interpreted.status().failureMessage())).withClasses(VIEWER_RESULT, RESULT_ERROR).render());
+      return new Rendering(div(pre(interpreted.status().failureMessage())).withClasses(
+              VIEWER_RESULT,
+              RESULT_ERROR).render());
     }
 
     final LineAwareRenderer domRenderer = new LineAwareRenderer(interpreted.lines());
@@ -305,8 +307,8 @@ public class Renderer {
       final DomContent resultLines1 =
               div(div(results).withClasses(OVERFLOW_Y_HIDDEN)).withClasses(RELATIVE);
 
-      final List<String> classes = new ArrayList<>();
-      classes.addAll(List.of(VIEWER, VIEWER_RESULT, W_FULL, MAX_W_PROSE, PX_8));
+      final List<String> classes =
+              new ArrayList<>(List.of(VIEWER, VIEWER_RESULT, W_FULL, MAX_W_PROSE, PX_8));
       if (!success) {
         classes.add(RESULT_ERROR);
       }

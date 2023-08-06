@@ -19,19 +19,24 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Scanner;
 
+import static com.google.common.base.Preconditions.checkState;
+
 public class Constants {
 
   private static final String RESOURCES_VERSION_FILE = "/version.txt";
   public static final String VERSION = readResourcesFile(RESOURCES_VERSION_FILE).trim();
 
   private static String readResourcesFile(final String resourcesPath) {
-    try (InputStream inputStream = LocalStorage.class
-            .getResourceAsStream(resourcesPath); Scanner scanner = new Scanner(
-            inputStream).useDelimiter("\\A")) {
-      if (scanner.hasNext()) {
-        return scanner.next();
+    try (InputStream inputStream = LocalStorage.class.getResourceAsStream(resourcesPath)) {
+      checkState(inputStream != null,
+                 "Failed reading resources file in path %s",
+                 resourcesPath);
+      try (Scanner scanner = new Scanner(inputStream).useDelimiter("\\A")) {
+        if (scanner.hasNext()) {
+          return scanner.next();
+        }
+        throw new IOException();
       }
-      throw new IOException();
     } catch (IOException e) {
       throw new RuntimeException(String.format(
               "Failed reading jnotebook version from resources %s",

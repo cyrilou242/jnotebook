@@ -132,10 +132,9 @@ public class NotebookRenderer {
   @NotNull
   private NotebookRenderer.HtmlFileServer getMiniServer(final String htmlFile) {
     final byte[] htmlBytes = htmlFile.getBytes(StandardCharsets.UTF_8);
-    HttpServer server = null;
     try {
       final int port = getFreePort();
-      server = HttpServer.create(new InetSocketAddress(port), 0);
+      final HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
       server.createContext("/", new HttpHandler() {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
@@ -146,7 +145,7 @@ public class NotebookRenderer {
           responseStream.close();
         }
       });
-      HtmlFileServer result = new HtmlFileServer("http://localhost:" + port, server);
+      final HtmlFileServer result = new HtmlFileServer("http://localhost:" + port, server);
       return result;
     } catch (Exception e) {
       LOG.error("Failed to create a server: ", e);
