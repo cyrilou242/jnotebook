@@ -20,6 +20,8 @@ import picocli.CommandLine;
 import java.io.IOException;
 import java.nio.file.Paths;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import static tech.catheu.jnotebook.Constants.VERSION;
 
 @CommandLine.Command(
@@ -109,6 +111,8 @@ public class Main {
                             description = "The path to the notebook to render.")
     public String inputPath;
 
+    
+    @Nullable
     @CommandLine.Parameters(index = "1", arity = "0..1", description = "The output path.")
     public String outputPath;
 

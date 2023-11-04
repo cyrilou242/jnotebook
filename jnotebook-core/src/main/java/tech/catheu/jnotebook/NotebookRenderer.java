@@ -90,11 +90,11 @@ public class NotebookRenderer {
         html = optimizeHtml(html);
       }
 
-      var outputPath = config.outputPath;
+      String outputPath = config.outputPath;
       if(outputPath==null) {
         outputPath = Files.getNameWithoutExtension(config.inputPath) + ".html";
       } 
-      final File outputFile = FileUtils.getFile(outputPath);
+      final File outputFile = FileUtils.getFile(config.outputPath);
       FileUtils.write(outputFile, html, StandardCharsets.UTF_8);
       LOG.info("Notebook rendered successfully and written to {}", outputFile);
     } catch (Exception e) {
