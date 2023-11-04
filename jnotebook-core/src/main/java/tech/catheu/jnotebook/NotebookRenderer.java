@@ -10,6 +10,7 @@ package tech.catheu.jnotebook;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import io.github.bonigarcia.wdm.WebDriverManager;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jsoup.Jsoup;
@@ -104,6 +105,7 @@ public class NotebookRenderer {
     miniServer.server.start();
     // use selenium to render the file with javascript in a browser and parse the content
     ChromeOptions options = new ChromeOptions().addArguments("--headless=new");
+    WebDriverManager.chromedriver().setup();
     final WebDriver webDriver = new ChromeDriver(options);
     webDriver.get(miniServer.url);
     final String htmlWithOpti = webDriver.getPageSource();
