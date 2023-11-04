@@ -187,6 +187,11 @@
                 <version>4.10.0</version>
             </dependency>
             <dependency>
+                <groupId>io.github.bonigarcia</groupId>
+                <artifactId>webdrivermanager</artifactId>
+                <version>5.6.1</version>
+            </dependency>
+            <dependency>
                 <!-- jsoup HTML parser library @ https://jsoup.org/ -->
                 <groupId>org.jsoup</groupId>
                 <artifactId>jsoup</artifactId>
