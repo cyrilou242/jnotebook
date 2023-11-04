@@ -334,7 +334,6 @@
                             <!-- Top level files -->
                             <exclude>HEADER</exclude>
                             <exclude>LICENSE</exclude>
-                            <exclude>qodana.yaml</exclude>
                             <!-- files from Eclipse -->
                             <exclude>**/maven-eclipse.xml</exclude>
                             <exclude>.externalToolBuilders/**</exclude>
