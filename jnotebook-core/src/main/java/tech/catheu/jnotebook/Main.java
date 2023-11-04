@@ -109,7 +109,7 @@ public class Main {
                             description = "The path to the notebook to render.")
     public String inputPath;
 
-    @CommandLine.Parameters(index = "1", description = "The output path.")
+    @CommandLine.Parameters(index = "1", arity = "0..1", description = "The output path.")
     public String outputPath;
 
     @CommandLine.Option(names= {"--no-optimize"},
