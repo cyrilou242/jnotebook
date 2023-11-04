@@ -10,6 +10,14 @@ String s2 = "World";
 String s3 = "!";
 String greeting = s1 + " " + s2 + s3;
 
+// import Nb to get access to built-in integrations
+import tech.catheu.jnotebook.Nb;
+
+Nb.plotly(List.of(
+          Map.of("z", List.of(List.of(1, 2, 3), List.of(1, 2, 3)), "type", "surface")),
+          Map.of(),
+          Map.of());
+
 // ## markdown
 // ### is
 // #### supported
