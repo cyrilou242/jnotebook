@@ -75,6 +75,7 @@ public class PowerJShell {
     err = new ByteArrayOutputStream();
     errPrintStream = new PrintStream(err);
     this.delegate = JShell.builder()
+                          // TODO CYRIL use a custom execution engine (see jupyter kernel java implems)
                           .executionEngine("local")
                           .build();
     this.delegate.addToClasspath(configuration.classpath);
