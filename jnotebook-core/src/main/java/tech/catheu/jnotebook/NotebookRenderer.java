@@ -7,6 +7,7 @@
  */
 package tech.catheu.jnotebook;
 
+import com.google.common.io.Files;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
@@ -84,6 +85,10 @@ public class NotebookRenderer {
         html = optimizeHtml(html);
       }
 
+      String outputPath = config.outputPath;
+      if(outputPath==null) {
+        outputPath = Files.getNameWithoutExtension(config.inputPath) + ".html";
+      } 
       final File outputFile = FileUtils.getFile(config.outputPath);
       FileUtils.write(outputFile, html, StandardCharsets.UTF_8);
       LOG.info("Notebook rendered successfully and written to {}", outputFile);
