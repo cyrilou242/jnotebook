@@ -45,8 +45,9 @@
 
 // Once your notebook is ready to be published, render it in a single html file with:
 // ```
-// ./jnotebook render notebooks/my_notebook.jsh my_notebook.html
+// ./jnotebook render notebooks/my_notebook.jsh
 // ```
+// A `my_notebook.html` file will be generated.
 
 // ### Install
 // See detailed installation instruction for different platforms in the <a href="https://github.com/cyrilou242/jnotebook/#install" target="_blank">github project</a>.
