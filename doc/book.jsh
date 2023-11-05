@@ -112,6 +112,17 @@ invalidJava();
 throw new RuntimeException("Panic!");
 
 // ### Markdown
+// Comments are interpreted as markdown.
+// ```
+// // #### example title
+// // my text with [a link](example.com)
+// ```
+// Is rendered as
+// #### example title
+// my text with [a link](example.com)
+//
+// You can also use multiline comments.
+// ### Latex
 // Latex is supported inline: <pre>\$\`a^2+b^2=c^2\`\$</pre> → will render as $`a^2+b^2=c^2`$.
 // and as block:
 // <pre>
