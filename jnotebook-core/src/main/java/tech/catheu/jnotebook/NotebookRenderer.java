@@ -46,6 +46,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static tech.catheu.jnotebook.server.HtmlTemplateEngine.TEMPLATE_KEY_CONFIG;
 import static tech.catheu.jnotebook.server.HtmlTemplateEngine.TEMPLATE_KEY_RENDERED;
+import static tech.catheu.jnotebook.utils.JavaUtils.optional;
 
 public class NotebookRenderer {
 
@@ -85,11 +86,9 @@ public class NotebookRenderer {
         html = optimizeHtml(html);
       }
 
-      String outputPath = config.outputPath;
-      if(outputPath==null) {
-        outputPath = Files.getNameWithoutExtension(config.inputPath) + ".html";
-      } 
-      final File outputFile = FileUtils.getFile(config.outputPath);
+      final String outputPath = optional(config.outputPath)
+              .orElse(Files.getNameWithoutExtension(config.inputPath) + ".html");
+      final File outputFile = FileUtils.getFile(outputPath);
       FileUtils.write(outputFile, html, StandardCharsets.UTF_8);
       LOG.info("Notebook rendered successfully and written to {}", outputFile);
     } catch (Exception e) {
