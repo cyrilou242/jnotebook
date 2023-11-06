@@ -24,6 +24,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static j2html.TagCreator.*;
 import static tech.catheu.jnotebook.FlameGraph.flameGraphD3;
@@ -50,18 +51,32 @@ public class Nb {
 
   public static DivTag plotly(final List<Object> data, final Map<String, Object> layout,
                               final Map<String, Object> config) {
+    return plotly(data, layout, config, null);
+  }
+
+  public static DivTag plotly(final List<Object> data, final Map<String, Object> layout,
+                              final Map<String, Object> config, final List<Map<String, List<Map<String, ?>>>> frames) {
     final JSONArray jsonData = new JSONArray(data);
     final JSONObject jsonLayout = new JSONObject(layout);
     final JSONObject jsonConfig = new JSONObject(config);
-    return plotly(jsonData, jsonLayout, jsonConfig);
+    final JSONArray jsonFrames = Optional.ofNullable(frames).map(JSONArray::new).orElse(null);
+    return plotly(jsonData, jsonLayout, jsonConfig, jsonFrames);
   }
 
   public static DivTag plotly(JSONArray jsonData, JSONObject jsonLayout,
                               JSONObject jsonConfig) {
-    final DivTag chartContainer = div().withClasses("plotly js-plotly-plot")
+    return plotly(jsonData, jsonLayout, jsonConfig);
+  }
+
+  public static DivTag plotly(JSONArray jsonData, JSONObject jsonLayout,
+                              JSONObject jsonConfig, JSONArray jsonFrames) {
+    DivTag chartContainer = div().withClasses("plotly js-plotly-plot")
                                        .withData("data", jsonData.toString())
                                        .withData("layout", jsonLayout.toString())
                                        .withData("config", jsonConfig.toString());
+    if (jsonFrames != null) {
+      chartContainer = chartContainer.withData("frames", jsonFrames.toString());
+    }
     return div(chartContainer).withClasses("overflow-x-auto");
   }
 

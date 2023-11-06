@@ -82,8 +82,13 @@
         }
         function renderPlotly() {
             document.querySelectorAll('div.js-plotly-plot').forEach(el => {
-                Plotly.newPlot(el, JSON.parse(el.dataset.data), JSON.parse(el.dataset.layout), JSON.parse(el.dataset.config));
-            });
+                Plotly.newPlot(el, JSON.parse(el.dataset.data), JSON.parse(el.dataset.layout), JSON.parse(el.dataset.config))
+                    .then( function() {
+                        if ("frames" in el.dataset) {
+                            Plotly.addFrames(el, JSON.parse(el.dataset.frames));
+                        }});
+                    })
+                ;
         }
         function renderFlamegraphs() {
             document.querySelectorAll(".flame").forEach(el => {

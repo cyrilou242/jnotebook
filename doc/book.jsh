@@ -75,7 +75,9 @@
 // ## 💡 Editor principle
 // Cells are delimited by blank lines
 
-String s1 = "Hello";
+import java.sql.Array;
+import java.util.ArrayList;
+import java.util.Map;String s1 = "Hello";
 
 String s2 = "World";
 
@@ -166,6 +168,64 @@ Nb.plotly(List.of(
           Map.of("z", List.of(List.of(1, 2, 3), List.of(3, 2, 1)), "type", "surface")),
           Map.of(),
           Map.of());
+
+// `jnotebook` has built-in support for Plotly's low-ceremony plotting. See Plotly's JavaScript [docs](https://plotly.com/javascript/) for more examples and [options](https://plotly.com/javascript/configuration-options/).
+import java.util.Random;
+int numPoints = 50;
+List<Integer> time = IntStream.range(0, numPoints).boxed().collect(Collectors.toList());
+List<Double> y1 = new Random().doubles(numPoints, 0.0, 10.0).boxed().collect(Collectors.toList());
+List<Map<String, List<Map<String, ?>>>> frames = new ArrayList<>();
+for (int i =0; i< time.size(); i++) {
+  List dataRow = List.of(Map.of("x", time.subList(0, i+1),"y",y1.subList(0, i+1)));
+  frames.add(Map.of("data", dataRow));
+}
+Map trace1 = Map.of("type", "scatter", "mode", "lines",
+  "name", "y1",
+  "x", frames.get(3).get("data").get(0).get("x"),
+  "y",  frames.get(3).get("data").get(0).get("y"));
+List data= List.of(trace1);
+List playAnimateArgs = new ArrayList<>();
+playAnimateArgs.add(null);
+playAnimateArgs.add(Map.of(
+        "fromcurrent", true,
+        "transition", Map.of("duration", 0),
+        "frame", Map.of("duration", 50, "redraw", false)
+));
+List pauseAnimateArgs = new ArrayList<>();
+List ofNull = new ArrayList();
+ofNull.add(null)
+pauseAnimateArgs.add(ofNull);
+pauseAnimateArgs.add(Map.of(
+"mode", "immediate",
+"transition", Map.of("duration", 0),
+"frame", Map.of("duration", 0, "redraw", false)
+));
+Map layout = Map.of("title", "A timeseries",
+                    "xaxis", Map.of("range", List.of(time.get(0), time.get(time.size()-1)), "showgrid", false),
+                    "yaxis", Map.of("range", List.of(0, 10), "showgrid", false),
+                    "margin", Map.of("l", 10, "r", 10),
+                    "legend", Map.of("orientation", "h", "x", 0.5, "y", 1.2, "xanchor", "center"),
+                    "updatemenus", List.of(
+                            Map.of("x", 0.5,
+                                   "y", 0,
+                                   "yanchor", "top",
+                                   "xanchor", "center",
+                                   "showactive", false,
+                                   "direction", "left",
+                                   "type", "buttons",
+                                   "pad", Map.of("t", 87,"r", 10),
+                                   "buttons", List.of(Map.of(
+                                            "label", "Play",
+                                           "method", "animate",
+                                           "args", playAnimateArgs),
+                                            Map.of(
+                                            "label", "Pause",
+                                            "method", "animate",
+                                            "args", pauseAnimateArgs)
+                                    ))));
+Nb.plotly(List.of(trace1),
+          layout,
+          Map.of(), frames);
 
 // ## 🗺 Vega Lite
 // `jnotebook` also supports [Vega Lite](https://vega.github.io/vega-lite/).
