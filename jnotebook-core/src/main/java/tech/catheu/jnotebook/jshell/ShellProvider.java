@@ -26,15 +26,17 @@ import static tech.catheu.jnotebook.utils.JavaUtils.optional;
 
 public class ShellProvider {
 
-  private static final Logger LOG = LoggerFactory.getLogger(ShellProvider.class);
-  private static final String MAVEN_PROJECT_FILE = "pom.xml";
-  private static final String MAVEN_WRAPPER_FILE =
-          IS_OS_WINDOWS ? "mvnw.cmd" : "mvnw";
-  private static final String GRADLE_PROJECT_FILE = "build.gradle";
-  public static final String MAVEN_DEPENDENCY_COMMAND =
-          " -q exec:exec -Dexec.executable=echo -Dexec.args=\"%classpath\"";
-  private final Deque<PowerJShell> preparedShells;
-  private final Main.SharedConfiguration configuration;
+    private static final Logger LOG = LoggerFactory.getLogger(ShellProvider.class);
+    private static final String MAVEN_PROJECT_FILE = "pom.xml";
+    private static final String MAVEN_WRAPPER_FILE =
+            IS_OS_WINDOWS ? "mvnw.cmd" : "mvnw";
+    private static final String GRADLE_PROJECT_FILE = "build.gradle";
+    public static final String MAVEN_DEPENDENCY_COMMAND =
+            " -q exec:exec -Dexec.executable=echo -Dexec.args=\"%classpath\"";
+    // We need to escape the '.' in the command otherwise it fails
+    public static final String MAVEN_DEPENDENCY_COMMAND_WINDOWS = " -q exec:exec -Dexec^.executable=cmd -Dexec^.args=\"/c echo %classpath\"";
+    private final Deque<PowerJShell> preparedShells;
+    private final Main.SharedConfiguration configuration;
 
   private String resolvedClasspath = null;
   private final LocalStorage localStorage;
@@ -95,13 +97,7 @@ public class ShellProvider {
 
     return resolvedClasspath;
   }
-
   private String computeMavenClasspath() throws IOException, InterruptedException {
-    if (IS_OS_WINDOWS) {
-      LOG.error(
-              "Cannot add maven dependencies automatically, this is not implemented for Windows platform yet. If you have a windows machine, please contribute!");
-      return "";
-    }
     final File mavenWrapper = lookForFile(MAVEN_WRAPPER_FILE, new File(""), 0);
     final String mavenExecutable;
     if (mavenWrapper != null) {
@@ -110,22 +106,30 @@ public class ShellProvider {
       LOG.warn("Maven wrapper not found. Trying to use `mvn` directly.");
       mavenExecutable = "mvn";
     }
-    final String cmd = mavenExecutable + MAVEN_DEPENDENCY_COMMAND;
+    final String classpathCommand = IS_OS_WINDOWS ? MAVEN_DEPENDENCY_COMMAND_WINDOWS : MAVEN_DEPENDENCY_COMMAND;
+    final String cmd = mavenExecutable + classpathCommand;
     final Runtime run = Runtime.getRuntime();
     final Process pr = run.exec(cmd);
     pr.waitFor();
     final BufferedReader reader =
             new BufferedReader(new InputStreamReader(pr.getInputStream()));
     final List<String> classpaths = reader.lines().toList();
-    if (classpaths.isEmpty()) {
+    // mvn (-q) does not suppress errors, but all error line start with "[ERROR]
+    // there's cases where we get some classpaths, but some module fails, we can load the successful ones.
+    final List<String> errors = classpaths.stream().filter(s -> s.startsWith("[ERROR]")).toList();
+    final List<String> filteredClasspaths = classpaths.stream().filter(s -> !s.startsWith("[ERROR]")).toList();
+    if (!errors.isEmpty()) {
+      LOG.warn("Maven dependencies command ran with some errors: %s".formatted(errors.get(0)));// only thr first line has the relevant error (not sure though)
+    }
+    if (filteredClasspaths.isEmpty()) {
       LOG.warn("Maven dependencies command ran successfully, but classpath is empty");
       return "";
-    } else if (classpaths.size() == 1) {
-      return classpaths.get(0);
+    } else if (filteredClasspaths.size() == 1) {
+      return filteredClasspaths.get(0);
     } else {
       LOG.warn(
               "Maven dependencies command ran successfully, but multiple classpath were returned. This can happen with multi-modules projects. Combining all classpath.");
-      return String.join(":", classpaths);
+      return String.join(":", filteredClasspaths);
     }
   }
 
