@@ -26,17 +26,18 @@ import static tech.catheu.jnotebook.utils.JavaUtils.optional;
 
 public class ShellProvider {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ShellProvider.class);
-    private static final String MAVEN_PROJECT_FILE = "pom.xml";
-    private static final String MAVEN_WRAPPER_FILE =
-            IS_OS_WINDOWS ? "mvnw.cmd" : "mvnw";
-    private static final String GRADLE_PROJECT_FILE = "build.gradle";
-    public static final String MAVEN_DEPENDENCY_COMMAND =
-            " -q exec:exec -Dexec.executable=echo -Dexec.args=\"%classpath\"";
-    // We need to escape the '.' in the command otherwise it fails
-    public static final String MAVEN_DEPENDENCY_COMMAND_WINDOWS = " -q exec:exec -Dexec^.executable=cmd -Dexec^.args=\"/c echo %classpath\"";
-    private final Deque<PowerJShell> preparedShells;
-    private final Main.SharedConfiguration configuration;
+  private static final Logger LOG = LoggerFactory.getLogger(ShellProvider.class);
+  private static final String MAVEN_PROJECT_FILE = "pom.xml";
+  private static final String MAVEN_WRAPPER_FILE =
+          IS_OS_WINDOWS ? "mvnw.cmd" : "mvnw";
+  private static final String GRADLE_PROJECT_FILE = "build.gradle";
+  public static final String MAVEN_DEPENDENCY_COMMAND =
+          " -q exec:exec -Dexec.executable=echo -Dexec.args=\"%classpath\"";
+  // We need to escape the '.' in the command otherwise it fails
+  public static final String MAVEN_DEPENDENCY_COMMAND_WINDOWS =
+          " -q exec:exec -Dexec^.executable=cmd -Dexec^.args=\"/c echo %classpath\"";
+  private final Deque<PowerJShell> preparedShells;
+  private final Main.SharedConfiguration configuration;
 
   private String resolvedClasspath = null;
   private final LocalStorage localStorage;
