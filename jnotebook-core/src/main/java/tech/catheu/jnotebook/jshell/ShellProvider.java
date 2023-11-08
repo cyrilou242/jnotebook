@@ -115,22 +115,22 @@ public class ShellProvider {
     final BufferedReader reader =
             new BufferedReader(new InputStreamReader(pr.getInputStream()));
     final List<String> classpaths = reader.lines().toList();
-    // mvn (-q) does not suppress errors, but all error line start with "[ERROR]
+    // mvn (-q) does not suppress errors, but all error line start with "[ERROR]"
     // there's cases where we get some classpaths, but some module fails, we can load the successful ones.
     final List<String> errors = classpaths.stream().filter(s -> s.startsWith("[ERROR]")).toList();
-    final List<String> filteredClasspaths = classpaths.stream().filter(s -> !s.startsWith("[ERROR]")).toList();
     if (!errors.isEmpty()) {
-      LOG.warn("Maven dependencies command ran with some errors: %s".formatted(errors.get(0)));// only thr first line has the relevant error (not sure though)
+      // only the first line has the relevant error (not sure though)
+      throw new RuntimeException("Maven dependencies command exited with errors: %s".formatted(errors.get(0)));
     }
-    if (filteredClasspaths.isEmpty()) {
+    if (classpaths.isEmpty()) {
       LOG.warn("Maven dependencies command ran successfully, but classpath is empty");
       return "";
-    } else if (filteredClasspaths.size() == 1) {
-      return filteredClasspaths.get(0);
+    } else if (classpaths.size() == 1) {
+      return classpaths.get(0);
     } else {
       LOG.warn(
               "Maven dependencies command ran successfully, but multiple classpath were returned. This can happen with multi-modules projects. Combining all classpath.");
-      return String.join(":", filteredClasspaths);
+      return String.join(":", classpaths);
     }
   }
 
