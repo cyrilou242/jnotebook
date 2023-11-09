@@ -33,7 +33,6 @@ public class ShellProvider {
   private static final String GRADLE_PROJECT_FILE = "build.gradle";
   public static final String MAVEN_DEPENDENCY_COMMAND =
           " -q exec:exec -Dexec.executable=echo -Dexec.args=\"%classpath\"";
-  // We need to escape the '.' in the command otherwise it fails
   public static final String MAVEN_DEPENDENCY_COMMAND_WINDOWS =
           " -q exec:exec -Dexec^.executable=cmd -Dexec^.args=\"/c echo %classpath\"";
   private final Deque<PowerJShell> preparedShells;
@@ -111,16 +110,13 @@ public class ShellProvider {
     final String cmd = mavenExecutable + classpathCommand;
     final Runtime run = Runtime.getRuntime();
     final Process pr = run.exec(cmd);
-    pr.waitFor();
+    final int exitCode = pr.waitFor();
     final BufferedReader reader =
             new BufferedReader(new InputStreamReader(pr.getInputStream()));
     final List<String> classpaths = reader.lines().toList();
-    // mvn (-q) does not suppress errors, but all error line start with "[ERROR]"
-    // there's cases where we get some classpaths, but some module fails, we can load the successful ones.
-    final List<String> errors = classpaths.stream().filter(s -> s.startsWith("[ERROR]")).toList();
-    if (!errors.isEmpty()) {
-      // only the first line has the relevant error (not sure though)
-      throw new RuntimeException("Maven dependencies command exited with errors: %s".formatted(errors.get(0)));
+
+    if (exitCode != 0) {
+      throw new RuntimeException("Maven finished with exit code %s. Input command: '%s'.".formatted(exitCode, classpathCommand));
     }
     if (classpaths.isEmpty()) {
       LOG.warn("Maven dependencies command ran successfully, but classpath is empty");
