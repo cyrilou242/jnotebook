@@ -33,6 +33,8 @@ public class ShellProvider {
   private static final String GRADLE_PROJECT_FILE = "build.gradle";
   public static final String MAVEN_DEPENDENCY_COMMAND =
           " -q exec:exec -Dexec.executable=echo -Dexec.args=\"%classpath\"";
+  public static final String MAVEN_DEPENDENCY_COMMAND_WINDOWS =
+          " -q exec:exec -Dexec^.executable=cmd -Dexec^.args=\"/c echo %classpath\"";
   private final Deque<PowerJShell> preparedShells;
   private final Main.SharedConfiguration configuration;
 
@@ -95,13 +97,7 @@ public class ShellProvider {
 
     return resolvedClasspath;
   }
-
   private String computeMavenClasspath() throws IOException, InterruptedException {
-    if (IS_OS_WINDOWS) {
-      LOG.error(
-              "Cannot add maven dependencies automatically, this is not implemented for Windows platform yet. If you have a windows machine, please contribute!");
-      return "";
-    }
     final File mavenWrapper = lookForFile(MAVEN_WRAPPER_FILE, new File(""), 0);
     final String mavenExecutable;
     if (mavenWrapper != null) {
@@ -110,13 +106,18 @@ public class ShellProvider {
       LOG.warn("Maven wrapper not found. Trying to use `mvn` directly.");
       mavenExecutable = "mvn";
     }
-    final String cmd = mavenExecutable + MAVEN_DEPENDENCY_COMMAND;
+    final String classpathCommand = IS_OS_WINDOWS ? MAVEN_DEPENDENCY_COMMAND_WINDOWS : MAVEN_DEPENDENCY_COMMAND;
+    final String cmd = mavenExecutable + classpathCommand;
     final Runtime run = Runtime.getRuntime();
     final Process pr = run.exec(cmd);
-    pr.waitFor();
+    final int exitCode = pr.waitFor();
     final BufferedReader reader =
             new BufferedReader(new InputStreamReader(pr.getInputStream()));
     final List<String> classpaths = reader.lines().toList();
+
+    if (exitCode != 0) {
+      throw new RuntimeException("Maven finished with exit code %s. Input command: '%s'.".formatted(exitCode, classpathCommand));
+    }
     if (classpaths.isEmpty()) {
       LOG.warn("Maven dependencies command ran successfully, but classpath is empty");
       return "";
