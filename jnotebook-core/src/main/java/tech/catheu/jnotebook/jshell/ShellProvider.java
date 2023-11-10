@@ -12,13 +12,11 @@ import org.slf4j.LoggerFactory;
 import tech.catheu.jnotebook.Main;
 import tech.catheu.jnotebook.localstorage.LocalStorage;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.SystemUtils.IS_OS_WINDOWS;
 import static tech.catheu.jnotebook.Main.SharedConfiguration.AUTO_CLASSPATH;
@@ -97,6 +95,7 @@ public class ShellProvider {
 
     return resolvedClasspath;
   }
+
   private String computeMavenClasspath() throws IOException, InterruptedException {
     final File mavenWrapper = lookForFile(MAVEN_WRAPPER_FILE, new File(""), 0);
     final String mavenExecutable;
@@ -106,27 +105,33 @@ public class ShellProvider {
       LOG.warn("Maven wrapper not found. Trying to use `mvn` directly.");
       mavenExecutable = "mvn";
     }
-    final String classpathCommand = IS_OS_WINDOWS ? MAVEN_DEPENDENCY_COMMAND_WINDOWS : MAVEN_DEPENDENCY_COMMAND;
-    final String cmd = mavenExecutable + classpathCommand;
+    final String mavenCommand =
+            IS_OS_WINDOWS ? MAVEN_DEPENDENCY_COMMAND_WINDOWS : MAVEN_DEPENDENCY_COMMAND;
+    final String cmd = mavenExecutable + mavenCommand;
     final Runtime run = Runtime.getRuntime();
     final Process pr = run.exec(cmd);
     final int exitCode = pr.waitFor();
-    final BufferedReader reader =
-            new BufferedReader(new InputStreamReader(pr.getInputStream()));
-    final List<String> classpaths = reader.lines().toList();
-
-    if (exitCode != 0) {
-      throw new RuntimeException("Maven finished with exit code %s. Input command: '%s'.".formatted(exitCode, classpathCommand));
-    }
-    if (classpaths.isEmpty()) {
-      LOG.warn("Maven dependencies command ran successfully, but classpath is empty");
-      return "";
-    } else if (classpaths.size() == 1) {
-      return classpaths.get(0);
-    } else {
-      LOG.warn(
-              "Maven dependencies command ran successfully, but multiple classpath were returned. This can happen with multi-modules projects. Combining all classpath.");
-      return String.join(":", classpaths);
+    try (final BufferedReader reader = new BufferedReader(new InputStreamReader(pr.getInputStream()))) {
+      if (exitCode != 0) {
+        throw new RuntimeException(("""
+                Failed to add maven dependencies to the classpath.
+                Maven command finished with exit code %s.
+                Maven command: %s.
+                Error: %s""").formatted(
+                exitCode,
+                cmd, reader.lines().collect(Collectors.joining("\n"))));
+      }
+      final List<String> classpaths = reader.lines().toList();
+      if (classpaths.isEmpty()) {
+        LOG.warn("Maven dependencies command ran successfully, but classpath is empty");
+        return "";
+      } else if (classpaths.size() == 1) {
+        return classpaths.get(0);
+      } else {
+        LOG.warn(
+                "Maven dependencies command ran successfully, but multiple classpath were returned. This can happen with multi-modules projects. Combining all classpath.");
+        return String.join(":", classpaths);
+      }
     }
   }
 
