@@ -646,6 +646,7 @@
             background-color: #ffe4e4;
         }
 
+        [x-cloak] { display: none !important; }
     </style>
 
     <script defer class="jnb-no-opti" src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.1/dist/cdn.min.js"></script>
@@ -668,7 +669,7 @@
     <script defer class="jnb-no-opti" src="https://cdn.plot.ly/plotly-latest.min.js" onload="renderPlotly();"></script>
 </head>
 <body>
-<div x-data="{ tocOpen: window.innerWidth >= 768, notebookStatus: 'Connected'}" class="flex">
+<div x-cloak x-data="{ tocOpen: window.innerWidth >= 768, notebookStatus: 'Connected'}" class="flex">
     <button x-on:click="tocOpen = ! tocOpen"
             class="toc-toggle z-20 fixed right-2 top-2 md:right-auto md:left-3 md:top-[7px] text-slate-400 font-sans text-xs hover:underline cursor-pointer flex items-center bg-white py-1 px-3 md:p-0 rounded-full md:rounded-none border md:border-0 border-slate-200 shadow md:shadow-none">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20"
