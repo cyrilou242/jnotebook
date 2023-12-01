@@ -35,7 +35,7 @@ public class HtmlTemplateEngine {
     }
   }
 
-  // render is the actual generated html
+  // render is the generated notebook html
   public String render(final Main.SharedConfiguration config, final boolean interactive,
                        final String render) {
     final TemplateModel model =  new TemplateModel(config, interactive, render);
