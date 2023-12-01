@@ -646,7 +646,9 @@
             background-color: #ffe4e4;
         }
 
-        [x-cloak] { display: none !important; }
+        [x-cloak] {
+            display: none !important;
+        }
     </style>
 
     <script defer class="jnb-no-opti" src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.1/dist/cdn.min.js"></script>
@@ -670,7 +672,7 @@
 </head>
 <body>
 <div x-cloak x-data="{ tocOpen: window.innerWidth >= 768, notebookStatus: 'Connected'}" class="flex">
-    <button x-on:click="tocOpen = ! tocOpen"
+    <button x-on:click="tocOpen=!tocOpen"
             class="toc-toggle z-20 fixed right-2 top-2 md:right-auto md:left-3 md:top-[7px] text-slate-400 font-sans text-xs hover:underline cursor-pointer flex items-center bg-white py-1 px-3 md:p-0 rounded-full md:rounded-none border md:border-0 border-slate-200 shadow md:shadow-none">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20"
              height="20">
@@ -687,7 +689,7 @@
         <div class="px-3 mb-1 mt-1 md:mt-0 text-xs md:text-[12px] uppercase tracking-wider text-slate-500 font-medium px-3 mb-1 leading-none">
             ToC
         </div>
-        <div x-on:click="tocOpen = ! tocOpen"
+        <div x-on:click="tocOpen=!tocOpen"
              class="toc-toggle text-slate-500 absolute right-2 top-[11px] cursor-pointer z-10">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
                  stroke-width="2" class="w-4 w-4">
@@ -697,23 +699,22 @@
         <div id="toc"></div>
     </aside>
     <div x-bind:class="tocOpen ? 'toc-offset' : ''" class="flex-auto h-screen overflow-y-auto scroll-container">
-        @if(model.render() != null)
-            <div id="notebook" class="flex flex-col items-center viewer-notebook flex-auto">
+        <div id="notebook" class="flex flex-col items-center viewer-notebook flex-auto">
+            @if(model.render() != null)
                 $unsafe{model.render()}
-            </div>
-        @else
-            <div id="notebook" class="flex flex-col items-center viewer-notebook flex-auto">
+            @else
                 <div id="helper" class="viewer viewer-result w-full max-w-prose px-8">
                     <div class="relative">
                         <div class="overflow-y-hidden">
                             <p>Welcome to <code>jnotebook</code>. Learn more on <a href="https://jnotebook.catheu.tech">jnotebook.catheu.tech</a>.
                             </p>
-                            <p>Edit a <code>.jsh</code> file in your <code>${((InteractiveConfiguration) model.config()).notebookPath}</code> folder to
+                            <p>Edit a <code>.jsh</code> file in your
+                                <code>${((InteractiveConfiguration) model.config()).notebookPath}</code> folder to
                                 make your notebook appear.</p></div>
                     </div>
                 </div>
-            </div>
-        @endif
+            @endif
+        </div>
     </div>
     @if(model.interactive())
         <script defer>
