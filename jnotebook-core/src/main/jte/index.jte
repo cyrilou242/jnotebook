@@ -1,0 +1,771 @@
+@import tech.catheu.jnotebook.Main.InteractiveConfiguration
+@import tech.catheu.jnotebook.server.HtmlTemplateEngine.TemplateModel
+@import java.util.Optional
+@param TemplateModel model
+<!--/*
+
+    Copyright 2023 Cyril de Catheu
+
+    Use of this source code is governed by an MIT-style
+    license that can be found in the LICENSE file or at
+    https://opensource.org/licenses/MIT.
+
+*/-->
+<!DOCTYPE html>
+<html lang="en" class="overflow-hidden min-h-screen">
+<head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>jnotebook</title>
+    <link rel="icon"
+          href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📓</text></svg>">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css"
+          integrity="sha384-GvrOXuhMATgEsSwCs4smul74iXGOixntILdUW9XmUC6+HX0sLNAK3q71HotJqlAn" crossorigin="anonymous">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+    <link rel="stylesheet" type="text/css"
+          href="https://cdn.jsdelivr.net/npm/d3-flame-graph@4.1.3/dist/d3-flamegraph.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.18.2/tocbot.css">
+    <script>
+        function initTocBot() {
+            tocbot.init({
+                // Where to render the table of contents.
+                tocSelector: '#toc',
+                // Where to grab the headings to build the table of contents.
+                contentSelector: '#notebook',
+                // Which headings to grab inside of the contentSelector element.
+                headingSelector: 'h1, h2, h3',
+                // For headings inside relative or absolute positioned containers within content.
+                hasInnerContainers: true,
+            })
+        }
+
+        function renderLatex() {
+            var mathElems = document.getElementsByClassName("katex");
+            var elems = [];
+            for (const i in mathElems) {
+                if (mathElems.hasOwnProperty(i)) elems.push(mathElems[i]);
+            }
+            elems.forEach(elem => {
+                katex.render(elem.textContent, elem, {throwOnError: false, displayMode: elem.nodeName !== 'SPAN',});
+            });
+        }
+
+        function renderMermaid() {
+            mermaid.init({noteMargin: 10}, '.mermaid');
+        }
+
+        function renderCodeColor() {
+            document.querySelectorAll('div.cm-content').forEach(el => {
+                hljs.highlightElement(el, {language: 'java'});
+            });
+        }
+
+        function renderVega() {
+            document.querySelectorAll('div.vega-embed').forEach(el => {
+                vegaEmbed(el, JSON.parse(el.dataset.config))
+            });
+        }
+
+        function renderPlotly() {
+            document.querySelectorAll('div.js-plotly-plot').forEach(el => {
+                Plotly.newPlot(el, JSON.parse(el.dataset.data), JSON.parse(el.dataset.layout), JSON.parse(el.dataset.config));
+            });
+        }
+
+        function renderFlamegraphs() {
+            document.querySelectorAll(".flame").forEach(el => {
+                const chart = flamegraph().inverted(true).width(el.parentElement.offsetWidth);
+                d3.select(el).datum(JSON.parse(el.dataset.profile)).call(chart);
+            })
+        }
+    </script>
+    <script class="jnb-opti" src="https://cdn.tailwindcss.com?plugins=typography"></script>
+    <script class="jnb-opti">tailwind.config = {
+            darkMode: "class",
+            content: ["./tw/viewer.js", "./tw/**/*.edn"],
+            safelist: ['dark'],
+            theme: {
+                extend: {},
+                fontFamily: {
+                    sans: ["Fira Sans", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
+                    serif: ["PT Serif", "serif"],
+                    mono: ["Fira Mono", "monospace"]
+                }
+            },
+            variants: {
+                extend: {},
+            },
+            plugins: [],
+        }</script>
+    <style class="jnb-opti" type="text/tailwindcss">@tailwind base;
+        @tailwind components;
+        @tailwind utilities;
+
+        @layer base {
+            html {
+                font-size: 18px;
+            }
+
+            @media (max-width: 600px) {
+                html {
+                    font-size: 16px;
+                }
+            }
+            .font-condensed {
+                font-family: "Fira Sans Condensed", sans-serif;
+            }
+
+            .font-inter {
+                font-family: "Inter", sans-serif;
+            }
+
+            body {
+                @apply font-serif antialiased text-gray-900 sm:overscroll-y-none;
+            }
+
+            code, .code {
+                @apply font-mono text-sm text-gray-900 bg-slate-50 px-0.5 py-px rounded;
+            }
+
+            code::before, code::after {
+                @apply content-none !important;
+            }
+
+            h1, h3, h4, h5, h6 {
+                @apply font-condensed font-bold mt-8 first:mt-0;
+            }
+
+            h2 {
+                /*We cannot collapse margins due to nesting but we want to*/
+                /*keep the h2’s large margin visible*/
+                @apply font-condensed font-bold mt-8 first:mt-2;
+            }
+
+            h1 {
+                @apply text-4xl;
+            }
+
+            h2 {
+                @apply text-3xl;
+            }
+
+            h3 {
+                @apply text-2xl;
+            }
+
+            button {
+                @apply focus:outline-none;
+            }
+
+            strong {
+                @apply font-bold;
+            }
+
+            em {
+                @apply italic;
+            }
+
+            pre {
+                @apply m-0 font-mono;
+            }
+        }
+
+        /* Compatibility */
+        /* --------------------------------------------------------------- */
+        /* TODO: Verify which colors are in use and replace with Tailwind
+           colors accordingly. Move Nj-specific styles out of here. */
+
+        :root {
+            --teal-color: #31afd0;
+            --dark-teal-color: #095960;
+            --near-black-color: #2e2e2c;
+            --red-color: #d64242;
+            --dark-blue-color: #1f2937;
+            --dark-blue-60-color: rgba(28, 42, 56, 0.6);
+            --gray-panel-color: rgba(239, 241, 245, 1.000);
+            --brand-color: var(--dark-blue-color);
+            --link-color: #5046e4;
+            --command-bar-selected-color: var(--teal-color);
+        }
+
+        .serif {
+            @apply font-serif;
+        }
+
+        .sans-serif {
+            @apply font-sans;
+        }
+
+        .monospace {
+            @apply font-mono;
+        }
+
+        .inter {
+            @apply font-inter;
+        }
+
+        .border-color-teal {
+            border-color: var(--dark-teal-color);
+        }
+
+        .teal {
+            color: var(--teal-color);
+        }
+
+        .bg-dark-blue {
+            background: var(--dark-blue-color);
+        }
+
+        .bg-dark-blue-60 {
+            background: rgba(28, 42, 56, 0.6);
+        }
+
+        .bg-gray-panel {
+            background: var(--gray-panel-color);
+        }
+
+        .text-dark-blue {
+            color: var(--dark-blue-color);
+        }
+
+        .text-dark-blue-60 {
+            color: var(--dark-blue-60-color);
+        }
+
+        .border-dark-blue-30 {
+            border-color: rgba(28, 42, 56, 0.6);
+        }
+
+        .text-brand {
+            color: var(--dark-blue-color);
+        }
+
+        .bg-brand {
+            background: var(--dark-blue-color);
+        }
+
+        .text-selected {
+            color: white;
+        }
+
+        .red {
+            color: var(--red-color);
+        }
+
+        /* Disclose Button */
+        /* --------------------------------------------------------------- */
+
+        .disclose {
+            @apply content-none border-solid cursor-pointer inline-block relative mr-[3px] top-[-2px] transition-all;
+            border-color: var(--near-black-color) transparent;
+            border-width: 6px 4px 0;
+        }
+
+        .disclose:hover {
+            border-color: var(--near-black-color) transparent;
+        }
+
+        .dark .disclose,
+        .dark .disclose:hover {
+            border-color: white transparent;
+        }
+
+        .disclose.collapsed {
+            @apply rotate-[-90deg];
+        }
+
+        /* Layout */
+        /* --------------------------------------------------------------- */
+
+        .page {
+            @apply max-w-5xl mx-auto px-12 box-border flex-shrink-0;
+        }
+
+        .max-w-prose {
+            @apply max-w-[46rem] !important;
+        }
+
+        .max-w-wide {
+            @apply max-w-3xl !important;
+        }
+
+        /* List Styles */
+        /* --------------------------------------------------------------- */
+
+        .task-list-item + .task-list-item,
+        .viewer-markdown ul ul {
+            @apply mt-1 mb-0;
+        }
+
+        /* TOC related */
+        .toc-offset {
+            @apply ml-52;
+        }
+
+        /* compact TOC */
+        .viewer-markdown .toc ul {
+            list-style: none;
+            @apply my-1;
+        }
+
+        /* Code Viewer */
+        /* --------------------------------------------------------------- */
+
+        .viewer-code {
+            @apply font-mono bg-slate-100 rounded-sm text-sm overflow-x-auto;
+        }
+
+        .viewer-code .cm-content {
+            @apply py-4 px-8;
+        }
+
+        @media (min-width: 960px) {
+            .viewer-notebook .viewer-code .cm-content {
+                @apply py-4 pl-12;
+            }
+        }
+
+        /* Don’t show focus outline when double-clicking cell in Safari */
+        .cm-scroller {
+            @apply focus:outline-none;
+        }
+
+        /* Syntax Highlighting */
+        /* --------------------------------------------------------------- */
+
+        .inspected-value {
+            @apply text-xs font-mono leading-[1.25rem];
+        }
+
+        .result-data {
+            @apply font-mono text-sm overflow-x-auto whitespace-nowrap leading-normal;
+        }
+
+        .result-data::-webkit-scrollbar, .path-nav::-webkit-scrollbar {
+            @apply h-0;
+        }
+
+        .result-data-collapsed {
+            @apply whitespace-nowrap;
+        }
+
+        .result-data-field {
+            @apply ml-4 whitespace-nowrap;
+        }
+
+        .result-data-field-link {
+            @apply ml-4 whitespace-nowrap cursor-pointer;
+        }
+
+        .result-data-field-link:hover {
+            @apply text-black bg-black/5;
+        }
+
+        .result-text-empty {
+            color: rgba(0, 0, 0, .3);
+        }
+
+        .browsify-button:hover {
+            box-shadow: -2px 0 0 2px #edf2f7;
+        }
+
+        /* Prose */
+        /* --------------------------------------------------------------- */
+
+        .viewer-notebook,
+        .viewer-markdown {
+            @apply prose
+            prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline
+            prose-p:mt-4 prose-p:leading-snug
+            prose-ol:mt-4 prose-ol:mb-6 prose-ol:leading-snug
+            prose-ul:mt-4 prose-ul:mb-6 prose-ul:leading-snug
+            prose-blockquote:mt-4 prose-blockquote:leading-snug
+            prose-hr:mt-6 prose-hr:border-t-2 prose-hr:border-solid prose-hr:border-slate-200
+            prose-figure:mt-4
+            prose-figcaption:mt-2 prose-figcaption:text-xs
+            prose-headings:mb-4
+            prose-table:mt-0
+            prose-th:mb-0
+            prose-img:my-0
+            prose-code:font-medium prose-code:bg-slate-100
+            max-w-none;
+        }
+
+        .viewer-markdown blockquote p:first-of-type:before,
+        .viewer-markdown blockquote p:last-of-type:after {
+            @apply content-none;
+        }
+
+        /* Images */
+        /* --------------------------------------------------------------- */
+
+
+        /* Todo Lists */
+        /* --------------------------------------------------------------- */
+
+        .contains-task-list {
+            @apply pl-6 list-none;
+        }
+
+        .contains-task-list input[type="checkbox"] {
+            @apply appearance-none h-4 w-4 rounded border border-slate-200 relative mr-[0.3rem] ml-[-1.5rem] top-[0.15rem];
+        }
+
+        .contains-task-list input[type="checkbox"]:checked {
+            @apply border-indigo-600 bg-indigo-600 bg-no-repeat bg-contain;
+            background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");
+        }
+
+        /* Markdown TOC */
+        /* --------------------------------------------------------------- */
+
+        .viewer-markdown .toc {
+            @apply mt-4;
+        }
+
+        .viewer-markdown h1 + .toc {
+            @apply mt-8;
+        }
+
+        .viewer-markdown .toc h1,
+        .viewer-markdown .toc h2,
+        .viewer-markdown .toc h3,
+        .viewer-markdown .toc h4,
+        .viewer-markdown .toc h5,
+        .viewer-markdown .toc h6 {
+            @apply text-base text-indigo-600 font-sans my-0;
+        }
+
+        .viewer-markdown .toc a {
+            @apply text-indigo-600 font-normal no-underline hover:underline;
+        }
+
+        .viewer-markdown .toc li {
+            @apply m-0;
+        }
+
+        .viewer-markdown .toc ul ul {
+            @apply pl-4;
+        }
+
+        /* Notebook Spacing */
+        /* --------------------------------------------------------------- */
+
+        .viewer-notebook {
+            @apply py-16;
+        }
+
+        #clerk-static-app .viewer-notebook {
+            @apply pt-[0.8rem] pb-16;
+        }
+
+        .viewer-markdown *:first-child:not(.viewer-code):not(li):not(h2) {
+            @apply mt-0;
+        }
+
+        /*.viewer + .viewer { @apply mt-6; }*/
+        .viewer + .viewer-result {
+            @apply mt-0;
+        }
+
+        .viewer-code + .viewer-result {
+            @apply mt-3;
+        }
+
+        .viewer-markdown + .viewer-markdown {
+            @apply mt-0;
+        }
+
+        /* Sidenotes */
+        /* --------------------------------------------------------------- */
+
+        .sidenote-ref {
+            @apply top-[-3px] inline-flex justify-center items-center w-[18px] h-[18px]
+            rounded-full bg-slate-100 border border-slate-300 hover:bg-slate-200 hover:border-slate-300
+            m-0 ml-[4px] cursor-pointer;
+        }
+
+        .sidenote {
+            @apply hidden float-left clear-both mx-[2.5%] my-4 text-xs relative w-[95%];
+        }
+
+        .sidenote-ref.expanded + .sidenote {
+            @apply block;
+        }
+
+        @media (min-width: 860px) {
+            .sidenote-ref {
+                @apply top-[-0.5em] w-auto h-auto inline border-0 bg-transparent m-0 pointer-events-none;
+            }
+
+            .sidenote sup {
+                @apply inline;
+            }
+
+            .viewer-markdown .contains-sidenotes p {
+                @apply max-w-[65%];
+            }
+
+            .viewer-markdown p .sidenote {
+                @apply mr-[-54%] mt-[0.2rem] w-1/2 float-right clear-right relative block;
+            }
+        }
+
+        .viewer-code + .viewer:not(.viewer-markdown):not(.viewer-code):not(.viewer-code-folded),
+        .viewer-code-folded + .viewer:not(.viewer-markdown):not(.viewer-code):not(.viewer-code-folded),
+        .viewer-result + .viewer-result {
+            @apply mt-2;
+        }
+
+        .viewer-markdown code {
+            background-color: transparent;
+        }
+
+        .viewer-code + .viewer-code-folded {
+            @apply mt-4;
+        }
+
+        .viewer-result {
+            @apply leading-tight mb-6;
+        }
+
+        .viewer-result figure {
+            @apply mt-0 !important;
+        }
+
+        @media (min-width: 768px) {
+            .devcard-desc > div {
+                @apply max-w-full m-0;
+            }
+        }
+
+        /* Command Palette */
+        /* --------------------------------------------------------------- */
+
+        .nj-commands-input {
+            @apply bg-transparent text-white;
+        }
+
+        .nj-context-menu-item:hover:not([disabled]) {
+            @apply cursor-pointer;
+            background-color: rgba(255, 255, 255, .14);
+        }
+
+        /* Devdocs */
+        /* --------------------------------------------------------------- */
+
+        .logo, .logo-white {
+            @apply block indent-[-999em];
+            background: url(/images/nextjournal-logo.svg) center center no-repeat;
+        }
+
+        .devdocs-body {
+            @apply font-inter;
+        }
+
+        /* Workarounds */
+        /* --------------------------------------------------------------- */
+
+        /* Fixes vega viewer resizing into infinity */
+        .vega-embed .chart-wrapper {
+            @apply h-auto !important;
+        }
+
+        /* fixes fraction separators being overridden by tw’s border-color */
+        .katex * {
+            @apply border-black;
+        }
+
+        /* end of fork */
+        .hljs {
+            background-color: transparent !important;
+        }
+
+        .cm-success {
+            position: relative;
+        }
+
+        .cm-success::after {
+            content: '';
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            width: 24px;
+            height: 24px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='currentColor' class='w-6 h-6'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z'/%3E%3C/svg%3E");
+        }
+
+        .cm-failure {
+            position: relative;
+        }
+
+        .cm-failure::after {
+            content: '';
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            width: 24px;
+            height: 24px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor' style='width: 100%; height: 100%;'%3E%3Cpath fill-rule='evenodd' d='M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z' clip-rule='evenodd'/%3E%3C/svg%3E");
+        }
+
+        /* START: connection status header */
+        .status-header {
+            @apply z-10 fixed left-0 right-0 text-center font-sans text-xs bg-white;
+        }
+
+        .status-info {
+            @apply uppercase tracking-wider ml-1 font-bold text-[12px]
+        }
+
+        [data-status="COMPUTE"]::after {
+            content: 'Computing...';
+            color: green;
+        }
+
+        [data-status="TRANSFER"]::after {
+            content: "Transferring results...";
+            color: green;
+        }
+
+        [data-status="CONNECTED"]::after {
+            content: "Connected";
+            color: green;
+        }
+
+        [data-status="DISCONNECTED"]::after {
+            content: "Disconnected";
+            color: red;
+        }
+
+        /* END: connection status header */
+
+
+        .result-error {
+            background-color: #ffe4e4;
+        }
+
+    </style>
+
+    <script defer class="jnb-no-opti" src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.1/dist/cdn.min.js"></script>
+    <script defer class="jnb-opti" src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js" ,
+            onload="renderCodeColor();"></script>
+    <script defer class="jnb-opti" src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.18.2/tocbot.min.js" ,
+            onload="initTocBot();"></script>
+    <script defer class="jnb-opti" src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"
+            integrity="sha384-cpW21h6RZv/phavutF+AuVYrr+dA8xD9zs6FwLpaCct6O9ctzYFfFr4dgmgccOTx" crossorigin="anonymous"
+            onload="renderLatex();"></script>
+    <script defer class="jnb-opti" src="https://cdn.jsdelivr.net/npm/mermaid@10.2.4/dist/mermaid.min.js"
+            onload="renderMermaid();"></script>
+    <script defer class="jnb-no-opti" src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+    <script defer class="jnb-no-opti" src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+    <script defer class="jnb-no-opti" src="https://cdn.jsdelivr.net/npm/vega-embed@6" onload="renderVega()"></script>
+    <script defer class="jnb-no-opti" type="text/javascript" src="https://d3js.org/d3.v7.js"></script>
+    <script defer class="jnb-no-opti" type="text/javascript"
+            src="https://cdn.jsdelivr.net/npm/d3-flame-graph@4.1.3/dist/d3-flamegraph.min.js"
+            onload="renderFlamegraphs();"></script>
+    <script defer class="jnb-no-opti" src="https://cdn.plot.ly/plotly-latest.min.js" onload="renderPlotly();"></script>
+</head>
+<body>
+<div x-data="{ tocOpen: window.innerWidth >= 768, notebookStatus: 'Connected'}" class="flex">
+    <button x-on:click="tocOpen = ! tocOpen"
+            class="toc-toggle z-20 fixed right-2 top-2 md:right-auto md:left-3 md:top-[7px] text-slate-400 font-sans text-xs hover:underline cursor-pointer flex items-center bg-white py-1 px-3 md:p-0 rounded-full md:rounded-none border md:border-0 border-slate-200 shadow md:shadow-none">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20"
+             height="20">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+        <span class="tracking-wider ml-1 font-bold text-[12px]">ToC</span>
+    </button>
+    @if(model.interactive())
+        <div x-bind:class="tocOpen ? 'toc-offset' : ''" class="status-header">
+            <span id="status-message" data-status="" class="status-info"></span>
+        </div>
+    @endif
+    <aside x-show="tocOpen" class="h-screen z-20 flex-shrink-0 fixed bg-slate-100 font-sans border-r border-t w-52">
+        <div class="px-3 mb-1 mt-1 md:mt-0 text-xs md:text-[12px] uppercase tracking-wider text-slate-500 font-medium px-3 mb-1 leading-none">
+            ToC
+        </div>
+        <div x-on:click="tocOpen = ! tocOpen"
+             class="toc-toggle text-slate-500 absolute right-2 top-[11px] cursor-pointer z-10">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                 stroke-width="2" class="w-4 w-4">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path>
+            </svg>
+        </div>
+        <div id="toc"></div>
+    </aside>
+    <div x-bind:class="tocOpen ? 'toc-offset' : ''" class="flex-auto h-screen overflow-y-auto scroll-container">
+        @if(model.render() != null)
+            <div id="notebook" class="flex flex-col items-center viewer-notebook flex-auto">
+                $unsafe{model.render()}
+            </div>
+        @else
+            <div id="notebook" class="flex flex-col items-center viewer-notebook flex-auto">
+                <div id="helper" class="viewer viewer-result w-full max-w-prose px-8">
+                    <div class="relative">
+                        <div class="overflow-y-hidden">
+                            <p>Welcome to <code>jnotebook</code>. Learn more on <a href="https://jnotebook.catheu.tech">jnotebook.catheu.tech</a>.
+                            </p>
+                            <p>Edit a <code>.jsh</code> file in your <code>${((InteractiveConfiguration) model.config()).notebookPath}</code> folder to
+                                make your notebook appear.</p></div>
+                    </div>
+                </div>
+            </div>
+        @endif
+    </div>
+    @if(model.interactive())
+        <script defer>
+            function reRender() {
+                renderMermaid();
+                renderLatex();
+                renderCodeColor();
+                renderVega();
+                renderPlotly();
+                renderFlamegraphs();
+
+                // refresh table of content
+                tocbot.refresh();
+            }
+
+            function update(eventData) {
+                document.getElementById("notebook").innerHTML = eventData;
+                reRender();
+                updateStatus("CONNECTED");
+            }
+
+            function updateStatus(status) {
+                console.log("Status change: " + status);
+                const statusElem = document.getElementById("status-message");
+                statusElem.dataset.status = status;
+            }
+
+            function startWebSocketServer(port) {
+                var socket = new WebSocket("ws://localhost:" + port + "/websocket");
+
+                socket.onclose = function (event) {
+                    console.log("Websocket connection closed or unable to connect; " +
+                        "starting reconnect timeout");
+                    updateStatus("DISCONNECTED");
+                    socket = null;
+                    setTimeout(function () {
+                        startWebSocketServer(port);
+                    }, 5000)
+                }
+
+                socket.onmessage = (socketEvent) => {
+                    if (socketEvent.data.startsWith("status_")) {
+                        updateStatus(socketEvent.data.substring(7))
+                    } else {
+                        update(socketEvent.data);
+                    }
+                };
+            }
+
+            const port = "${Optional.ofNullable(((InteractiveConfiguration) model.config()).port).orElse(5002)}";
+            startWebSocketServer(port);
+        </script>
+    @endif
+</div>
+</body>
+</html>
