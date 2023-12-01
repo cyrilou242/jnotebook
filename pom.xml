@@ -344,14 +344,10 @@
                             <!-- tmp directories -->
                             <exclude>**/tmp/**</exclude>
                         </excludes>
-                        <headerDefinitions>
-                            <headerDefinition>${maven.multiModuleProjectDirectory}/license_style_thymeleaf_no_render.xml</headerDefinition>
-                        </headerDefinitions>
                         <mapping>
                             <ts>JAVADOC_STYLE</ts>
                             <tsx>JAVADOC_STYLE</tsx>
                             <js>JAVADOC_STYLE</js>
-                            <html>THYMELEAF_NO_RENDER</html>
                         </mapping>
                     </configuration>
                 </plugin>
