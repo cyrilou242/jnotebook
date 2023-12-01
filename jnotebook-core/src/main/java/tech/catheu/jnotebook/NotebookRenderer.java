@@ -40,12 +40,9 @@ import java.net.ServerSocket;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
-import static tech.catheu.jnotebook.server.HtmlTemplateEngine.TEMPLATE_KEY_CONFIG;
-import static tech.catheu.jnotebook.server.HtmlTemplateEngine.TEMPLATE_KEY_RENDERED;
 import static tech.catheu.jnotebook.utils.JavaUtils.optional;
 
 public class NotebookRenderer {
@@ -78,10 +75,7 @@ public class NotebookRenderer {
       final Interpreted interpreted = interpreter.interpret(staticParsing);
       final Rendering render = renderer.render(interpreted);
       final HtmlTemplateEngine templateEngine = new HtmlTemplateEngine();
-      String html = templateEngine.render(Map.of(TEMPLATE_KEY_RENDERED,
-                                                 render.html(),
-                                                 TEMPLATE_KEY_CONFIG,
-                                                 config));
+      String html = templateEngine.render(config, false, render.html());
       if (!config.noOptimize) {
         html = optimizeHtml(html);
       }

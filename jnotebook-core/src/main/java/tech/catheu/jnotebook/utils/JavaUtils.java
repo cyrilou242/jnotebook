@@ -11,6 +11,12 @@ import java.util.Optional;
 
 public class JavaUtils {
 
+  public static boolean RUN_IN_JAR = JavaUtils.class.getProtectionDomain()
+                                                    .getCodeSource()
+                                                    .getLocation()
+                                                    .toString()
+                                                    .endsWith(".jar");
+
   public static <T> Optional<T> optional(final T obj) {
     return Optional.ofNullable(obj);
   }

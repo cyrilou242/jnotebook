@@ -7,35 +7,44 @@
  */
 package tech.catheu.jnotebook.server;
 
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
-import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
+import gg.jte.CodeResolver;
+import gg.jte.ContentType;
+import gg.jte.TemplateEngine;
+import gg.jte.TemplateOutput;
+import gg.jte.output.StringOutput;
+import gg.jte.resolve.DirectoryCodeResolver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import tech.catheu.jnotebook.Main;
+import tech.catheu.jnotebook.utils.JavaUtils;
 
-import java.util.Map;
+import java.nio.file.Path;
 
 public class HtmlTemplateEngine {
 
-  public final static String TEMPLATE_KEY_CONFIG = "jnb_config";
-  public final static String TEMPLATE_KEY_INTERACTIVE = "jnb_interactive";
-  public final static String TEMPLATE_KEY_RENDERED = "jnb_rendered";
-
+  private static final Logger LOG = LoggerFactory.getLogger(Main.class);
   private final TemplateEngine delegate;
 
   public HtmlTemplateEngine() {
-    ClassLoaderTemplateResolver resolver = new ClassLoaderTemplateResolver();
-    // frontend/index.html is the path of the only template used for the moment
-    resolver.setPrefix("frontend/");
-    resolver.setSuffix(".html");
-
-    this.delegate  = new TemplateEngine();
-    this.delegate.setTemplateResolver(resolver);
+    if (JavaUtils.RUN_IN_JAR) {
+      this.delegate = TemplateEngine.createPrecompiled(ContentType.Html);
+    } else {
+      LOG.warn("Using dynamic templates. This should only happen in development.");
+      final CodeResolver codeResolver = new DirectoryCodeResolver(Path.of("jnotebook-core/src/main/jte"));
+      this.delegate = TemplateEngine.create(codeResolver, ContentType.Html);
+    }
   }
 
-  public String render(final Map<String, Object> context) {
-    final Context tlContext = new Context();
-    context.forEach(tlContext::setVariable);
-
-    return delegate.process("index", tlContext);
+  // render is the actual generated html
+  public String render(final Main.SharedConfiguration config, final boolean interactive,
+                       final String render) {
+    final TemplateModel model =  new TemplateModel(config, interactive, render);
+    final TemplateOutput output = new StringOutput();
+    delegate.render("index.jte", model, output);
+    return output.toString();
   }
+
+  public record TemplateModel(Main.SharedConfiguration config, boolean interactive, String render) {}
+
 
 }

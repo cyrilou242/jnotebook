@@ -30,10 +30,6 @@ import tech.catheu.jnotebook.render.Rendering;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
-import static tech.catheu.jnotebook.server.HtmlTemplateEngine.TEMPLATE_KEY_INTERACTIVE;
-import static tech.catheu.jnotebook.server.HtmlTemplateEngine.TEMPLATE_KEY_CONFIG;
 
 public class InteractiveServer {
 
@@ -89,19 +85,16 @@ public class InteractiveServer {
   private static class TemplatedHttpHandler implements HttpHandler {
 
     final HtmlTemplateEngine templateEngine;
-    final Map<String, Object> context;
     final Main.InteractiveConfiguration configuration;
 
     TemplatedHttpHandler(final Main.InteractiveConfiguration configuration) {
       this.configuration = configuration;
       this.templateEngine = new HtmlTemplateEngine();
-      this.context = Map.of(TEMPLATE_KEY_INTERACTIVE, true,
-                            TEMPLATE_KEY_CONFIG, this.configuration);
     }
 
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
-      final String html = templateEngine.render(context);
+      final String html = templateEngine.render(this.configuration, true, null);
       exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/html");
       exchange.getResponseSender().send(html);
     }
