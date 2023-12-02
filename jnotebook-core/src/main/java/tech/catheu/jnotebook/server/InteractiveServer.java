@@ -30,10 +30,13 @@ import tech.catheu.jnotebook.Main;
 import tech.catheu.jnotebook.render.Rendering;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 public class InteractiveServer {
 
@@ -43,7 +46,7 @@ public class InteractiveServer {
   private final Consumer<Path> renderTrigger;
 
   private Undertow server;
-  private final List<WebSocketChannel> channels = new ArrayList<>();
+  private final Queue<WebSocketChannel> channels = new ConcurrentLinkedQueue<>();
   XnioWorker worker;
   private Rendering lastUpdate;
 
@@ -101,7 +104,20 @@ public class InteractiveServer {
 
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
-      final String html = templateEngine.render(this.configuration, true, null);
+      final List<Path> notebooksInPath;
+      try (Stream<Path> files = Files.find(Path.of(configuration.notebookPath),
+                                           10,
+                                           (path, attributes) -> attributes.isRegularFile() && path.toString()
+                                                                                                   .endsWith(
+                                                                                                           ".jsh"))) {
+        notebooksInPath = files.toList();
+      }
+      final HtmlTemplateEngine.TemplateData model = new HtmlTemplateEngine.TemplateData(
+              this.configuration,
+              true,
+              null,
+              notebooksInPath);
+      final String html = templateEngine.render(model);
       exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/html");
       exchange.getResponseSender().send(html);
     }
@@ -126,7 +142,8 @@ public class InteractiveServer {
       }
     }
     if (!messageSent) {
-      LOG.error("ERROR: trying to send updates but no client is opened. Go to http://localhost:" + configuration.port);
+      LOG.error(
+              "ERROR: trying to send updates but no client is opened. Go to http://localhost:" + configuration.port);
     }
   }
 

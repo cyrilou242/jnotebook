@@ -75,13 +75,15 @@ public class NotebookRenderer {
       final Interpreted interpreted = interpreter.interpret(staticParsing);
       final Rendering render = renderer.render(interpreted);
       final HtmlTemplateEngine templateEngine = new HtmlTemplateEngine();
-      String html = templateEngine.render(config, false, render.html());
+      final HtmlTemplateEngine.TemplateData model =
+              new HtmlTemplateEngine.TemplateData(config, false, render.html(), null);
+      String html = templateEngine.render(model);
       if (!config.noOptimize) {
         html = optimizeHtml(html);
       }
 
-      final String outputPath = optional(config.outputPath)
-              .orElse(Files.getNameWithoutExtension(config.inputPath) + ".html");
+      final String outputPath =
+              optional(config.outputPath).orElse(Files.getNameWithoutExtension(config.inputPath) + ".html");
       final File outputFile = FileUtils.getFile(outputPath);
       FileUtils.write(outputFile, html, StandardCharsets.UTF_8);
       LOG.info("Notebook rendered successfully and written to {}", outputFile);
@@ -139,7 +141,8 @@ public class NotebookRenderer {
           responseStream.close();
         }
       });
-      final HtmlFileServer result = new HtmlFileServer("http://localhost:" + port, server);
+      final HtmlFileServer result =
+              new HtmlFileServer("http://localhost:" + port, server);
       return result;
     } catch (Exception e) {
       LOG.error("Failed to create a server: ", e);

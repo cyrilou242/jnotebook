@@ -1,7 +1,8 @@
 @import tech.catheu.jnotebook.Main.InteractiveConfiguration
-@import tech.catheu.jnotebook.server.HtmlTemplateEngine.TemplateModel
+@import tech.catheu.jnotebook.server.HtmlTemplateEngine.TemplateData
+@import java.nio.file.Path
 @import java.util.Optional
-@param TemplateModel model
+@param TemplateData model
 <!--/*
 
     Copyright 2023 Cyril de Catheu
@@ -710,8 +711,27 @@
                             </p>
                             <p>Edit a <code>.jsh</code> file in your
                                 <code>${((InteractiveConfiguration) model.config()).notebookPath}</code> folder to
-                                make your notebook appear.</p>
-                            <button class="test-cyril">doc/book.jsh</button>
+                                launch your notebook, or click on one of the notebook below.</p>
+                            <div>
+                                <table>
+                                    <tr>
+                                        <td>Notebooks</td>
+                                    </tr>
+                                    @if(model.notebooksInPath() == null || model.notebooksInPath().isEmpty())
+                                        <tr>
+                                            <td>
+                                                <i>There are no notebooks in the <code>${((InteractiveConfiguration) model.config()).notebookPath}</code> folder.</i>
+                                            </td>
+                                        </tr>
+                                    @else
+                                    @for(final Path p: model.notebooksInPath())
+                                        <tr>
+                                            <td><button class="notebook-in-path"><a>${p.toString()}</a></button></td>
+                                        </tr>
+                                    @endfor
+                                    @endif
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -766,8 +786,10 @@
                 };
 
                 // something like this for the message passing
-                const textAreas = document.querySelectorAll("button.test-cyril")
-                    .forEach(e => e.addEventListener('click', ev => {socket.send("refresh_"+e.textContent)}));
+                const textAreas = document.querySelectorAll("button.notebook-in-path")
+                    .forEach(e => e.addEventListener('click', ev => {
+                        socket.send("refresh_" + e.textContent)
+                    }));
             }
 
             const port = "${Optional.ofNullable(((InteractiveConfiguration) model.config()).port).orElse(5002)}";
