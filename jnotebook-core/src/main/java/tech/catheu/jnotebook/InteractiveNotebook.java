@@ -11,7 +11,7 @@ import io.methvin.watcher.DirectoryChangeEvent;
 import io.methvin.watcher.hashing.FileHash;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.subjects.PublishSubject;
-import org.jetbrains.annotations.NotNull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.catheu.jnotebook.evaluate.GreedyInterpreter;
@@ -77,9 +77,7 @@ public class InteractiveNotebook {
             .subscribe(server::sendUpdate, InteractiveNotebook::logError);
   }
 
-  // build a DirectoryChangeEvent manually
-  // assumes rootPath is never used - it may be incorrect
-  @NotNull
+  @NonNull
   private static DirectoryChangeEvent directoryChangeEvent(final Path path) {
     return new DirectoryChangeEvent(
             DirectoryChangeEvent.EventType.MODIFY,
@@ -87,7 +85,6 @@ public class InteractiveNotebook {
             path,
             FileHash.fromLong(0),
             0,
-            // assume this is not used - may be incorrect
             path.getRoot());
   }
 
