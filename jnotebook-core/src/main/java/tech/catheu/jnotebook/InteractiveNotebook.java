@@ -8,7 +8,10 @@
 package tech.catheu.jnotebook;
 
 import io.methvin.watcher.DirectoryChangeEvent;
+import io.methvin.watcher.hashing.FileHash;
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.subjects.PublishSubject;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.catheu.jnotebook.evaluate.GreedyInterpreter;
@@ -32,7 +35,8 @@ public class InteractiveNotebook {
 
   private static final Logger LOG = LoggerFactory.getLogger(InteractiveNotebook.class);
 
-  private static final String RESOURCES_HELLO_WORLD_NOTEBOOK = "/jnb_interactive/hello_world.jsh";
+  private static final String RESOURCES_HELLO_WORLD_NOTEBOOK =
+          "/jnb_interactive/hello_world.jsh";
   private static final String FILESYSTEM_HELLO_WORLD_NAME = "hello_world.jsh";
 
   private final Main.InteractiveConfiguration configuration;
@@ -40,7 +44,7 @@ public class InteractiveNotebook {
   private final StaticParser staticParser;
   private final Interpreter interpreter;
   private final Renderer renderer;
-  private final InteractiveServer server;
+  private InteractiveServer server;
 
   public InteractiveNotebook(final Main.InteractiveConfiguration configuration) {
     this.configuration = configuration;
@@ -48,20 +52,21 @@ public class InteractiveNotebook {
     this.staticParser = new StaticParser(shellProvider);
     this.interpreter = new GreedyInterpreter(shellProvider);
     this.renderer = new Renderer(configuration);
-    this.server = new InteractiveServer(configuration);
   }
 
   public void run() throws IOException {
     prepare();
-    server.start();
-    final Observable<DirectoryChangeEvent> notebookEvents =
+    final Observable<DirectoryChangeEvent> fileChangeEvents =
             PathObservables.of(Paths.get(configuration.notebookPath))
                            .filter(e -> e.path().toString().endsWith(JSHELL_SUFFIX));
-    //.subscribe(s -> server.sendReload()); to subscribe on a side scheduler
-
+    final PublishSubject<DirectoryChangeEvent> manualTriggers = PublishSubject.create();
+    this.server = new InteractiveServer(configuration,
+                                        path -> manualTriggers.onNext(
+                                                directoryChangeEvent(path)));
+    server.start();
     LOG.info("Notebook server started. Go to http://localhost:" + configuration.port);
-
-    notebookEvents
+    manualTriggers
+            .mergeWith(fileChangeEvents)
             .doOnEach(e -> server.sendStatus(NotebookServerStatus.COMPUTE))
             .map(staticParser::staticSnippets)
             .doOnError(InteractiveNotebook::logError)
@@ -70,6 +75,17 @@ public class InteractiveNotebook {
             .map(renderer::render)
             .doOnError(InteractiveNotebook::logError)
             .subscribe(server::sendUpdate, InteractiveNotebook::logError);
+  }
+
+  @NonNull
+  private static DirectoryChangeEvent directoryChangeEvent(final Path path) {
+    return new DirectoryChangeEvent(
+            DirectoryChangeEvent.EventType.MODIFY,
+            false,
+            path,
+            FileHash.fromLong(0),
+            0,
+            path.getRoot());
   }
 
   private void prepare() {
@@ -91,7 +107,9 @@ public class InteractiveNotebook {
 
 
   public void stop() throws IOException {
-    server.stop();
+    if (server != null) {
+      server.stop();
+    }
     staticParser.stop();
     interpreter.stop();
     renderer.stop();

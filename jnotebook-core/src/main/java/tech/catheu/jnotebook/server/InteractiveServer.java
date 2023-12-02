@@ -15,6 +15,8 @@ import io.undertow.server.RoutingHandler;
 import io.undertow.util.Headers;
 import io.undertow.websockets.WebSocketConnectionCallback;
 import io.undertow.websockets.WebSocketProtocolHandshakeHandler;
+import io.undertow.websockets.core.AbstractReceiveListener;
+import io.undertow.websockets.core.BufferedTextMessage;
 import io.undertow.websockets.core.WebSocketChannel;
 import io.undertow.websockets.core.WebSockets;
 import io.undertow.websockets.spi.WebSocketHttpExchange;
@@ -28,22 +30,30 @@ import tech.catheu.jnotebook.Main;
 import tech.catheu.jnotebook.render.Rendering;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 public class InteractiveServer {
 
-  private static final Logger LOG = LoggerFactory.getLogger(Main.class);
+  private static final Logger LOG = LoggerFactory.getLogger(InteractiveServer.class);
 
   private final Main.InteractiveConfiguration configuration;
+  private final Consumer<Path> renderTrigger;
 
   private Undertow server;
-  private final List<WebSocketChannel> channels = new ArrayList<>();
+  private final Queue<WebSocketChannel> channels = new ConcurrentLinkedQueue<>();
   XnioWorker worker;
   private Rendering lastUpdate;
 
-  public InteractiveServer(final Main.InteractiveConfiguration configuration) {
+  public InteractiveServer(final Main.InteractiveConfiguration configuration,
+                           Consumer<Path> renderTrigger) {
     this.configuration = configuration;
+    this.renderTrigger = renderTrigger;
   }
 
 
@@ -94,7 +104,20 @@ public class InteractiveServer {
 
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
-      final String html = templateEngine.render(this.configuration, true, null);
+      final List<Path> notebooksInPath;
+      try (Stream<Path> files = Files.find(Path.of(configuration.notebookPath),
+                                           10,
+                                           (path, attributes) -> attributes.isRegularFile() && path.toString()
+                                                                                                   .endsWith(
+                                                                                                           ".jsh"))) {
+        notebooksInPath = files.toList();
+      }
+      final HtmlTemplateEngine.TemplateData model = new HtmlTemplateEngine.TemplateData(
+              this.configuration,
+              true,
+              null,
+              notebooksInPath);
+      final String html = templateEngine.render(model);
       exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/html");
       exchange.getResponseSender().send(html);
     }
@@ -119,7 +142,8 @@ public class InteractiveServer {
       }
     }
     if (!messageSent) {
-      LOG.error("ERROR: trying to send updates but no client is opened. Go to http://localhost:" + configuration.port);
+      LOG.error(
+              "ERROR: trying to send updates but no client is opened. Go to http://localhost:" + configuration.port);
     }
   }
 
@@ -144,10 +168,29 @@ public class InteractiveServer {
       channels.add(channel);
       // resend to every channel - not very correct but simpler for the moment
       sendStatus(NotebookServerStatus.CONNECTED);
+      setupReceiver(channel);
       if (lastUpdate != null) {
         // resend to every channel - not necessary but simpler for the moment
         sendUpdate(lastUpdate);
       }
+    }
+
+    private void setupReceiver(WebSocketChannel channel) {
+      channel.getReceiveSetter().set(new AbstractReceiveListener() {
+        @Override
+        protected void onFullTextMessage(WebSocketChannel channel,
+                                         BufferedTextMessage message) throws IOException {
+          final String messageText = message.getData();
+          if (messageText.startsWith("refresh_")) {
+            final String substring = messageText.substring(8);
+            LOG.info("Triggering refresh for file {}", substring);
+            renderTrigger.accept(Path.of(substring));
+          } else {
+            LOG.error("Received unsupported message from websocket: {}", messageText);
+          }
+        }
+      });
+      channel.resumeReceives();
     }
   }
 }

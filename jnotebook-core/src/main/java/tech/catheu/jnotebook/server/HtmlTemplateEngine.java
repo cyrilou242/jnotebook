@@ -19,6 +19,7 @@ import tech.catheu.jnotebook.Main;
 import tech.catheu.jnotebook.utils.JavaUtils;
 
 import java.nio.file.Path;
+import java.util.List;
 
 public class HtmlTemplateEngine {
 
@@ -36,15 +37,13 @@ public class HtmlTemplateEngine {
   }
 
   // render is the generated notebook html
-  public String render(final Main.SharedConfiguration config, final boolean interactive,
-                       final String render) {
-    final TemplateModel model =  new TemplateModel(config, interactive, render);
+  public String render(TemplateData model) {
     final TemplateOutput output = new StringOutput();
     delegate.render("index.jte", model, output);
     return output.toString();
   }
 
-  public record TemplateModel(Main.SharedConfiguration config, boolean interactive, String render) {}
+  public record TemplateData(Main.SharedConfiguration config, boolean interactive, String render, List<Path> notebooksInPath) {}
 
 
 }
