@@ -710,7 +710,9 @@
                             </p>
                             <p>Edit a <code>.jsh</code> file in your
                                 <code>${((InteractiveConfiguration) model.config()).notebookPath}</code> folder to
-                                make your notebook appear.</p></div>
+                                make your notebook appear.</p>
+                            <button class="test-cyril">doc/book.jsh</button>
+                        </div>
                     </div>
                 </div>
             @endif
@@ -762,6 +764,10 @@
                         update(socketEvent.data);
                     }
                 };
+
+                // something like this for the message passing
+                const textAreas = document.querySelectorAll("button.test-cyril")
+                    .forEach(e => e.addEventListener('click', ev => {socket.send("refresh_"+e.textContent)}));
             }
 
             const port = "${Optional.ofNullable(((InteractiveConfiguration) model.config()).port).orElse(5002)}";

@@ -15,6 +15,8 @@ import io.undertow.server.RoutingHandler;
 import io.undertow.util.Headers;
 import io.undertow.websockets.WebSocketConnectionCallback;
 import io.undertow.websockets.WebSocketProtocolHandshakeHandler;
+import io.undertow.websockets.core.AbstractReceiveListener;
+import io.undertow.websockets.core.BufferedTextMessage;
 import io.undertow.websockets.core.WebSocketChannel;
 import io.undertow.websockets.core.WebSockets;
 import io.undertow.websockets.spi.WebSocketHttpExchange;
@@ -28,22 +30,27 @@ import tech.catheu.jnotebook.Main;
 import tech.catheu.jnotebook.render.Rendering;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class InteractiveServer {
 
-  private static final Logger LOG = LoggerFactory.getLogger(Main.class);
+  private static final Logger LOG = LoggerFactory.getLogger(InteractiveServer.class);
 
   private final Main.InteractiveConfiguration configuration;
+  private final Consumer<Path> renderTrigger;
 
   private Undertow server;
   private final List<WebSocketChannel> channels = new ArrayList<>();
   XnioWorker worker;
   private Rendering lastUpdate;
 
-  public InteractiveServer(final Main.InteractiveConfiguration configuration) {
+  public InteractiveServer(final Main.InteractiveConfiguration configuration,
+                           Consumer<Path> renderTrigger) {
     this.configuration = configuration;
+    this.renderTrigger = renderTrigger;
   }
 
 
@@ -144,10 +151,29 @@ public class InteractiveServer {
       channels.add(channel);
       // resend to every channel - not very correct but simpler for the moment
       sendStatus(NotebookServerStatus.CONNECTED);
+      setupReceiver(channel);
       if (lastUpdate != null) {
         // resend to every channel - not necessary but simpler for the moment
         sendUpdate(lastUpdate);
       }
+    }
+
+    private void setupReceiver(WebSocketChannel channel) {
+      channel.getReceiveSetter().set(new AbstractReceiveListener() {
+        @Override
+        protected void onFullTextMessage(WebSocketChannel channel,
+                                         BufferedTextMessage message) throws IOException {
+          final String messageText = message.getData();
+          if (messageText.startsWith("refresh_")) {
+            final String substring = messageText.substring(8);
+            LOG.info("Triggering refresh for file {}", substring);
+            renderTrigger.accept(Path.of(substring));
+          } else {
+            LOG.error("Received unsupported message from websocket: {}", messageText);
+          }
+        }
+      });
+      channel.resumeReceives();
     }
   }
 }
