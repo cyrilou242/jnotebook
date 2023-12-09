@@ -13,7 +13,7 @@
 
     <groupId>tech.catheu</groupId>
     <artifactId>jnotebook</artifactId>
-    <version>0.14.0</version>
+    <version>0.15.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>jNotebook</name>
     <description>A notebook system for Java.</description>
@@ -56,7 +56,7 @@
         <url>https://github.com/cyrilou242/jnotebook.git</url>
         <connection>scm:git:${project.scm.url}</connection>
         <developerConnection>scm:git:${project.scm.url}</developerConnection>
-        <tag>jnotebook-0.14.0</tag>
+        <tag>HEAD</tag>
     </scm>
     <distributionManagement>
         <snapshotRepository>
