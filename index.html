@@ -12,16 +12,17 @@
     <script>
         function initTocBot() {
             tocbot.init({
-                // Where to render the table of contents.
+                
                 tocSelector: '#toc',
-                // Where to grab the headings to build the table of contents.
+                
                 contentSelector: '#notebook',
-                // Which headings to grab inside of the contentSelector element.
+                
                 headingSelector: 'h1, h2, h3',
-                // For headings inside relative or absolute positioned containers within content.
+                
                 hasInnerContainers: true,
             })
         }
+
         function renderLatex() {
             var mathElems = document.getElementsByClassName("katex");
             var elems = [];
@@ -32,24 +33,29 @@
                 katex.render(elem.textContent, elem, {throwOnError: false, displayMode: elem.nodeName !== 'SPAN',});
             });
         }
+
         function renderMermaid() {
             mermaid.init({noteMargin: 10}, '.mermaid');
         }
+
         function renderCodeColor() {
             document.querySelectorAll('div.cm-content').forEach(el => {
                 hljs.highlightElement(el, {language: 'java'});
             });
         }
+
         function renderVega() {
             document.querySelectorAll('div.vega-embed').forEach(el => {
                 vegaEmbed(el, JSON.parse(el.dataset.config))
             });
         }
+
         function renderPlotly() {
             document.querySelectorAll('div.js-plotly-plot').forEach(el => {
                 Plotly.newPlot(el, JSON.parse(el.dataset.data), JSON.parse(el.dataset.layout), JSON.parse(el.dataset.config));
             });
         }
+
         function renderFlamegraphs() {
             document.querySelectorAll(".flame").forEach(el => {
                 const chart = flamegraph().inverted(true).width(el.parentElement.offsetWidth);
@@ -72,741 +78,1045 @@
     
     
     
-<style>@tailwind base;@tailwind components;@tailwind utilities;/*! tailwindcss v3.3.5 | MIT License | https://tailwindcss.com*/*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:Fira Sans, -apple-system, BlinkMacSystemFont, sans-serif;font-feature-settings:normal;font-variation-settings:normal}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:Fira Mono, monospace;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}[type=button],[type=reset],[type=submit],button{-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]{display:none}html {
-            font-size: 18px;
-        }@media (max-width: 600px) {
-            html {
-                font-size: 16px;
+<style>@tailwind base;@tailwind components;@tailwind utilities;/* ! tailwindcss v3.3.5 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:Fira Sans, -apple-system, BlinkMacSystemFont, sans-serif;font-feature-settings:normal;font-variation-settings:normal}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:Fira Mono, monospace;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}[type=button],[type=reset],[type=submit],button{-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]{display:none}html {
+                font-size: 18px;
+            }@media (max-width: 600px) {
+                html {
+                    font-size: 16px;
+                }
+            }body{font-family:PT Serif, serif;--tw-text-opacity:1;color:rgb(17 24 39 / var(--tw-text-opacity));-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}@media (min-width: 640px){body{overscroll-behavior-y:none}}code, .code{border-radius:0.25rem;--tw-bg-opacity:1;background-color:rgb(248 250 252 / var(--tw-bg-opacity));padding-left:0.125rem;padding-right:0.125rem;padding-top:1px;padding-bottom:1px;font-family:Fira Mono, monospace;font-size:0.875rem;line-height:1.25rem;--tw-text-opacity:1;color:rgb(17 24 39 / var(--tw-text-opacity))}code::before, code::after{--tw-content:none !important;content:var(--tw-content) !important}h1, h3, h4, h5, h6 {
+                font-family: "Fira Sans Condensed", sans-serif;
+                margin-top:2rem;
+                font-weight:700;
+            }h1:first-child, h3:first-child, h4:first-child, h5:first-child, h6:first-child{margin-top:0px}h2 {
+                font-family: "Fira Sans Condensed", sans-serif;
+                margin-top:2rem;
+                font-weight:700;
+            }h2:first-child{margin-top:0.5rem}h1{font-size:2.25rem;line-height:2.5rem}h2{font-size:1.875rem;line-height:2.25rem}h3{font-size:1.5rem;line-height:2rem}button:focus{outline:2px solid transparent;outline-offset:2px}strong{font-weight:700}em{font-style:italic}pre{margin:0px;font-family:Fira Mono, monospace}*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: }
+        .fixed{position:fixed}
+        .absolute{position:absolute}
+        .relative{position:relative}
+        .right-2{right:0.5rem}
+        .top-2{top:0.5rem}
+        .top-\[11px\]{top:11px}
+        .z-10{z-index:10}
+        .z-20{z-index:20}
+        .mb-1{margin-bottom:0.25rem}
+        .ml-1{margin-left:0.25rem}
+        .mt-1{margin-top:0.25rem}
+        .flex{display:flex}
+        .grid{display:grid}
+        .h-screen{height:100vh}
+        .min-h-screen{min-height:100vh}
+        .w-4{width:1rem}
+        .w-52{width:13rem}
+        .w-full{width:100%}
+        .max-w-prose{max-width:65ch}
+        .flex-auto{flex:1 1 auto}
+        .flex-shrink-0{flex-shrink:0}
+        .cursor-pointer{cursor:pointer}
+        .grid-flow-row{grid-auto-flow:row}
+        .grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}
+        .grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}
+        .grid-cols-4{grid-template-columns:repeat(4, minmax(0, 1fr))}
+        .flex-col{flex-direction:column}
+        .items-center{align-items:center}
+        .overflow-hidden{overflow:hidden}
+        .overflow-x-auto{overflow-x:auto}
+        .overflow-y-auto{overflow-y:auto}
+        .overflow-y-hidden{overflow-y:hidden}
+        .whitespace-pre{white-space:pre}
+        .rounded-full{border-radius:9999px}
+        .border{border-width:1px}
+        .border-r{border-right-width:1px}
+        .border-t{border-top-width:1px}
+        .border-slate-200{--tw-border-opacity:1;border-color:rgb(226 232 240 / var(--tw-border-opacity))}
+        .bg-slate-100{--tw-bg-opacity:1;background-color:rgb(241 245 249 / var(--tw-bg-opacity))}
+        .bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity))}
+        .px-3{padding-left:0.75rem;padding-right:0.75rem}
+        .px-8{padding-left:2rem;padding-right:2rem}
+        .py-1{padding-top:0.25rem;padding-bottom:0.25rem}
+        .font-sans{font-family:Fira Sans, -apple-system, BlinkMacSystemFont, sans-serif}
+        .text-\[12px\]{font-size:12px}
+        .text-xs{font-size:0.75rem;line-height:1rem}
+        .font-bold{font-weight:700}
+        .font-medium{font-weight:500}
+        .uppercase{text-transform:uppercase}
+        .leading-none{line-height:1}
+        .tracking-wider{letter-spacing:0.05em}
+        .text-slate-400{--tw-text-opacity:1;color:rgb(148 163 184 / var(--tw-text-opacity))}
+        .text-slate-500{--tw-text-opacity:1;color:rgb(100 116 139 / var(--tw-text-opacity))}
+        .shadow{--tw-shadow:0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}
+
+        
+        
+        
+
+        :root {
+            --teal-color: #31afd0;
+            --dark-teal-color: #095960;
+            --near-black-color: #2e2e2c;
+            --red-color: #d64242;
+            --dark-blue-color: #1f2937;
+            --dark-blue-60-color: rgba(28, 42, 56, 0.6);
+            --gray-panel-color: rgba(239, 241, 245, 1.000);
+            --brand-color: var(--dark-blue-color);
+            --link-color: #5046e4;
+            --command-bar-selected-color: var(--teal-color);
+        }
+
+        .serif{font-family:PT Serif, serif}
+
+        .sans-serif{font-family:Fira Sans, -apple-system, BlinkMacSystemFont, sans-serif}
+
+        .monospace{font-family:Fira Mono, monospace}
+
+        .inter {
+                font-family: "Inter", sans-serif;
             }
-        }body{font-family:PT Serif, serif;--tw-text-opacity:1;color:rgb(17 24 39 / var(--tw-text-opacity));-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}@media (min-width: 640px){body{overscroll-behavior-y:none}}code, .code{border-radius:0.25rem;--tw-bg-opacity:1;background-color:rgb(248 250 252 / var(--tw-bg-opacity));padding-left:0.125rem;padding-right:0.125rem;padding-top:1px;padding-bottom:1px;font-family:Fira Mono, monospace;font-size:0.875rem;line-height:1.25rem;--tw-text-opacity:1;color:rgb(17 24 39 / var(--tw-text-opacity))}code::before, code::after{--tw-content:none !important;content:var(--tw-content) !important}h1, h3, h4, h5, h6 {
-            font-family: "Fira Sans Condensed", sans-serif;
-            margin-top:2rem;
-            font-weight:700;
-        }h1:first-child, h3:first-child, h4:first-child, h5:first-child, h6:first-child{margin-top:0px}h2 {
-            /*We cannot collapse margins due to nesting but we want to*/
-            /*keep the h2’s large margin visible*/
-            font-family: "Fira Sans Condensed", sans-serif;
-            margin-top:2rem;
-            font-weight:700;
-        }h2:first-child{margin-top:0.5rem}h1{font-size:2.25rem;line-height:2.5rem}h2{font-size:1.875rem;line-height:2.25rem}h3{font-size:1.5rem;line-height:2rem}button:focus{outline:2px solid transparent;outline-offset:2px}strong{font-weight:700}em{font-style:italic}pre{margin:0px;font-family:Fira Mono, monospace}*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: }
-    .fixed{position:fixed}
-    .absolute{position:absolute}
-    .relative{position:relative}
-    .right-2{right:0.5rem}
-    .top-2{top:0.5rem}
-    .top-\[11px\]{top:11px}
-    .z-10{z-index:10}
-    .z-20{z-index:20}
-    .mb-1{margin-bottom:0.25rem}
-    .ml-1{margin-left:0.25rem}
-    .mt-1{margin-top:0.25rem}
-    .flex{display:flex}
-    .grid{display:grid}
-    .h-screen{height:100vh}
-    .min-h-screen{min-height:100vh}
-    .w-4{width:1rem}
-    .w-52{width:13rem}
-    .w-full{width:100%}
-    .max-w-prose{max-width:65ch}
-    .flex-auto{flex:1 1 auto}
-    .flex-shrink-0{flex-shrink:0}
-    .cursor-pointer{cursor:pointer}
-    .grid-flow-row{grid-auto-flow:row}
-    .grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}
-    .grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}
-    .grid-cols-4{grid-template-columns:repeat(4, minmax(0, 1fr))}
-    .flex-col{flex-direction:column}
-    .items-center{align-items:center}
-    .overflow-hidden{overflow:hidden}
-    .overflow-x-auto{overflow-x:auto}
-    .overflow-y-auto{overflow-y:auto}
-    .overflow-y-hidden{overflow-y:hidden}
-    .whitespace-pre{white-space:pre}
-    .rounded-full{border-radius:9999px}
-    .border{border-width:1px}
-    .border-r{border-right-width:1px}
-    .border-t{border-top-width:1px}
-    .border-slate-200{--tw-border-opacity:1;border-color:rgb(226 232 240 / var(--tw-border-opacity))}
-    .bg-slate-100{--tw-bg-opacity:1;background-color:rgb(241 245 249 / var(--tw-bg-opacity))}
-    .bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity))}
-    .px-3{padding-left:0.75rem;padding-right:0.75rem}
-    .px-8{padding-left:2rem;padding-right:2rem}
-    .py-1{padding-top:0.25rem;padding-bottom:0.25rem}
-    .font-sans{font-family:Fira Sans, -apple-system, BlinkMacSystemFont, sans-serif}
-    .text-\[12px\]{font-size:12px}
-    .text-xs{font-size:0.75rem;line-height:1rem}
-    .font-bold{font-weight:700}
-    .font-medium{font-weight:500}
-    .uppercase{text-transform:uppercase}
-    .leading-none{line-height:1}
-    .tracking-wider{letter-spacing:0.05em}
-    .text-slate-400{--tw-text-opacity:1;color:rgb(148 163 184 / var(--tw-text-opacity))}
-    .text-slate-500{--tw-text-opacity:1;color:rgb(100 116 139 / var(--tw-text-opacity))}
-    .shadow{--tw-shadow:0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}
 
-    /* Compatibility */
-    /* --------------------------------------------------------------- */
-    /* TODO: Verify which colors are in use and replace with Tailwind
-       colors accordingly. Move Nj-specific styles out of here. */
-
-    :root {
-        --teal-color: #31afd0;
-        --dark-teal-color: #095960;
-        --near-black-color: #2e2e2c;
-        --red-color: #d64242;
-        --dark-blue-color: #1f2937;
-        --dark-blue-60-color: rgba(28, 42, 56, 0.6);
-        --gray-panel-color: rgba(239, 241, 245, 1.000);
-        --brand-color: var(--dark-blue-color);
-        --link-color: #5046e4;
-        --command-bar-selected-color: var(--teal-color);
-    }
-
-    .serif{font-family:PT Serif, serif}
-
-    .sans-serif{font-family:Fira Sans, -apple-system, BlinkMacSystemFont, sans-serif}
-
-    .monospace{font-family:Fira Mono, monospace}
-
-    .inter {
-            font-family: "Inter", sans-serif;
+        .border-color-teal {
+            border-color: var(--dark-teal-color);
         }
 
-    .border-color-teal {
-        border-color: var(--dark-teal-color);
-    }
-
-    .teal {
-        color: var(--teal-color);
-    }
-
-    .bg-dark-blue {
-        background: var(--dark-blue-color);
-    }
-
-    .bg-dark-blue-60 {
-        background: rgba(28, 42, 56, 0.6);
-    }
-
-    .bg-gray-panel {
-        background: var(--gray-panel-color);
-    }
-
-    .text-dark-blue {
-        color: var(--dark-blue-color);
-    }
-
-    .text-dark-blue-60 {
-        color: var(--dark-blue-60-color);
-    }
-
-    .border-dark-blue-30 {
-        border-color: rgba(28, 42, 56, 0.6);
-    }
-
-    .text-brand {
-        color: var(--dark-blue-color);
-    }
-
-    .bg-brand {
-        background: var(--dark-blue-color);
-    }
-
-    .text-selected {
-        color: white;
-    }
-
-    .red {
-        color: var(--red-color);
-    }
-
-    /* Disclose Button */
-    /* --------------------------------------------------------------- */
-
-    .disclose{position:relative;top:-2px;margin-right:3px;display:inline-block;cursor:pointer;border-style:solid;transition-property:all;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms;--tw-content:none;content:var(--tw-content);
-        border-color: var(--near-black-color) transparent;
-        border-width: 6px 4px 0}
-
-    .disclose:hover {
-        border-color: var(--near-black-color) transparent;
-    }
-
-    .dark .disclose,
-    .dark .disclose:hover {
-        border-color: white transparent;
-    }
-
-    .disclose.collapsed{--tw-rotate:-90deg;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}
-
-    /* Layout */
-    /* --------------------------------------------------------------- */
-
-    .page{margin-left:auto;margin-right:auto;box-sizing:border-box;max-width:64rem;flex-shrink:0;padding-left:3rem;padding-right:3rem}
-
-    .max-w-prose{max-width:46rem !important}
-
-    .max-w-wide{max-width:48rem !important}
-
-    /* List Styles */
-    /* --------------------------------------------------------------- */
-
-    .task-list-item + .task-list-item,
-    .viewer-markdown ul ul{margin-top:0.25rem;margin-bottom:0px}
-
-    /* TOC related */
-    .toc-offset{margin-left:13rem}
-
-    /* compact TOC */
-    .viewer-markdown .toc ul {
-        list-style: none;
-        margin-top:0.25rem;
-        margin-bottom:0.25rem;
-    }
-
-    /* Code Viewer */
-    /* --------------------------------------------------------------- */
-
-    .viewer-code{overflow-x:auto;border-radius:0.125rem;--tw-bg-opacity:1;background-color:rgb(241 245 249 / var(--tw-bg-opacity));font-family:Fira Mono, monospace;font-size:0.875rem;line-height:1.25rem}
-
-    .viewer-code .cm-content{padding-top:1rem;padding-bottom:1rem;padding-left:2rem;padding-right:2rem}
-
-    @media (min-width: 960px) {
-        .viewer-notebook .viewer-code .cm-content{padding-top:1rem;padding-bottom:1rem;padding-left:3rem}
-    }
-
-    /* Don’t show focus outline when double-clicking cell in Safari */
-    .cm-scroller:focus{outline:2px solid transparent;outline-offset:2px}
-
-    /* Syntax Highlighting */
-    /* --------------------------------------------------------------- */
-
-    .inspected-value{font-family:Fira Mono, monospace;font-size:0.75rem;line-height:1.25rem}
-
-    .result-data{overflow-x:auto;white-space:nowrap;font-family:Fira Mono, monospace;font-size:0.875rem;line-height:1.25rem;line-height:1.5}
-
-    .result-data::-webkit-scrollbar, .path-nav::-webkit-scrollbar{height:0px}
-
-    .result-data-collapsed{white-space:nowrap}
-
-    .result-data-field{margin-left:1rem;white-space:nowrap}
-
-    .result-data-field-link{margin-left:1rem;cursor:pointer;white-space:nowrap}
-
-    .result-data-field-link:hover{background-color:rgb(0 0 0 / 0.05);--tw-text-opacity:1;color:rgb(0 0 0 / var(--tw-text-opacity))}
-
-    .result-text-empty {
-        color: rgba(0, 0, 0, .3);
-    }
-
-    .browsify-button:hover {
-        box-shadow: -2px 0 0 2px #edf2f7;
-    }
-
-    /* Prose */
-    /* --------------------------------------------------------------- */
-
-    .viewer-notebook,
-    .viewer-markdown{color:var(--tw-prose-body);max-width:65ch;}
-
-    .viewer-notebook :where(p):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(p):not(:where([class~="not-prose"],[class~="not-prose"] *)){margin-top:1.25em;margin-bottom:1.25em}
-
-    .viewer-notebook :where([class~="lead"]):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where([class~="lead"]):not(:where([class~="not-prose"],[class~="not-prose"] *)){color:var(--tw-prose-lead);font-size:1.25em;line-height:1.6;margin-top:1.2em;margin-bottom:1.2em}
-
-    .viewer-notebook :where(a):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(a):not(:where([class~="not-prose"],[class~="not-prose"] *)){color:var(--tw-prose-links);text-decoration:underline;font-weight:500}
-
-    .viewer-notebook :where(strong):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(strong):not(:where([class~="not-prose"],[class~="not-prose"] *)){color:var(--tw-prose-bold);font-weight:600}
-
-    .viewer-notebook :where(a strong):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(a strong):not(:where([class~="not-prose"],[class~="not-prose"] *)){color:inherit}
-
-    .viewer-notebook :where(blockquote strong):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(blockquote strong):not(:where([class~="not-prose"],[class~="not-prose"] *)){color:inherit}
-
-    .viewer-notebook :where(thead th strong):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(thead th strong):not(:where([class~="not-prose"],[class~="not-prose"] *)){color:inherit}
-
-    .viewer-notebook :where(ol):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(ol):not(:where([class~="not-prose"],[class~="not-prose"] *)){list-style-type:decimal;margin-top:1.25em;margin-bottom:1.25em;padding-left:1.625em}
-
-    .viewer-notebook :where(ol[type="A"]):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(ol[type="A"]):not(:where([class~="not-prose"],[class~="not-prose"] *)){list-style-type:upper-alpha}
-
-    .viewer-notebook :where(ol[type="a"]):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(ol[type="a"]):not(:where([class~="not-prose"],[class~="not-prose"] *)){list-style-type:lower-alpha}
-
-    .viewer-notebook :where(ol[type="A" s]):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(ol[type="A" s]):not(:where([class~="not-prose"],[class~="not-prose"] *)){list-style-type:upper-alpha}
-
-    .viewer-notebook :where(ol[type="a" s]):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(ol[type="a" s]):not(:where([class~="not-prose"],[class~="not-prose"] *)){list-style-type:lower-alpha}
-
-    .viewer-notebook :where(ol[type="I"]):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(ol[type="I"]):not(:where([class~="not-prose"],[class~="not-prose"] *)){list-style-type:upper-roman}
-
-    .viewer-notebook :where(ol[type="i"]):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(ol[type="i"]):not(:where([class~="not-prose"],[class~="not-prose"] *)){list-style-type:lower-roman}
-
-    .viewer-notebook :where(ol[type="I" s]):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(ol[type="I" s]):not(:where([class~="not-prose"],[class~="not-prose"] *)){list-style-type:upper-roman}
-
-    .viewer-notebook :where(ol[type="i" s]):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(ol[type="i" s]):not(:where([class~="not-prose"],[class~="not-prose"] *)){list-style-type:lower-roman}
-
-    .viewer-notebook :where(ol[type="1"]):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(ol[type="1"]):not(:where([class~="not-prose"],[class~="not-prose"] *)){list-style-type:decimal}
-
-    .viewer-notebook :where(ul):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(ul):not(:where([class~="not-prose"],[class~="not-prose"] *)){list-style-type:disc;margin-top:1.25em;margin-bottom:1.25em;padding-left:1.625em}
-
-    .viewer-notebook :where(ol > li):not(:where([class~="not-prose"],[class~="not-prose"] *))::marker,
-    .viewer-markdown :where(ol > li):not(:where([class~="not-prose"],[class~="not-prose"] *))::marker{font-weight:400;color:var(--tw-prose-counters)}
-
-    .viewer-notebook :where(ul > li):not(:where([class~="not-prose"],[class~="not-prose"] *))::marker,
-    .viewer-markdown :where(ul > li):not(:where([class~="not-prose"],[class~="not-prose"] *))::marker{color:var(--tw-prose-bullets)}
-
-    .viewer-notebook :where(dt):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(dt):not(:where([class~="not-prose"],[class~="not-prose"] *)){color:var(--tw-prose-headings);font-weight:600;margin-top:1.25em}
-
-    .viewer-notebook :where(hr):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(hr):not(:where([class~="not-prose"],[class~="not-prose"] *)){border-color:var(--tw-prose-hr);border-top-width:1px;margin-top:3em;margin-bottom:3em}
-
-    .viewer-notebook :where(blockquote):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(blockquote):not(:where([class~="not-prose"],[class~="not-prose"] *)){font-weight:500;font-style:italic;color:var(--tw-prose-quotes);border-left-width:0.25rem;border-left-color:var(--tw-prose-quote-borders);quotes:"\201C""\201D""\2018""\2019";margin-top:1.6em;margin-bottom:1.6em;padding-left:1em}
-
-    .viewer-notebook :where(blockquote p:first-of-type):not(:where([class~="not-prose"],[class~="not-prose"] *))::before,
-    .viewer-markdown :where(blockquote p:first-of-type):not(:where([class~="not-prose"],[class~="not-prose"] *))::before{content:open-quote}
-
-    .viewer-notebook :where(blockquote p:last-of-type):not(:where([class~="not-prose"],[class~="not-prose"] *))::after,
-    .viewer-markdown :where(blockquote p:last-of-type):not(:where([class~="not-prose"],[class~="not-prose"] *))::after{content:close-quote}
-
-    .viewer-notebook :where(h1):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(h1):not(:where([class~="not-prose"],[class~="not-prose"] *)){color:var(--tw-prose-headings);font-weight:800;font-size:2.25em;margin-top:0;margin-bottom:0.8888889em;line-height:1.1111111}
-
-    .viewer-notebook :where(h1 strong):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(h1 strong):not(:where([class~="not-prose"],[class~="not-prose"] *)){font-weight:900;color:inherit}
-
-    .viewer-notebook :where(h2):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(h2):not(:where([class~="not-prose"],[class~="not-prose"] *)){color:var(--tw-prose-headings);font-weight:700;font-size:1.5em;margin-top:2em;margin-bottom:1em;line-height:1.3333333}
-
-    .viewer-notebook :where(h2 strong):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(h2 strong):not(:where([class~="not-prose"],[class~="not-prose"] *)){font-weight:800;color:inherit}
-
-    .viewer-notebook :where(h3):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(h3):not(:where([class~="not-prose"],[class~="not-prose"] *)){color:var(--tw-prose-headings);font-weight:600;font-size:1.25em;margin-top:1.6em;margin-bottom:0.6em;line-height:1.6}
-
-    .viewer-notebook :where(h3 strong):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(h3 strong):not(:where([class~="not-prose"],[class~="not-prose"] *)){font-weight:700;color:inherit}
-
-    .viewer-notebook :where(h4):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(h4):not(:where([class~="not-prose"],[class~="not-prose"] *)){color:var(--tw-prose-headings);font-weight:600;margin-top:1.5em;margin-bottom:0.5em;line-height:1.5}
-
-    .viewer-notebook :where(h4 strong):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(h4 strong):not(:where([class~="not-prose"],[class~="not-prose"] *)){font-weight:700;color:inherit}
-
-    .viewer-notebook :where(img):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(img):not(:where([class~="not-prose"],[class~="not-prose"] *)){margin-top:2em;margin-bottom:2em}
-
-    .viewer-notebook :where(picture):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(picture):not(:where([class~="not-prose"],[class~="not-prose"] *)){display:block;margin-top:2em;margin-bottom:2em}
-
-    .viewer-notebook :where(kbd):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(kbd):not(:where([class~="not-prose"],[class~="not-prose"] *)){font-weight:500;font-family:inherit;color:var(--tw-prose-kbd);box-shadow:0 0 0 1px rgb(var(--tw-prose-kbd-shadows) / 10%), 0 3px 0 rgb(var(--tw-prose-kbd-shadows) / 10%);font-size:0.875em;border-radius:0.3125rem;padding-top:0.1875em;padding-right:0.375em;padding-bottom:0.1875em;padding-left:0.375em}
-
-    .viewer-notebook :where(code):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(code):not(:where([class~="not-prose"],[class~="not-prose"] *)){color:var(--tw-prose-code);font-weight:600;font-size:0.875em}
-
-    .viewer-notebook :where(code):not(:where([class~="not-prose"],[class~="not-prose"] *))::before,
-    .viewer-markdown :where(code):not(:where([class~="not-prose"],[class~="not-prose"] *))::before{content:"`"}
-
-    .viewer-notebook :where(code):not(:where([class~="not-prose"],[class~="not-prose"] *))::after,
-    .viewer-markdown :where(code):not(:where([class~="not-prose"],[class~="not-prose"] *))::after{content:"`"}
-
-    .viewer-notebook :where(a code):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(a code):not(:where([class~="not-prose"],[class~="not-prose"] *)){color:inherit}
-
-    .viewer-notebook :where(h1 code):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(h1 code):not(:where([class~="not-prose"],[class~="not-prose"] *)){color:inherit}
-
-    .viewer-notebook :where(h2 code):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(h2 code):not(:where([class~="not-prose"],[class~="not-prose"] *)){color:inherit;font-size:0.875em}
-
-    .viewer-notebook :where(h3 code):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(h3 code):not(:where([class~="not-prose"],[class~="not-prose"] *)){color:inherit;font-size:0.9em}
-
-    .viewer-notebook :where(h4 code):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(h4 code):not(:where([class~="not-prose"],[class~="not-prose"] *)){color:inherit}
-
-    .viewer-notebook :where(blockquote code):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(blockquote code):not(:where([class~="not-prose"],[class~="not-prose"] *)){color:inherit}
-
-    .viewer-notebook :where(thead th code):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(thead th code):not(:where([class~="not-prose"],[class~="not-prose"] *)){color:inherit}
-
-    .viewer-notebook :where(pre):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(pre):not(:where([class~="not-prose"],[class~="not-prose"] *)){color:var(--tw-prose-pre-code);background-color:var(--tw-prose-pre-bg);overflow-x:auto;font-weight:400;font-size:0.875em;line-height:1.7142857;margin-top:1.7142857em;margin-bottom:1.7142857em;border-radius:0.375rem;padding-top:0.8571429em;padding-right:1.1428571em;padding-bottom:0.8571429em;padding-left:1.1428571em}
-
-    .viewer-notebook :where(pre code):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(pre code):not(:where([class~="not-prose"],[class~="not-prose"] *)){background-color:transparent;border-width:0;border-radius:0;padding:0;font-weight:inherit;color:inherit;font-size:inherit;font-family:inherit;line-height:inherit}
-
-    .viewer-notebook :where(pre code):not(:where([class~="not-prose"],[class~="not-prose"] *))::before,
-    .viewer-markdown :where(pre code):not(:where([class~="not-prose"],[class~="not-prose"] *))::before{content:none}
-
-    .viewer-notebook :where(pre code):not(:where([class~="not-prose"],[class~="not-prose"] *))::after,
-    .viewer-markdown :where(pre code):not(:where([class~="not-prose"],[class~="not-prose"] *))::after{content:none}
-
-    .viewer-notebook :where(table):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(table):not(:where([class~="not-prose"],[class~="not-prose"] *)){width:100%;table-layout:auto;text-align:left;margin-top:2em;margin-bottom:2em;font-size:0.875em;line-height:1.7142857}
-
-    .viewer-notebook :where(thead):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(thead):not(:where([class~="not-prose"],[class~="not-prose"] *)){border-bottom-width:1px;border-bottom-color:var(--tw-prose-th-borders)}
-
-    .viewer-notebook :where(thead th):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(thead th):not(:where([class~="not-prose"],[class~="not-prose"] *)){color:var(--tw-prose-headings);font-weight:600;vertical-align:bottom;padding-right:0.5714286em;padding-bottom:0.5714286em;padding-left:0.5714286em}
-
-    .viewer-notebook :where(tbody tr):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(tbody tr):not(:where([class~="not-prose"],[class~="not-prose"] *)){border-bottom-width:1px;border-bottom-color:var(--tw-prose-td-borders)}
-
-    .viewer-notebook :where(tbody tr:last-child):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(tbody tr:last-child):not(:where([class~="not-prose"],[class~="not-prose"] *)){border-bottom-width:0}
-
-    .viewer-notebook :where(tbody td):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(tbody td):not(:where([class~="not-prose"],[class~="not-prose"] *)){vertical-align:baseline}
-
-    .viewer-notebook :where(tfoot):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(tfoot):not(:where([class~="not-prose"],[class~="not-prose"] *)){border-top-width:1px;border-top-color:var(--tw-prose-th-borders)}
-
-    .viewer-notebook :where(tfoot td):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(tfoot td):not(:where([class~="not-prose"],[class~="not-prose"] *)){vertical-align:top}
-
-    .viewer-notebook :where(figure > *):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(figure > *):not(:where([class~="not-prose"],[class~="not-prose"] *)){margin-top:0;margin-bottom:0}
-
-    .viewer-notebook :where(figcaption):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(figcaption):not(:where([class~="not-prose"],[class~="not-prose"] *)){color:var(--tw-prose-captions);font-size:0.875em;line-height:1.4285714;margin-top:0.8571429em}
-
-    .viewer-notebook,
-    .viewer-markdown{--tw-prose-body:#374151;--tw-prose-headings:#111827;--tw-prose-lead:#4b5563;--tw-prose-links:#111827;--tw-prose-bold:#111827;--tw-prose-counters:#6b7280;--tw-prose-bullets:#d1d5db;--tw-prose-hr:#e5e7eb;--tw-prose-quotes:#111827;--tw-prose-quote-borders:#e5e7eb;--tw-prose-captions:#6b7280;--tw-prose-kbd:#111827;--tw-prose-kbd-shadows:17 24 39;--tw-prose-code:#111827;--tw-prose-pre-code:#e5e7eb;--tw-prose-pre-bg:#1f2937;--tw-prose-th-borders:#d1d5db;--tw-prose-td-borders:#e5e7eb;--tw-prose-invert-body:#d1d5db;--tw-prose-invert-headings:#fff;--tw-prose-invert-lead:#9ca3af;--tw-prose-invert-links:#fff;--tw-prose-invert-bold:#fff;--tw-prose-invert-counters:#9ca3af;--tw-prose-invert-bullets:#4b5563;--tw-prose-invert-hr:#374151;--tw-prose-invert-quotes:#f3f4f6;--tw-prose-invert-quote-borders:#374151;--tw-prose-invert-captions:#9ca3af;--tw-prose-invert-kbd:#fff;--tw-prose-invert-kbd-shadows:255 255 255;--tw-prose-invert-code:#fff;--tw-prose-invert-pre-code:#d1d5db;--tw-prose-invert-pre-bg:rgb(0 0 0 / 50%);--tw-prose-invert-th-borders:#4b5563;--tw-prose-invert-td-borders:#374151;font-size:1rem;line-height:1.75}
-
-    .viewer-notebook :where(picture > img):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(picture > img):not(:where([class~="not-prose"],[class~="not-prose"] *)){margin-top:0;margin-bottom:0}
-
-    .viewer-notebook :where(video):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(video):not(:where([class~="not-prose"],[class~="not-prose"] *)){margin-top:2em;margin-bottom:2em}
-
-    .viewer-notebook :where(li):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(li):not(:where([class~="not-prose"],[class~="not-prose"] *)){margin-top:0.5em;margin-bottom:0.5em}
-
-    .viewer-notebook :where(ol > li):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(ol > li):not(:where([class~="not-prose"],[class~="not-prose"] *)){padding-left:0.375em}
-
-    .viewer-notebook :where(ul > li):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(ul > li):not(:where([class~="not-prose"],[class~="not-prose"] *)){padding-left:0.375em}
-
-    .viewer-notebook :where(.prose > ul > li p):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(.prose > ul > li p):not(:where([class~="not-prose"],[class~="not-prose"] *)){margin-top:0.75em;margin-bottom:0.75em}
-
-    .viewer-notebook :where(.prose > ul > li > *:first-child):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(.prose > ul > li > *:first-child):not(:where([class~="not-prose"],[class~="not-prose"] *)){margin-top:1.25em}
-
-    .viewer-notebook :where(.prose > ul > li > *:last-child):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(.prose > ul > li > *:last-child):not(:where([class~="not-prose"],[class~="not-prose"] *)){margin-bottom:1.25em}
-
-    .viewer-notebook :where(.prose > ol > li > *:first-child):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(.prose > ol > li > *:first-child):not(:where([class~="not-prose"],[class~="not-prose"] *)){margin-top:1.25em}
-
-    .viewer-notebook :where(.prose > ol > li > *:last-child):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(.prose > ol > li > *:last-child):not(:where([class~="not-prose"],[class~="not-prose"] *)){margin-bottom:1.25em}
-
-    .viewer-notebook :where(ul ul, ul ol, ol ul, ol ol):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(ul ul, ul ol, ol ul, ol ol):not(:where([class~="not-prose"],[class~="not-prose"] *)){margin-top:0.75em;margin-bottom:0.75em}
-
-    .viewer-notebook :where(dl):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(dl):not(:where([class~="not-prose"],[class~="not-prose"] *)){margin-top:1.25em;margin-bottom:1.25em}
-
-    .viewer-notebook :where(dd):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(dd):not(:where([class~="not-prose"],[class~="not-prose"] *)){margin-top:0.5em;padding-left:1.625em}
-
-    .viewer-notebook :where(hr + *):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(hr + *):not(:where([class~="not-prose"],[class~="not-prose"] *)){margin-top:0}
-
-    .viewer-notebook :where(h2 + *):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(h2 + *):not(:where([class~="not-prose"],[class~="not-prose"] *)){margin-top:0}
-
-    .viewer-notebook :where(h3 + *):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(h3 + *):not(:where([class~="not-prose"],[class~="not-prose"] *)){margin-top:0}
-
-    .viewer-notebook :where(h4 + *):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(h4 + *):not(:where([class~="not-prose"],[class~="not-prose"] *)){margin-top:0}
-
-    .viewer-notebook :where(thead th:first-child):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(thead th:first-child):not(:where([class~="not-prose"],[class~="not-prose"] *)){padding-left:0}
-
-    .viewer-notebook :where(thead th:last-child):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(thead th:last-child):not(:where([class~="not-prose"],[class~="not-prose"] *)){padding-right:0}
-
-    .viewer-notebook :where(tbody td, tfoot td):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(tbody td, tfoot td):not(:where([class~="not-prose"],[class~="not-prose"] *)){padding-top:0.5714286em;padding-right:0.5714286em;padding-bottom:0.5714286em;padding-left:0.5714286em}
-
-    .viewer-notebook :where(tbody td:first-child, tfoot td:first-child):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(tbody td:first-child, tfoot td:first-child):not(:where([class~="not-prose"],[class~="not-prose"] *)){padding-left:0}
-
-    .viewer-notebook :where(tbody td:last-child, tfoot td:last-child):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(tbody td:last-child, tfoot td:last-child):not(:where([class~="not-prose"],[class~="not-prose"] *)){padding-right:0}
-
-    .viewer-notebook :where(figure):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(figure):not(:where([class~="not-prose"],[class~="not-prose"] *)){margin-top:2em;margin-bottom:2em}
-
-    .viewer-notebook :where(.prose > :first-child):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(.prose > :first-child):not(:where([class~="not-prose"],[class~="not-prose"] *)){margin-top:0}
-
-    .viewer-notebook :where(.prose > :last-child):not(:where([class~="not-prose"],[class~="not-prose"] *)),
-    .viewer-markdown :where(.prose > :last-child):not(:where([class~="not-prose"],[class~="not-prose"] *)){margin-bottom:0}
-
-    .viewer-notebook,
-    .viewer-markdown{max-width:none}
-
-    .viewer-notebook :is(:where(h1, h2, h3, h4, h5, h6, th):not(:where([class~="not-prose"],[class~="not-prose"] *))),
-    .viewer-markdown :is(:where(h1, h2, h3, h4, h5, h6, th):not(:where([class~="not-prose"],[class~="not-prose"] *))){margin-bottom:1rem}
-
-    .viewer-notebook :is(:where(p):not(:where([class~="not-prose"],[class~="not-prose"] *))),
-    .viewer-markdown :is(:where(p):not(:where([class~="not-prose"],[class~="not-prose"] *))){margin-top:1rem;line-height:1.375}
-
-    .viewer-notebook :is(:where(a):not(:where([class~="not-prose"],[class~="not-prose"] *))),
-    .viewer-markdown :is(:where(a):not(:where([class~="not-prose"],[class~="not-prose"] *))){--tw-text-opacity:1;color:rgb(37 99 235 / var(--tw-text-opacity));-webkit-text-decoration-line:none;text-decoration-line:none}
-
-    .viewer-notebook :is(:where(a):not(:where([class~="not-prose"],[class~="not-prose"] *))):hover,
-    .viewer-markdown :is(:where(a):not(:where([class~="not-prose"],[class~="not-prose"] *))):hover{-webkit-text-decoration-line:underline;text-decoration-line:underline}
-
-    .viewer-notebook :is(:where(blockquote):not(:where([class~="not-prose"],[class~="not-prose"] *))),
-    .viewer-markdown :is(:where(blockquote):not(:where([class~="not-prose"],[class~="not-prose"] *))){margin-top:1rem;line-height:1.375}
-
-    .viewer-notebook :is(:where(figure):not(:where([class~="not-prose"],[class~="not-prose"] *))),
-    .viewer-markdown :is(:where(figure):not(:where([class~="not-prose"],[class~="not-prose"] *))){margin-top:1rem}
-
-    .viewer-notebook :is(:where(figcaption):not(:where([class~="not-prose"],[class~="not-prose"] *))),
-    .viewer-markdown :is(:where(figcaption):not(:where([class~="not-prose"],[class~="not-prose"] *))){margin-top:0.5rem;font-size:0.75rem;line-height:1rem}
-
-    .viewer-notebook :is(:where(code):not(:where([class~="not-prose"],[class~="not-prose"] *))),
-    .viewer-markdown :is(:where(code):not(:where([class~="not-prose"],[class~="not-prose"] *))){--tw-bg-opacity:1;background-color:rgb(241 245 249 / var(--tw-bg-opacity));font-weight:500}
-
-    .viewer-notebook :is(:where(ol):not(:where([class~="not-prose"],[class~="not-prose"] *))),
-    .viewer-markdown :is(:where(ol):not(:where([class~="not-prose"],[class~="not-prose"] *))){margin-top:1rem;margin-bottom:1.5rem;line-height:1.375}
-
-    .viewer-notebook :is(:where(ul):not(:where([class~="not-prose"],[class~="not-prose"] *))),
-    .viewer-markdown :is(:where(ul):not(:where([class~="not-prose"],[class~="not-prose"] *))){margin-top:1rem;margin-bottom:1.5rem;line-height:1.375}
-
-    .viewer-notebook :is(:where(table):not(:where([class~="not-prose"],[class~="not-prose"] *))),
-    .viewer-markdown :is(:where(table):not(:where([class~="not-prose"],[class~="not-prose"] *))){margin-top:0px}
-
-    .viewer-notebook :is(:where(th):not(:where([class~="not-prose"],[class~="not-prose"] *))),
-    .viewer-markdown :is(:where(th):not(:where([class~="not-prose"],[class~="not-prose"] *))){margin-bottom:0px}
-
-    .viewer-notebook :is(:where(img):not(:where([class~="not-prose"],[class~="not-prose"] *))),
-    .viewer-markdown :is(:where(img):not(:where([class~="not-prose"],[class~="not-prose"] *))){margin-top:0px;margin-bottom:0px}
-
-    .viewer-notebook :is(:where(hr):not(:where([class~="not-prose"],[class~="not-prose"] *))),
-    .viewer-markdown :is(:where(hr):not(:where([class~="not-prose"],[class~="not-prose"] *))){margin-top:1.5rem;border-top-width:2px;border-style:solid;--tw-border-opacity:1;border-color:rgb(226 232 240 / var(--tw-border-opacity))}
-
-    .viewer-markdown blockquote p:first-of-type:before,
-    .viewer-markdown blockquote p:last-of-type:after{--tw-content:none;content:var(--tw-content)}
-
-    /* Images */
-    /* --------------------------------------------------------------- */
-
-
-    /* Todo Lists */
-    /* --------------------------------------------------------------- */
-
-    .contains-task-list{list-style-type:none;padding-left:1.5rem}
-
-    .contains-task-list input[type="checkbox"]{position:relative;top:0.15rem;margin-right:0.3rem;margin-left:-1.5rem;height:1rem;width:1rem;-webkit-appearance:none;appearance:none;border-radius:0.25rem;border-width:1px;--tw-border-opacity:1;border-color:rgb(226 232 240 / var(--tw-border-opacity))}
-
-    .contains-task-list input[type="checkbox"]:checked{--tw-border-opacity:1;border-color:rgb(79 70 229 / var(--tw-border-opacity));--tw-bg-opacity:1;background-color:rgb(79 70 229 / var(--tw-bg-opacity));background-size:contain;background-repeat:no-repeat;
-        background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e")}
-
-    /* Markdown TOC */
-    /* --------------------------------------------------------------- */
-
-    .viewer-markdown .toc{margin-top:1rem}
-
-    .viewer-markdown h1 + .toc{margin-top:2rem}
-
-    .viewer-markdown .toc h1,
-    .viewer-markdown .toc h2,
-    .viewer-markdown .toc h3,
-    .viewer-markdown .toc h4,
-    .viewer-markdown .toc h5,
-    .viewer-markdown .toc h6{margin-top:0px;margin-bottom:0px;font-family:Fira Sans, -apple-system, BlinkMacSystemFont, sans-serif;font-size:1rem;line-height:1.5rem;--tw-text-opacity:1;color:rgb(79 70 229 / var(--tw-text-opacity))}
-
-    .viewer-markdown .toc a{font-weight:400;--tw-text-opacity:1;color:rgb(79 70 229 / var(--tw-text-opacity));-webkit-text-decoration-line:none;text-decoration-line:none}
-
-    .viewer-markdown .toc a:hover{-webkit-text-decoration-line:underline;text-decoration-line:underline}
-
-    .viewer-markdown .toc li{margin:0px}
-
-    .viewer-markdown .toc ul ul{padding-left:1rem}
-
-    /* Notebook Spacing */
-    /* --------------------------------------------------------------- */
-
-    .viewer-notebook{padding-top:4rem;padding-bottom:4rem}
-
-    #clerk-static-app .viewer-notebook{padding-top:0.8rem;padding-bottom:4rem}
-
-    .viewer-markdown *:first-child:not(.viewer-code):not(li):not(h2){margin-top:0px}
-
-    /*.viewer + .viewer { @apply mt-6; }*/
-    .viewer + .viewer-result{margin-top:0px}
-
-    .viewer-code + .viewer-result{margin-top:0.75rem}
-
-    .viewer-markdown + .viewer-markdown{margin-top:0px}
-
-    /* Sidenotes */
-    /* --------------------------------------------------------------- */
-
-    .sidenote-ref{top:-3px;margin:0px;margin-left:4px;display:inline-flex;height:18px;width:18px;cursor:pointer;align-items:center;justify-content:center;border-radius:9999px;border-width:1px;--tw-border-opacity:1;border-color:rgb(203 213 225 / var(--tw-border-opacity));--tw-bg-opacity:1;background-color:rgb(241 245 249 / var(--tw-bg-opacity))}
-
-    .sidenote-ref:hover{--tw-border-opacity:1;border-color:rgb(203 213 225 / var(--tw-border-opacity));--tw-bg-opacity:1;background-color:rgb(226 232 240 / var(--tw-bg-opacity))}
-
-    .sidenote{position:relative;float:left;clear:both;margin-left:2.5%;margin-right:2.5%;margin-top:1rem;margin-bottom:1rem;display:none;width:95%;font-size:0.75rem;line-height:1rem}
-
-    .sidenote-ref.expanded + .sidenote{display:block}
-
-    @media (min-width: 860px) {
-        .sidenote-ref{pointer-events:none;top:-0.5em;margin:0px;display:inline;height:auto;width:auto;border-width:0px;background-color:transparent}
-
-        .sidenote sup{display:inline}
-
-        .viewer-markdown .contains-sidenotes p{max-width:65%}
-
-        .viewer-markdown p .sidenote{position:relative;float:right;clear:right;margin-right:-54%;margin-top:0.2rem;display:block;width:50%}
-    }
-
-    .viewer-code + .viewer:not(.viewer-markdown):not(.viewer-code):not(.viewer-code-folded),
-    .viewer-code-folded + .viewer:not(.viewer-markdown):not(.viewer-code):not(.viewer-code-folded),
-    .viewer-result + .viewer-result{margin-top:0.5rem}
-
-    .viewer-markdown code {
-        background-color: transparent;
-    }
-
-    .viewer-code + .viewer-code-folded{margin-top:1rem}
-
-    .viewer-result{margin-bottom:1.5rem;line-height:1.25}
-
-    .viewer-result figure{margin-top:0px !important}
-
-    @media (min-width: 768px) {
-        .devcard-desc > div{margin:0px;max-width:100%}
-    }
-
-    /* Command Palette */
-    /* --------------------------------------------------------------- */
-
-    .nj-commands-input{background-color:transparent;--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity))}
-
-    .nj-context-menu-item:hover:not([disabled]){cursor:pointer;
-        background-color: rgba(255, 255, 255, .14)}
-
-    /* Devdocs */
-    /* --------------------------------------------------------------- */
-
-    .logo, .logo-white{display:block;text-indent:-999em;
-        background: url(/images/nextjournal-logo.svg) center center no-repeat}
-
-    .devdocs-body {
-            font-family: "Inter", sans-serif;
+        .teal {
+            color: var(--teal-color);
         }
 
-    /* Workarounds */
-    /* --------------------------------------------------------------- */
+        .bg-dark-blue {
+            background: var(--dark-blue-color);
+        }
 
-    /* Fixes vega viewer resizing into infinity */
-    .vega-embed .chart-wrapper{height:auto !important}
+        .bg-dark-blue-60 {
+            background: rgba(28, 42, 56, 0.6);
+        }
 
-    /* fixes fraction separators being overridden by tw’s border-color */
-    .katex *{--tw-border-opacity:1;border-color:rgb(0 0 0 / var(--tw-border-opacity))}
+        .bg-gray-panel {
+            background: var(--gray-panel-color);
+        }
 
-    /* end of fork */
-    .hljs {
-        background-color: transparent !important;
-    }
+        .text-dark-blue {
+            color: var(--dark-blue-color);
+        }
 
-    .cm-success {
-        position: relative;
-    }
+        .text-dark-blue-60 {
+            color: var(--dark-blue-60-color);
+        }
 
-    .cm-success::after {
-        content: '';
-        position: absolute;
-        bottom: 5px;
-        right: 5px;
-        width: 24px;
-        height: 24px;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='currentColor' class='w-6 h-6'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z'/%3E%3C/svg%3E");
-    }
+        .border-dark-blue-30 {
+            border-color: rgba(28, 42, 56, 0.6);
+        }
 
-    .cm-failure {
-        position: relative;
-    }
+        .text-brand {
+            color: var(--dark-blue-color);
+        }
 
-    .cm-failure::after {
-        content: '';
-        position: absolute;
-        bottom: 5px;
-        right: 5px;
-        width: 24px;
-        height: 24px;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor' style='width: 100%; height: 100%;'%3E%3Cpath fill-rule='evenodd' d='M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z' clip-rule='evenodd'/%3E%3C/svg%3E");
-    }
+        .bg-brand {
+            background: var(--dark-blue-color);
+        }
 
-    /* START: connection status header */
-    .status-header{position:fixed;left:0px;right:0px;z-index:10;--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity));text-align:center;font-family:Fira Sans, -apple-system, BlinkMacSystemFont, sans-serif;font-size:0.75rem;line-height:1rem}
+        .text-selected {
+            color: white;
+        }
 
-    .status-info{margin-left:0.25rem;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em}
+        .red {
+            color: var(--red-color);
+        }
 
-    [data-status="COMPUTE"]::after {
-        content: 'Computing...';
-        color: green;
-    }
+        
+        
 
-    [data-status="TRANSFER"]::after {
-        content: "Transferring results...";
-        color: green;
-    }
+        .disclose{position:relative;top:-2px;margin-right:3px;display:inline-block;cursor:pointer;border-style:solid;transition-property:all;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms;--tw-content:none;content:var(--tw-content);
+            border-color: var(--near-black-color) transparent;
+            border-width: 6px 4px 0}
 
-    [data-status="CONNECTED"]::after {
-        content: "Connected";
-        color: green;
-    }
+        .disclose:hover {
+            border-color: var(--near-black-color) transparent;
+        }
 
-    [data-status="DISCONNECTED"]::after {
-        content: "Disconnected";
-        color: red;
-    }
+        .dark .disclose,
+        .dark .disclose:hover {
+            border-color: white transparent;
+        }
 
-    /* END: connection status header */
+        .disclose.collapsed{--tw-rotate:-90deg;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}
+
+        
+        
+
+        .page{margin-left:auto;margin-right:auto;box-sizing:border-box;max-width:64rem;flex-shrink:0;padding-left:3rem;padding-right:3rem}
+
+        .max-w-prose{max-width:46rem !important}
+
+        .max-w-wide{max-width:48rem !important}
+
+        
+        
+
+        .task-list-item + .task-list-item,
+        .viewer-markdown ul ul{margin-top:0.25rem;margin-bottom:0px}
+
+        
+        .toc-offset{margin-left:13rem}
+
+        
+        .viewer-markdown .toc ul {
+            list-style: none;
+            margin-top:0.25rem;
+            margin-bottom:0.25rem;
+        }
+
+        
+        
+
+        .viewer-code{overflow-x:auto;border-radius:0.125rem;--tw-bg-opacity:1;background-color:rgb(241 245 249 / var(--tw-bg-opacity));font-family:Fira Mono, monospace;font-size:0.875rem;line-height:1.25rem}
+
+        .viewer-code .cm-content{padding-top:1rem;padding-bottom:1rem;padding-left:2rem;padding-right:2rem}
+
+        @media (min-width: 960px) {
+            .viewer-notebook .viewer-code .cm-content{padding-top:1rem;padding-bottom:1rem;padding-left:3rem}
+        }
+
+        
+        .cm-scroller:focus{outline:2px solid transparent;outline-offset:2px}
+
+        
+        
+
+        .inspected-value{font-family:Fira Mono, monospace;font-size:0.75rem;line-height:1.25rem}
+
+        .result-data{overflow-x:auto;white-space:nowrap;font-family:Fira Mono, monospace;font-size:0.875rem;line-height:1.25rem;line-height:1.5}
+
+        .result-data::-webkit-scrollbar, .path-nav::-webkit-scrollbar{height:0px}
+
+        .result-data-collapsed{white-space:nowrap}
+
+        .result-data-field{margin-left:1rem;white-space:nowrap}
+
+        .result-data-field-link{margin-left:1rem;cursor:pointer;white-space:nowrap}
+
+        .result-data-field-link:hover{background-color:rgb(0 0 0 / 0.05);--tw-text-opacity:1;color:rgb(0 0 0 / var(--tw-text-opacity))}
+
+        .result-text-empty {
+            color: rgba(0, 0, 0, .3);
+        }
+
+        .browsify-button:hover {
+            box-shadow: -2px 0 0 2px #edf2f7;
+        }
+
+        
+        
+
+        .viewer-notebook,
+        .viewer-markdown{color:var(--tw-prose-body);max-width:65ch;}
+
+        
+        
+
+        .viewer-notebook :where(p):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(p):not(:where([class~="not-prose"],[class~="not-prose"] *)){margin-top:1.25em;margin-bottom:1.25em}
+
+        
+        
+
+        .viewer-notebook :where([class~="lead"]):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where([class~="lead"]):not(:where([class~="not-prose"],[class~="not-prose"] *)){color:var(--tw-prose-lead);font-size:1.25em;line-height:1.6;margin-top:1.2em;margin-bottom:1.2em}
+
+        
+        
+
+        .viewer-notebook :where(a):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(a):not(:where([class~="not-prose"],[class~="not-prose"] *)){color:var(--tw-prose-links);text-decoration:underline;font-weight:500}
+
+        
+        
+
+        .viewer-notebook :where(strong):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(strong):not(:where([class~="not-prose"],[class~="not-prose"] *)){color:var(--tw-prose-bold);font-weight:600}
+
+        
+        
+
+        .viewer-notebook :where(a strong):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(a strong):not(:where([class~="not-prose"],[class~="not-prose"] *)){color:inherit}
+
+        
+        
+
+        .viewer-notebook :where(blockquote strong):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(blockquote strong):not(:where([class~="not-prose"],[class~="not-prose"] *)){color:inherit}
+
+        
+        
+
+        .viewer-notebook :where(thead th strong):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(thead th strong):not(:where([class~="not-prose"],[class~="not-prose"] *)){color:inherit}
+
+        
+        
+
+        .viewer-notebook :where(ol):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(ol):not(:where([class~="not-prose"],[class~="not-prose"] *)){list-style-type:decimal;margin-top:1.25em;margin-bottom:1.25em;padding-left:1.625em}
+
+        
+        
+
+        .viewer-notebook :where(ol[type="A"]):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(ol[type="A"]):not(:where([class~="not-prose"],[class~="not-prose"] *)){list-style-type:upper-alpha}
+
+        
+        
+
+        .viewer-notebook :where(ol[type="a"]):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(ol[type="a"]):not(:where([class~="not-prose"],[class~="not-prose"] *)){list-style-type:lower-alpha}
+
+        
+        
+
+        .viewer-notebook :where(ol[type="A" s]):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(ol[type="A" s]):not(:where([class~="not-prose"],[class~="not-prose"] *)){list-style-type:upper-alpha}
+
+        
+        
+
+        .viewer-notebook :where(ol[type="a" s]):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(ol[type="a" s]):not(:where([class~="not-prose"],[class~="not-prose"] *)){list-style-type:lower-alpha}
+
+        
+        
+
+        .viewer-notebook :where(ol[type="I"]):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(ol[type="I"]):not(:where([class~="not-prose"],[class~="not-prose"] *)){list-style-type:upper-roman}
+
+        
+        
+
+        .viewer-notebook :where(ol[type="i"]):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(ol[type="i"]):not(:where([class~="not-prose"],[class~="not-prose"] *)){list-style-type:lower-roman}
+
+        
+        
+
+        .viewer-notebook :where(ol[type="I" s]):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(ol[type="I" s]):not(:where([class~="not-prose"],[class~="not-prose"] *)){list-style-type:upper-roman}
+
+        
+        
+
+        .viewer-notebook :where(ol[type="i" s]):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(ol[type="i" s]):not(:where([class~="not-prose"],[class~="not-prose"] *)){list-style-type:lower-roman}
+
+        
+        
+
+        .viewer-notebook :where(ol[type="1"]):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(ol[type="1"]):not(:where([class~="not-prose"],[class~="not-prose"] *)){list-style-type:decimal}
+
+        
+        
+
+        .viewer-notebook :where(ul):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(ul):not(:where([class~="not-prose"],[class~="not-prose"] *)){list-style-type:disc;margin-top:1.25em;margin-bottom:1.25em;padding-left:1.625em}
+
+        
+        
+
+        .viewer-notebook :where(ol > li):not(:where([class~="not-prose"],[class~="not-prose"] *))::marker,
+        .viewer-markdown :where(ol > li):not(:where([class~="not-prose"],[class~="not-prose"] *))::marker{font-weight:400;color:var(--tw-prose-counters)}
+
+        
+        
+
+        .viewer-notebook :where(ul > li):not(:where([class~="not-prose"],[class~="not-prose"] *))::marker,
+        .viewer-markdown :where(ul > li):not(:where([class~="not-prose"],[class~="not-prose"] *))::marker{color:var(--tw-prose-bullets)}
+
+        
+        
+
+        .viewer-notebook :where(dt):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(dt):not(:where([class~="not-prose"],[class~="not-prose"] *)){color:var(--tw-prose-headings);font-weight:600;margin-top:1.25em}
+
+        
+        
+
+        .viewer-notebook :where(hr):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(hr):not(:where([class~="not-prose"],[class~="not-prose"] *)){border-color:var(--tw-prose-hr);border-top-width:1px;margin-top:3em;margin-bottom:3em}
+
+        
+        
+
+        .viewer-notebook :where(blockquote):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(blockquote):not(:where([class~="not-prose"],[class~="not-prose"] *)){font-weight:500;font-style:italic;color:var(--tw-prose-quotes);border-left-width:0.25rem;border-left-color:var(--tw-prose-quote-borders);quotes:"\201C""\201D""\2018""\2019";margin-top:1.6em;margin-bottom:1.6em;padding-left:1em}
+
+        
+        
+
+        .viewer-notebook :where(blockquote p:first-of-type):not(:where([class~="not-prose"],[class~="not-prose"] *))::before,
+        .viewer-markdown :where(blockquote p:first-of-type):not(:where([class~="not-prose"],[class~="not-prose"] *))::before{content:open-quote}
+
+        
+        
+
+        .viewer-notebook :where(blockquote p:last-of-type):not(:where([class~="not-prose"],[class~="not-prose"] *))::after,
+        .viewer-markdown :where(blockquote p:last-of-type):not(:where([class~="not-prose"],[class~="not-prose"] *))::after{content:close-quote}
+
+        
+        
+
+        .viewer-notebook :where(h1):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(h1):not(:where([class~="not-prose"],[class~="not-prose"] *)){color:var(--tw-prose-headings);font-weight:800;font-size:2.25em;margin-top:0;margin-bottom:0.8888889em;line-height:1.1111111}
+
+        
+        
+
+        .viewer-notebook :where(h1 strong):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(h1 strong):not(:where([class~="not-prose"],[class~="not-prose"] *)){font-weight:900;color:inherit}
+
+        
+        
+
+        .viewer-notebook :where(h2):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(h2):not(:where([class~="not-prose"],[class~="not-prose"] *)){color:var(--tw-prose-headings);font-weight:700;font-size:1.5em;margin-top:2em;margin-bottom:1em;line-height:1.3333333}
+
+        
+        
+
+        .viewer-notebook :where(h2 strong):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(h2 strong):not(:where([class~="not-prose"],[class~="not-prose"] *)){font-weight:800;color:inherit}
+
+        
+        
+
+        .viewer-notebook :where(h3):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(h3):not(:where([class~="not-prose"],[class~="not-prose"] *)){color:var(--tw-prose-headings);font-weight:600;font-size:1.25em;margin-top:1.6em;margin-bottom:0.6em;line-height:1.6}
+
+        
+        
+
+        .viewer-notebook :where(h3 strong):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(h3 strong):not(:where([class~="not-prose"],[class~="not-prose"] *)){font-weight:700;color:inherit}
+
+        
+        
+
+        .viewer-notebook :where(h4):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(h4):not(:where([class~="not-prose"],[class~="not-prose"] *)){color:var(--tw-prose-headings);font-weight:600;margin-top:1.5em;margin-bottom:0.5em;line-height:1.5}
+
+        
+        
+
+        .viewer-notebook :where(h4 strong):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(h4 strong):not(:where([class~="not-prose"],[class~="not-prose"] *)){font-weight:700;color:inherit}
+
+        
+        
+
+        .viewer-notebook :where(img):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(img):not(:where([class~="not-prose"],[class~="not-prose"] *)){margin-top:2em;margin-bottom:2em}
+
+        
+        
+
+        .viewer-notebook :where(picture):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(picture):not(:where([class~="not-prose"],[class~="not-prose"] *)){display:block;margin-top:2em;margin-bottom:2em}
+
+        
+        
+
+        .viewer-notebook :where(kbd):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(kbd):not(:where([class~="not-prose"],[class~="not-prose"] *)){font-weight:500;font-family:inherit;color:var(--tw-prose-kbd);box-shadow:0 0 0 1px rgb(var(--tw-prose-kbd-shadows) / 10%), 0 3px 0 rgb(var(--tw-prose-kbd-shadows) / 10%);font-size:0.875em;border-radius:0.3125rem;padding-top:0.1875em;padding-right:0.375em;padding-bottom:0.1875em;padding-left:0.375em}
+
+        
+        
+
+        .viewer-notebook :where(code):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(code):not(:where([class~="not-prose"],[class~="not-prose"] *)){color:var(--tw-prose-code);font-weight:600;font-size:0.875em}
+
+        
+        
+
+        .viewer-notebook :where(code):not(:where([class~="not-prose"],[class~="not-prose"] *))::before,
+        .viewer-markdown :where(code):not(:where([class~="not-prose"],[class~="not-prose"] *))::before{content:"`"}
+
+        
+        
+
+        .viewer-notebook :where(code):not(:where([class~="not-prose"],[class~="not-prose"] *))::after,
+        .viewer-markdown :where(code):not(:where([class~="not-prose"],[class~="not-prose"] *))::after{content:"`"}
+
+        
+        
+
+        .viewer-notebook :where(a code):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(a code):not(:where([class~="not-prose"],[class~="not-prose"] *)){color:inherit}
+
+        
+        
+
+        .viewer-notebook :where(h1 code):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(h1 code):not(:where([class~="not-prose"],[class~="not-prose"] *)){color:inherit}
+
+        
+        
+
+        .viewer-notebook :where(h2 code):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(h2 code):not(:where([class~="not-prose"],[class~="not-prose"] *)){color:inherit;font-size:0.875em}
+
+        
+        
+
+        .viewer-notebook :where(h3 code):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(h3 code):not(:where([class~="not-prose"],[class~="not-prose"] *)){color:inherit;font-size:0.9em}
+
+        
+        
+
+        .viewer-notebook :where(h4 code):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(h4 code):not(:where([class~="not-prose"],[class~="not-prose"] *)){color:inherit}
+
+        
+        
+
+        .viewer-notebook :where(blockquote code):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(blockquote code):not(:where([class~="not-prose"],[class~="not-prose"] *)){color:inherit}
+
+        
+        
+
+        .viewer-notebook :where(thead th code):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(thead th code):not(:where([class~="not-prose"],[class~="not-prose"] *)){color:inherit}
+
+        
+        
+
+        .viewer-notebook :where(pre):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(pre):not(:where([class~="not-prose"],[class~="not-prose"] *)){color:var(--tw-prose-pre-code);background-color:var(--tw-prose-pre-bg);overflow-x:auto;font-weight:400;font-size:0.875em;line-height:1.7142857;margin-top:1.7142857em;margin-bottom:1.7142857em;border-radius:0.375rem;padding-top:0.8571429em;padding-right:1.1428571em;padding-bottom:0.8571429em;padding-left:1.1428571em}
+
+        
+        
+
+        .viewer-notebook :where(pre code):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(pre code):not(:where([class~="not-prose"],[class~="not-prose"] *)){background-color:transparent;border-width:0;border-radius:0;padding:0;font-weight:inherit;color:inherit;font-size:inherit;font-family:inherit;line-height:inherit}
+
+        
+        
+
+        .viewer-notebook :where(pre code):not(:where([class~="not-prose"],[class~="not-prose"] *))::before,
+        .viewer-markdown :where(pre code):not(:where([class~="not-prose"],[class~="not-prose"] *))::before{content:none}
+
+        
+        
+
+        .viewer-notebook :where(pre code):not(:where([class~="not-prose"],[class~="not-prose"] *))::after,
+        .viewer-markdown :where(pre code):not(:where([class~="not-prose"],[class~="not-prose"] *))::after{content:none}
+
+        
+        
+
+        .viewer-notebook :where(table):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(table):not(:where([class~="not-prose"],[class~="not-prose"] *)){width:100%;table-layout:auto;text-align:left;margin-top:2em;margin-bottom:2em;font-size:0.875em;line-height:1.7142857}
+
+        
+        
+
+        .viewer-notebook :where(thead):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(thead):not(:where([class~="not-prose"],[class~="not-prose"] *)){border-bottom-width:1px;border-bottom-color:var(--tw-prose-th-borders)}
+
+        
+        
+
+        .viewer-notebook :where(thead th):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(thead th):not(:where([class~="not-prose"],[class~="not-prose"] *)){color:var(--tw-prose-headings);font-weight:600;vertical-align:bottom;padding-right:0.5714286em;padding-bottom:0.5714286em;padding-left:0.5714286em}
+
+        
+        
+
+        .viewer-notebook :where(tbody tr):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(tbody tr):not(:where([class~="not-prose"],[class~="not-prose"] *)){border-bottom-width:1px;border-bottom-color:var(--tw-prose-td-borders)}
+
+        
+        
+
+        .viewer-notebook :where(tbody tr:last-child):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(tbody tr:last-child):not(:where([class~="not-prose"],[class~="not-prose"] *)){border-bottom-width:0}
+
+        
+        
+
+        .viewer-notebook :where(tbody td):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(tbody td):not(:where([class~="not-prose"],[class~="not-prose"] *)){vertical-align:baseline}
+
+        
+        
+
+        .viewer-notebook :where(tfoot):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(tfoot):not(:where([class~="not-prose"],[class~="not-prose"] *)){border-top-width:1px;border-top-color:var(--tw-prose-th-borders)}
+
+        
+        
+
+        .viewer-notebook :where(tfoot td):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(tfoot td):not(:where([class~="not-prose"],[class~="not-prose"] *)){vertical-align:top}
+
+        
+        
+
+        .viewer-notebook :where(figure > *):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(figure > *):not(:where([class~="not-prose"],[class~="not-prose"] *)){margin-top:0;margin-bottom:0}
+
+        
+        
+
+        .viewer-notebook :where(figcaption):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(figcaption):not(:where([class~="not-prose"],[class~="not-prose"] *)){color:var(--tw-prose-captions);font-size:0.875em;line-height:1.4285714;margin-top:0.8571429em}
+
+        
+        
+
+        .viewer-notebook,
+        .viewer-markdown{--tw-prose-body:#374151;--tw-prose-headings:#111827;--tw-prose-lead:#4b5563;--tw-prose-links:#111827;--tw-prose-bold:#111827;--tw-prose-counters:#6b7280;--tw-prose-bullets:#d1d5db;--tw-prose-hr:#e5e7eb;--tw-prose-quotes:#111827;--tw-prose-quote-borders:#e5e7eb;--tw-prose-captions:#6b7280;--tw-prose-kbd:#111827;--tw-prose-kbd-shadows:17 24 39;--tw-prose-code:#111827;--tw-prose-pre-code:#e5e7eb;--tw-prose-pre-bg:#1f2937;--tw-prose-th-borders:#d1d5db;--tw-prose-td-borders:#e5e7eb;--tw-prose-invert-body:#d1d5db;--tw-prose-invert-headings:#fff;--tw-prose-invert-lead:#9ca3af;--tw-prose-invert-links:#fff;--tw-prose-invert-bold:#fff;--tw-prose-invert-counters:#9ca3af;--tw-prose-invert-bullets:#4b5563;--tw-prose-invert-hr:#374151;--tw-prose-invert-quotes:#f3f4f6;--tw-prose-invert-quote-borders:#374151;--tw-prose-invert-captions:#9ca3af;--tw-prose-invert-kbd:#fff;--tw-prose-invert-kbd-shadows:255 255 255;--tw-prose-invert-code:#fff;--tw-prose-invert-pre-code:#d1d5db;--tw-prose-invert-pre-bg:rgb(0 0 0 / 50%);--tw-prose-invert-th-borders:#4b5563;--tw-prose-invert-td-borders:#374151;font-size:1rem;line-height:1.75}
+
+        
+        
+
+        .viewer-notebook :where(picture > img):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(picture > img):not(:where([class~="not-prose"],[class~="not-prose"] *)){margin-top:0;margin-bottom:0}
+
+        
+        
+
+        .viewer-notebook :where(video):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(video):not(:where([class~="not-prose"],[class~="not-prose"] *)){margin-top:2em;margin-bottom:2em}
+
+        
+        
+
+        .viewer-notebook :where(li):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(li):not(:where([class~="not-prose"],[class~="not-prose"] *)){margin-top:0.5em;margin-bottom:0.5em}
+
+        
+        
+
+        .viewer-notebook :where(ol > li):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(ol > li):not(:where([class~="not-prose"],[class~="not-prose"] *)){padding-left:0.375em}
+
+        
+        
+
+        .viewer-notebook :where(ul > li):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(ul > li):not(:where([class~="not-prose"],[class~="not-prose"] *)){padding-left:0.375em}
+
+        
+        
+
+        .viewer-notebook :where(.prose > ul > li p):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(.prose > ul > li p):not(:where([class~="not-prose"],[class~="not-prose"] *)){margin-top:0.75em;margin-bottom:0.75em}
+
+        
+        
+
+        .viewer-notebook :where(.prose > ul > li > *:first-child):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(.prose > ul > li > *:first-child):not(:where([class~="not-prose"],[class~="not-prose"] *)){margin-top:1.25em}
+
+        
+        
+
+        .viewer-notebook :where(.prose > ul > li > *:last-child):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(.prose > ul > li > *:last-child):not(:where([class~="not-prose"],[class~="not-prose"] *)){margin-bottom:1.25em}
+
+        
+        
+
+        .viewer-notebook :where(.prose > ol > li > *:first-child):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(.prose > ol > li > *:first-child):not(:where([class~="not-prose"],[class~="not-prose"] *)){margin-top:1.25em}
+
+        
+        
+
+        .viewer-notebook :where(.prose > ol > li > *:last-child):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(.prose > ol > li > *:last-child):not(:where([class~="not-prose"],[class~="not-prose"] *)){margin-bottom:1.25em}
+
+        
+        
+
+        .viewer-notebook :where(ul ul, ul ol, ol ul, ol ol):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(ul ul, ul ol, ol ul, ol ol):not(:where([class~="not-prose"],[class~="not-prose"] *)){margin-top:0.75em;margin-bottom:0.75em}
+
+        
+        
+
+        .viewer-notebook :where(dl):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(dl):not(:where([class~="not-prose"],[class~="not-prose"] *)){margin-top:1.25em;margin-bottom:1.25em}
+
+        
+        
+
+        .viewer-notebook :where(dd):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(dd):not(:where([class~="not-prose"],[class~="not-prose"] *)){margin-top:0.5em;padding-left:1.625em}
+
+        
+        
+
+        .viewer-notebook :where(hr + *):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(hr + *):not(:where([class~="not-prose"],[class~="not-prose"] *)){margin-top:0}
+
+        
+        
+
+        .viewer-notebook :where(h2 + *):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(h2 + *):not(:where([class~="not-prose"],[class~="not-prose"] *)){margin-top:0}
+
+        
+        
+
+        .viewer-notebook :where(h3 + *):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(h3 + *):not(:where([class~="not-prose"],[class~="not-prose"] *)){margin-top:0}
+
+        
+        
+
+        .viewer-notebook :where(h4 + *):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(h4 + *):not(:where([class~="not-prose"],[class~="not-prose"] *)){margin-top:0}
+
+        
+        
+
+        .viewer-notebook :where(thead th:first-child):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(thead th:first-child):not(:where([class~="not-prose"],[class~="not-prose"] *)){padding-left:0}
+
+        
+        
+
+        .viewer-notebook :where(thead th:last-child):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(thead th:last-child):not(:where([class~="not-prose"],[class~="not-prose"] *)){padding-right:0}
+
+        
+        
+
+        .viewer-notebook :where(tbody td, tfoot td):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(tbody td, tfoot td):not(:where([class~="not-prose"],[class~="not-prose"] *)){padding-top:0.5714286em;padding-right:0.5714286em;padding-bottom:0.5714286em;padding-left:0.5714286em}
+
+        
+        
+
+        .viewer-notebook :where(tbody td:first-child, tfoot td:first-child):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(tbody td:first-child, tfoot td:first-child):not(:where([class~="not-prose"],[class~="not-prose"] *)){padding-left:0}
+
+        
+        
+
+        .viewer-notebook :where(tbody td:last-child, tfoot td:last-child):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(tbody td:last-child, tfoot td:last-child):not(:where([class~="not-prose"],[class~="not-prose"] *)){padding-right:0}
+
+        
+        
+
+        .viewer-notebook :where(figure):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(figure):not(:where([class~="not-prose"],[class~="not-prose"] *)){margin-top:2em;margin-bottom:2em}
+
+        
+        
+
+        .viewer-notebook :where(.prose > :first-child):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(.prose > :first-child):not(:where([class~="not-prose"],[class~="not-prose"] *)){margin-top:0}
+
+        
+        
+
+        .viewer-notebook :where(.prose > :last-child):not(:where([class~="not-prose"],[class~="not-prose"] *)),
+        .viewer-markdown :where(.prose > :last-child):not(:where([class~="not-prose"],[class~="not-prose"] *)){margin-bottom:0}
+
+        
+        
+
+        .viewer-notebook,
+        .viewer-markdown{max-width:none}
+
+        
+        
+
+        .viewer-notebook :is(:where(h1, h2, h3, h4, h5, h6, th):not(:where([class~="not-prose"],[class~="not-prose"] *))),
+        .viewer-markdown :is(:where(h1, h2, h3, h4, h5, h6, th):not(:where([class~="not-prose"],[class~="not-prose"] *))){margin-bottom:1rem}
+
+        
+        
+
+        .viewer-notebook :is(:where(p):not(:where([class~="not-prose"],[class~="not-prose"] *))),
+        .viewer-markdown :is(:where(p):not(:where([class~="not-prose"],[class~="not-prose"] *))){margin-top:1rem;line-height:1.375}
+
+        
+        
+
+        .viewer-notebook :is(:where(a):not(:where([class~="not-prose"],[class~="not-prose"] *))),
+        .viewer-markdown :is(:where(a):not(:where([class~="not-prose"],[class~="not-prose"] *))){--tw-text-opacity:1;color:rgb(37 99 235 / var(--tw-text-opacity));-webkit-text-decoration-line:none;text-decoration-line:none}
+
+        
+        
+
+        .viewer-notebook :is(:where(a):not(:where([class~="not-prose"],[class~="not-prose"] *))):hover,
+        .viewer-markdown :is(:where(a):not(:where([class~="not-prose"],[class~="not-prose"] *))):hover{-webkit-text-decoration-line:underline;text-decoration-line:underline}
+
+        
+        
+
+        .viewer-notebook :is(:where(blockquote):not(:where([class~="not-prose"],[class~="not-prose"] *))),
+        .viewer-markdown :is(:where(blockquote):not(:where([class~="not-prose"],[class~="not-prose"] *))){margin-top:1rem;line-height:1.375}
+
+        
+        
+
+        .viewer-notebook :is(:where(figure):not(:where([class~="not-prose"],[class~="not-prose"] *))),
+        .viewer-markdown :is(:where(figure):not(:where([class~="not-prose"],[class~="not-prose"] *))){margin-top:1rem}
+
+        
+        
+
+        .viewer-notebook :is(:where(figcaption):not(:where([class~="not-prose"],[class~="not-prose"] *))),
+        .viewer-markdown :is(:where(figcaption):not(:where([class~="not-prose"],[class~="not-prose"] *))){margin-top:0.5rem;font-size:0.75rem;line-height:1rem}
+
+        
+        
+
+        .viewer-notebook :is(:where(code):not(:where([class~="not-prose"],[class~="not-prose"] *))),
+        .viewer-markdown :is(:where(code):not(:where([class~="not-prose"],[class~="not-prose"] *))){--tw-bg-opacity:1;background-color:rgb(241 245 249 / var(--tw-bg-opacity));font-weight:500}
+
+        
+        
+
+        .viewer-notebook :is(:where(ol):not(:where([class~="not-prose"],[class~="not-prose"] *))),
+        .viewer-markdown :is(:where(ol):not(:where([class~="not-prose"],[class~="not-prose"] *))){margin-top:1rem;margin-bottom:1.5rem;line-height:1.375}
+
+        
+        
+
+        .viewer-notebook :is(:where(ul):not(:where([class~="not-prose"],[class~="not-prose"] *))),
+        .viewer-markdown :is(:where(ul):not(:where([class~="not-prose"],[class~="not-prose"] *))){margin-top:1rem;margin-bottom:1.5rem;line-height:1.375}
+
+        
+        
+
+        .viewer-notebook :is(:where(table):not(:where([class~="not-prose"],[class~="not-prose"] *))),
+        .viewer-markdown :is(:where(table):not(:where([class~="not-prose"],[class~="not-prose"] *))){margin-top:0px}
+
+        
+        
+
+        .viewer-notebook :is(:where(th):not(:where([class~="not-prose"],[class~="not-prose"] *))),
+        .viewer-markdown :is(:where(th):not(:where([class~="not-prose"],[class~="not-prose"] *))){margin-bottom:0px}
+
+        
+        
+
+        .viewer-notebook :is(:where(img):not(:where([class~="not-prose"],[class~="not-prose"] *))),
+        .viewer-markdown :is(:where(img):not(:where([class~="not-prose"],[class~="not-prose"] *))){margin-top:0px;margin-bottom:0px}
+
+        
+        
+
+        .viewer-notebook :is(:where(hr):not(:where([class~="not-prose"],[class~="not-prose"] *))),
+        .viewer-markdown :is(:where(hr):not(:where([class~="not-prose"],[class~="not-prose"] *))){margin-top:1.5rem;border-top-width:2px;border-style:solid;--tw-border-opacity:1;border-color:rgb(226 232 240 / var(--tw-border-opacity))}
+
+        .viewer-markdown blockquote p:first-of-type:before,
+        .viewer-markdown blockquote p:last-of-type:after{--tw-content:none;content:var(--tw-content)}
+
+        
+        
 
 
-    .result-error {
-        background-color: #ffe4e4;
-    }
+        
+        
+
+        .contains-task-list{list-style-type:none;padding-left:1.5rem}
+
+        .contains-task-list input[type="checkbox"]{position:relative;top:0.15rem;margin-right:0.3rem;margin-left:-1.5rem;height:1rem;width:1rem;-webkit-appearance:none;appearance:none;border-radius:0.25rem;border-width:1px;--tw-border-opacity:1;border-color:rgb(226 232 240 / var(--tw-border-opacity))}
+
+        .contains-task-list input[type="checkbox"]:checked{--tw-border-opacity:1;border-color:rgb(79 70 229 / var(--tw-border-opacity));--tw-bg-opacity:1;background-color:rgb(79 70 229 / var(--tw-bg-opacity));background-size:contain;background-repeat:no-repeat;
+            background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e")}
+
+        
+        
+
+        .viewer-markdown .toc{margin-top:1rem}
+
+        .viewer-markdown h1 + .toc{margin-top:2rem}
+
+        .viewer-markdown .toc h1,
+        .viewer-markdown .toc h2,
+        .viewer-markdown .toc h3,
+        .viewer-markdown .toc h4,
+        .viewer-markdown .toc h5,
+        .viewer-markdown .toc h6{margin-top:0px;margin-bottom:0px;font-family:Fira Sans, -apple-system, BlinkMacSystemFont, sans-serif;font-size:1rem;line-height:1.5rem;--tw-text-opacity:1;color:rgb(79 70 229 / var(--tw-text-opacity))}
+
+        .viewer-markdown .toc a{font-weight:400;--tw-text-opacity:1;color:rgb(79 70 229 / var(--tw-text-opacity));-webkit-text-decoration-line:none;text-decoration-line:none}
+
+        .viewer-markdown .toc a:hover{-webkit-text-decoration-line:underline;text-decoration-line:underline}
+
+        .viewer-markdown .toc li{margin:0px}
+
+        .viewer-markdown .toc ul ul{padding-left:1rem}
+
+        
+        
+
+        .viewer-notebook{padding-top:4rem;padding-bottom:4rem}
+
+        #clerk-static-app .viewer-notebook{padding-top:0.8rem;padding-bottom:4rem}
+
+        .viewer-markdown *:first-child:not(.viewer-code):not(li):not(h2){margin-top:0px}
+
+        
+        .viewer + .viewer-result{margin-top:0px}
+
+        .viewer-code + .viewer-result{margin-top:0.75rem}
+
+        .viewer-markdown + .viewer-markdown{margin-top:0px}
+
+        
+        
+
+        .sidenote-ref{top:-3px;margin:0px;margin-left:4px;display:inline-flex;height:18px;width:18px;cursor:pointer;align-items:center;justify-content:center;border-radius:9999px;border-width:1px;--tw-border-opacity:1;border-color:rgb(203 213 225 / var(--tw-border-opacity));--tw-bg-opacity:1;background-color:rgb(241 245 249 / var(--tw-bg-opacity))}
+
+        
+        
+
+        .sidenote-ref:hover{--tw-border-opacity:1;border-color:rgb(203 213 225 / var(--tw-border-opacity));--tw-bg-opacity:1;background-color:rgb(226 232 240 / var(--tw-bg-opacity))}
+
+        .sidenote{position:relative;float:left;clear:both;margin-left:2.5%;margin-right:2.5%;margin-top:1rem;margin-bottom:1rem;display:none;width:95%;font-size:0.75rem;line-height:1rem}
+
+        .sidenote-ref.expanded + .sidenote{display:block}
+
+        @media (min-width: 860px) {
+            .sidenote-ref{pointer-events:none;top:-0.5em;margin:0px;display:inline;height:auto;width:auto;border-width:0px;background-color:transparent}
+
+            .sidenote sup{display:inline}
+
+            .viewer-markdown .contains-sidenotes p{max-width:65%}
+
+            .viewer-markdown p .sidenote{position:relative;float:right;clear:right;margin-right:-54%;margin-top:0.2rem;display:block;width:50%}
+        }
+
+        .viewer-code + .viewer:not(.viewer-markdown):not(.viewer-code):not(.viewer-code-folded),
+        .viewer-code-folded + .viewer:not(.viewer-markdown):not(.viewer-code):not(.viewer-code-folded),
+        .viewer-result + .viewer-result{margin-top:0.5rem}
+
+        .viewer-markdown code {
+            background-color: transparent;
+        }
+
+        .viewer-code + .viewer-code-folded{margin-top:1rem}
+
+        .viewer-result{margin-bottom:1.5rem;line-height:1.25}
+
+        .viewer-result figure{margin-top:0px !important}
+
+        @media (min-width: 768px) {
+            .devcard-desc > div{margin:0px;max-width:100%}
+        }
+
+        
+        
+
+        .nj-commands-input{background-color:transparent;--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity))}
+
+        .nj-context-menu-item:hover:not([disabled]){cursor:pointer;
+            background-color: rgba(255, 255, 255, .14)}
+
+        
+        
+
+        .logo, .logo-white{display:block;text-indent:-999em;
+            background: url(/images/nextjournal-logo.svg) center center no-repeat}
+
+        .devdocs-body {
+                font-family: "Inter", sans-serif;
+            }
+
+        
+        
+
+        
+        .vega-embed .chart-wrapper{height:auto !important}
+
+        
+        .katex *{--tw-border-opacity:1;border-color:rgb(0 0 0 / var(--tw-border-opacity))}
+
+        
+        .hljs {
+            background-color: transparent !important;
+        }
+
+        .cm-success {
+            position: relative;
+        }
+
+        .cm-success::after {
+            content: '';
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            width: 24px;
+            height: 24px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='currentColor' class='w-6 h-6'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z'/%3E%3C/svg%3E");
+        }
+
+        .cm-failure {
+            position: relative;
+        }
+
+        .cm-failure::after {
+            content: '';
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            width: 24px;
+            height: 24px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor' style='width: 100%; height: 100%;'%3E%3Cpath fill-rule='evenodd' d='M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z' clip-rule='evenodd'/%3E%3C/svg%3E");
+        }
+
+        
+        .status-header{position:fixed;left:0px;right:0px;z-index:10;--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity));text-align:center;font-family:Fira Sans, -apple-system, BlinkMacSystemFont, sans-serif;font-size:0.75rem;line-height:1rem}
+
+        .status-info{margin-left:0.25rem;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em}
+
+        [data-status="COMPUTE"]::after {
+            content: 'Computing...';
+            color: green;
+        }
+
+        [data-status="TRANSFER"]::after {
+            content: "Transferring results...";
+            color: green;
+        }
+
+        [data-status="CONNECTED"]::after {
+            content: "Connected";
+            color: green;
+        }
+
+        [data-status="DISCONNECTED"]::after {
+            content: "Disconnected";
+            color: red;
+        }
+
+        
 
 
-    .hover\:underline:hover{-webkit-text-decoration-line:underline;text-decoration-line:underline}
+        .result-error {
+            background-color: #ffe4e4;
+        }
 
+        [x-cloak] {
+            display: none !important;
+        }
 
-    @media (min-width: 768px){.md\:left-3{left:0.75rem}.md\:right-auto{right:auto}.md\:top-\[7px\]{top:7px}.md\:mt-0{margin-top:0px}.md\:rounded-none{border-radius:0px}.md\:border-0{border-width:0px}.md\:p-0{padding:0px}.md\:text-\[12px\]{font-size:12px}.md\:shadow-none{--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}}
+        .hover\:underline:hover{-webkit-text-decoration-line:underline;text-decoration-line:underline}
 
+        @media (min-width: 768px){.md\:left-3{left:0.75rem}.md\:right-auto{right:auto}.md\:top-\[7px\]{top:7px}.md\:mt-0{margin-top:0px}.md\:rounded-none{border-radius:0px}.md\:border-0{border-width:0px}.md\:p-0{padding:0px}.md\:text-\[12px\]{font-size:12px}.md\:shadow-none{--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}}
     </style><script defer class="jnb-no-opti" src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.1/dist/cdn.min.js"></script><script defer class="jnb-no-opti" src="https://cdn.jsdelivr.net/npm/vega@5"></script><script defer class="jnb-no-opti" src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script><script defer class="jnb-no-opti" src="https://cdn.jsdelivr.net/npm/vega-embed@6" onload="renderVega()"></script><script defer class="jnb-no-opti" type="text/javascript" src="https://d3js.org/d3.v7.js"></script><script defer class="jnb-no-opti" type="text/javascript" src="https://cdn.jsdelivr.net/npm/d3-flame-graph@4.1.3/dist/d3-flamegraph.min.js" onload="renderFlamegraphs();"></script><script defer class="jnb-no-opti" src="https://cdn.plot.ly/plotly-latest.min.js" onload="renderPlotly();"></script></head>
 <body>
-<div x-data="{ tocOpen: window.innerWidth >= 768 ? true : false, notebookStatus: 'Connected'}" class="flex">
-    <button x-on:click="tocOpen = ! tocOpen" class="toc-toggle z-20 fixed right-2 top-2 md:right-auto md:left-3 md:top-[7px] text-slate-400 font-sans text-xs hover:underline cursor-pointer flex items-center bg-white py-1 px-3 md:p-0 rounded-full md:rounded-none border md:border-0 border-slate-200 shadow md:shadow-none">
+<div x-cloak="" x-data="{ tocOpen: window.innerWidth >= 768, notebookStatus: 'Connected'}" class="flex">
+    <button x-on:click="tocOpen=!tocOpen" class="toc-toggle z-20 fixed right-2 top-2 md:right-auto md:left-3 md:top-[7px] text-slate-400 font-sans text-xs hover:underline cursor-pointer flex items-center bg-white py-1 px-3 md:p-0 rounded-full md:rounded-none border md:border-0 border-slate-200 shadow md:shadow-none">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewbox="0 0 24 24" stroke="currentColor" width="20" height="20">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
         </svg>
@@ -817,15 +1127,17 @@
         <div class="px-3 mb-1 mt-1 md:mt-0 text-xs md:text-[12px] uppercase tracking-wider text-slate-500 font-medium px-3 mb-1 leading-none">
             ToC
         </div>
-        <div x-on:click="tocOpen = ! tocOpen" class="toc-toggle text-slate-500 absolute right-2 top-[11px] cursor-pointer z-10">
+        <div x-on:click="tocOpen=!tocOpen" class="toc-toggle text-slate-500 absolute right-2 top-[11px] cursor-pointer z-10">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewbox="0 0 24 24" stroke="currentColor" stroke-width="2" class="w-4 w-4">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path>
             </svg>
         </div>
-        <div id="toc"><ol class="toc-list "><li class="toc-list-item is-active-li"><a href="#-book-of-jnotebook" class="toc-link node-name--H1  is-active-link">📖 Book of jnotebook</a><ol class="toc-list  is-collapsible"><li class="toc-list-item"><a href="#-rationale" class="toc-link node-name--H2 ">⚖️ Rationale</a></li><li class="toc-list-item"><a href="#-getting-started" class="toc-link node-name--H2 ">🚀 Getting Started</a><ol class="toc-list  is-collapsible is-collapsed"><li class="toc-list-item"><a href="#quickstart" class="toc-link node-name--H3 ">Quickstart</a></li><li class="toc-list-item"><a href="#install" class="toc-link node-name--H3 ">Install</a></li><li class="toc-list-item"><a href="#-demo-notebooks" class="toc-link node-name--H3 ">🤹 Demo notebooks</a></li><li class="toc-list-item"><a href="#-in-an-existing-project" class="toc-link node-name--H3 ">🔌 In an Existing Project</a></li><li class="toc-list-item"><a href="#ide-integration" class="toc-link node-name--H3 ">IDE integration</a></li></ol></li><li class="toc-list-item"><a href="#-editor-principle" class="toc-link node-name--H2 ">💡 Editor principle</a><ol class="toc-list  is-collapsible is-collapsed"><li class="toc-list-item"><a href="#markdown" class="toc-link node-name--H3 ">Markdown</a></li><li class="toc-list-item"><a href="#latex" class="toc-link node-name--H3 ">Latex</a></li><li class="toc-list-item"><a href="#mermaid" class="toc-link node-name--H3 ">Mermaid</a></li></ol></li><li class="toc-list-item"><a href="#-viewers" class="toc-link node-name--H2 ">🔍 Viewers</a></li><li class="toc-list-item"><a href="#-tables" class="toc-link node-name--H2 ">🔢 Tables</a></li><li class="toc-list-item"><a href="#-plotly" class="toc-link node-name--H2 ">📊 Plotly</a></li><li class="toc-list-item"><a href="#-vega-lite" class="toc-link node-name--H2 ">🗺 Vega Lite</a></li><li class="toc-list-item"><a href="#-images" class="toc-link node-name--H2 ">🏞 Images</a></li><li class="toc-list-item"><a href="#-grid-layouts" class="toc-link node-name--H2 ">🔠 Grid Layouts</a></li><li class="toc-list-item"><a href="#-custom-html" class="toc-link node-name--H2 ">⚙️ Custom html</a></li><li class="toc-list-item"><a href="#-flamegraphs" class="toc-link node-name--H2 ">🔥 Flamegraphs</a></li><li class="toc-list-item"><a href="#credits" class="toc-link node-name--H2 ">Credits</a></li></ol></li></ol></div>
+        <div id="toc"><ol class="toc-list "><li class="toc-list-item"><a href="#-book-of-jnotebook" class="toc-link node-name--H1 ">📖 Book of jnotebook</a><ol class="toc-list  is-collapsible"><li class="toc-list-item"><a href="#-rationale" class="toc-link node-name--H2 ">⚖️ Rationale</a></li><li class="toc-list-item"><a href="#-getting-started" class="toc-link node-name--H2 ">🚀 Getting Started</a><ol class="toc-list  is-collapsible is-collapsed"><li class="toc-list-item"><a href="#quickstart" class="toc-link node-name--H3 ">Quickstart</a></li><li class="toc-list-item"><a href="#install" class="toc-link node-name--H3 ">Install</a></li><li class="toc-list-item"><a href="#-demo-notebooks" class="toc-link node-name--H3 ">🤹 Demo notebooks</a></li><li class="toc-list-item"><a href="#-in-an-existing-project" class="toc-link node-name--H3 ">🔌 In an Existing Project</a></li><li class="toc-list-item"><a href="#ide-integration" class="toc-link node-name--H3 ">IDE integration</a></li></ol></li><li class="toc-list-item"><a href="#-editor-principle" class="toc-link node-name--H2 ">💡 Editor principle</a><ol class="toc-list  is-collapsible is-collapsed"><li class="toc-list-item"><a href="#markdown" class="toc-link node-name--H3 ">Markdown</a></li><li class="toc-list-item"><a href="#latex" class="toc-link node-name--H3 ">Latex</a></li><li class="toc-list-item"><a href="#mermaid" class="toc-link node-name--H3 ">Mermaid</a></li></ol></li><li class="toc-list-item"><a href="#-viewers" class="toc-link node-name--H2 ">🔍 Viewers</a></li><li class="toc-list-item"><a href="#-tables" class="toc-link node-name--H2 ">🔢 Tables</a></li><li class="toc-list-item"><a href="#-plotly" class="toc-link node-name--H2 ">📊 Plotly</a></li><li class="toc-list-item"><a href="#-vega-lite" class="toc-link node-name--H2 ">🗺 Vega Lite</a></li><li class="toc-list-item"><a href="#-images" class="toc-link node-name--H2 ">🏞 Images</a></li><li class="toc-list-item"><a href="#-grid-layouts" class="toc-link node-name--H2 ">🔠 Grid Layouts</a></li><li class="toc-list-item"><a href="#-custom-html" class="toc-link node-name--H2 ">⚙️ Custom html</a></li><li class="toc-list-item"><a href="#-flamegraphs" class="toc-link node-name--H2 ">🔥 Flamegraphs</a></li><li class="toc-list-item is-active-li"><a href="#credits" class="toc-link node-name--H2  is-active-link">Credits</a></li></ol></li></ol></div>
     </aside>
     <div x-bind:class="tocOpen ? 'toc-offset' : ''" class="flex-auto h-screen overflow-y-auto scroll-container">
-        <div id="notebook" class="flex flex-col items-center viewer-notebook flex-auto"><div class="viewer viewer-html- w-full max-w-prose px-8"><div class="viewer-markdown"><h1 id="-book-of-jnotebook">📖 Book of jnotebook</h1>
+        <div id="notebook" class="flex flex-col items-center viewer-notebook flex-auto">
+            
+                <div class="viewer viewer-html- w-full max-w-prose px-8"><div class="viewer-markdown"><h1 id="-book-of-jnotebook">📖 Book of jnotebook</h1>
 <p><code>jnotebook</code> is a modern notebook system for Java<br>
 <code>jnotebook</code> interprets Java JShell files and render them as notebooks.</p>
 <h2 id="-rationale">⚖️ Rationale</h2>
@@ -935,7 +1247,7 @@ a^2+b^2=c^2
 </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.9474em; vertical-align: -0.0833em;"></span><span class="mord"><span class="mord mathnormal">a</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height: 0.8641em;"><span class="" style="top: -3.113em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right: 0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right: 0.2222em;"></span></span><span class="base"><span class="strut" style="height: 0.8641em;"></span><span class="mord"><span class="mord mathnormal">b</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height: 0.8641em;"><span class="" style="top: -3.113em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right: 0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right: 0.2778em;"></span></span><span class="base"><span class="strut" style="height: 0.8641em;"></span><span class="mord"><span class="mord mathnormal">c</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height: 0.8641em;"><span class="" style="top: -3.113em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></span></div>
 <h3 id="mermaid">Mermaid</h3>
 <p>Mermaid graphs are supported</p>
-<div class="mermaid" data-processed="true"><svg aria-roledescription="sequence" role="graphics-document document" viewbox="-50 -10 484 355" style="max-width: 484px;" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" width="100%" id="mermaid-1699610793791"><style>#mermaid-1699610793791{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}#mermaid-1699610793791 .error-icon{fill:#552222;}#mermaid-1699610793791 .error-text{fill:#552222;stroke:#552222;}#mermaid-1699610793791 .edge-thickness-normal{stroke-width:2px;}#mermaid-1699610793791 .edge-thickness-thick{stroke-width:3.5px;}#mermaid-1699610793791 .edge-pattern-solid{stroke-dasharray:0;}#mermaid-1699610793791 .edge-pattern-dashed{stroke-dasharray:3;}#mermaid-1699610793791 .edge-pattern-dotted{stroke-dasharray:2;}#mermaid-1699610793791 .marker{fill:#333333;stroke:#333333;}#mermaid-1699610793791 .marker.cross{stroke:#333333;}#mermaid-1699610793791 svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#mermaid-1699610793791 .actor{stroke:hsl(259.6261682243, 59.7765363128%, 87.9019607843%);fill:#ECECFF;}#mermaid-1699610793791 text.actor&gt;tspan{fill:black;stroke:none;}#mermaid-1699610793791 .actor-line{stroke:grey;}#mermaid-1699610793791 .messageLine0{stroke-width:1.5;stroke-dasharray:none;stroke:#333;}#mermaid-1699610793791 .messageLine1{stroke-width:1.5;stroke-dasharray:2,2;stroke:#333;}#mermaid-1699610793791 #arrowhead path{fill:#333;stroke:#333;}#mermaid-1699610793791 .sequenceNumber{fill:white;}#mermaid-1699610793791 #sequencenumber{fill:#333;}#mermaid-1699610793791 #crosshead path{fill:#333;stroke:#333;}#mermaid-1699610793791 .messageText{fill:#333;stroke:none;}#mermaid-1699610793791 .labelBox{stroke:hsl(259.6261682243, 59.7765363128%, 87.9019607843%);fill:#ECECFF;}#mermaid-1699610793791 .labelText,#mermaid-1699610793791 .labelText&gt;tspan{fill:black;stroke:none;}#mermaid-1699610793791 .loopText,#mermaid-1699610793791 .loopText&gt;tspan{fill:black;stroke:none;}#mermaid-1699610793791 .loopLine{stroke-width:2px;stroke-dasharray:2,2;stroke:hsl(259.6261682243, 59.7765363128%, 87.9019607843%);fill:hsl(259.6261682243, 59.7765363128%, 87.9019607843%);}#mermaid-1699610793791 .note{stroke:#aaaa33;fill:#fff5ad;}#mermaid-1699610793791 .noteText,#mermaid-1699610793791 .noteText&gt;tspan{fill:black;stroke:none;}#mermaid-1699610793791 .activation0{fill:#f4f4f4;stroke:#666;}#mermaid-1699610793791 .activation1{fill:#f4f4f4;stroke:#666;}#mermaid-1699610793791 .activation2{fill:#f4f4f4;stroke:#666;}#mermaid-1699610793791 .actorPopupMenu{position:absolute;}#mermaid-1699610793791 .actorPopupMenuPanel{position:absolute;fill:#ECECFF;box-shadow:0px 8px 16px 0px rgba(0,0,0,0.2);filter:drop-shadow(3px 5px 2px rgb(0 0 0 / 0.4));}#mermaid-1699610793791 .actor-man line{stroke:hsl(259.6261682243, 59.7765363128%, 87.9019607843%);fill:#ECECFF;}#mermaid-1699610793791 .actor-man circle,#mermaid-1699610793791 line{stroke:hsl(259.6261682243, 59.7765363128%, 87.9019607843%);fill:#ECECFF;stroke-width:2px;}#mermaid-1699610793791 :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style><g></g><defs><symbol height="24" width="24" id="computer"><path d="M2 2v13h20v-13h-20zm18 11h-16v-9h16v9zm-10.228 6l.466-1h3.524l.467 1h-4.457zm14.228 3h-24l2-6h2.104l-1.33 4h18.45l-1.297-4h2.073l2 6zm-5-10h-14v-7h14v7z" transform="scale(.5)"></path></symbol></defs><defs><symbol clip-rule="evenodd" fill-rule="evenodd" id="database"><path d="M12.258.001l.256.004.255.005.253.008.251.01.249.012.247.015.246.016.242.019.241.02.239.023.236.024.233.027.231.028.229.031.225.032.223.034.22.036.217.038.214.04.211.041.208.043.205.045.201.046.198.048.194.05.191.051.187.053.183.054.18.056.175.057.172.059.168.06.163.061.16.063.155.064.15.066.074.033.073.033.071.034.07.034.069.035.068.035.067.035.066.035.064.036.064.036.062.036.06.036.06.037.058.037.058.037.055.038.055.038.053.038.052.038.051.039.05.039.048.039.047.039.045.04.044.04.043.04.041.04.04.041.039.041.037.041.036.041.034.041.033.042.032.042.03.042.029.042.027.042.026.043.024.043.023.043.021.043.02.043.018.044.017.043.015.044.013.044.012.044.011.045.009.044.007.045.006.045.004.045.002.045.001.045v17l-.001.045-.002.045-.004.045-.006.045-.007.045-.009.044-.011.045-.012.044-.013.044-.015.044-.017.043-.018.044-.02.043-.021.043-.023.043-.024.043-.026.043-.027.042-.029.042-.03.042-.032.042-.033.042-.034.041-.036.041-.037.041-.039.041-.04.041-.041.04-.043.04-.044.04-.045.04-.047.039-.048.039-.05.039-.051.039-.052.038-.053.038-.055.038-.055.038-.058.037-.058.037-.06.037-.06.036-.062.036-.064.036-.064.036-.066.035-.067.035-.068.035-.069.035-.07.034-.071.034-.073.033-.074.033-.15.066-.155.064-.16.063-.163.061-.168.06-.172.059-.175.057-.18.056-.183.054-.187.053-.191.051-.194.05-.198.048-.201.046-.205.045-.208.043-.211.041-.214.04-.217.038-.22.036-.223.034-.225.032-.229.031-.231.028-.233.027-.236.024-.239.023-.241.02-.242.019-.246.016-.247.015-.249.012-.251.01-.253.008-.255.005-.256.004-.258.001-.258-.001-.256-.004-.255-.005-.253-.008-.251-.01-.249-.012-.247-.015-.245-.016-.243-.019-.241-.02-.238-.023-.236-.024-.234-.027-.231-.028-.228-.031-.226-.032-.223-.034-.22-.036-.217-.038-.214-.04-.211-.041-.208-.043-.204-.045-.201-.046-.198-.048-.195-.05-.19-.051-.187-.053-.184-.054-.179-.056-.176-.057-.172-.059-.167-.06-.164-.061-.159-.063-.155-.064-.151-.066-.074-.033-.072-.033-.072-.034-.07-.034-.069-.035-.068-.035-.067-.035-.066-.035-.064-.036-.063-.036-.062-.036-.061-.036-.06-.037-.058-.037-.057-.037-.056-.038-.055-.038-.053-.038-.052-.038-.051-.039-.049-.039-.049-.039-.046-.039-.046-.04-.044-.04-.043-.04-.041-.04-.04-.041-.039-.041-.037-.041-.036-.041-.034-.041-.033-.042-.032-.042-.03-.042-.029-.042-.027-.042-.026-.043-.024-.043-.023-.043-.021-.043-.02-.043-.018-.044-.017-.043-.015-.044-.013-.044-.012-.044-.011-.045-.009-.044-.007-.045-.006-.045-.004-.045-.002-.045-.001-.045v-17l.001-.045.002-.045.004-.045.006-.045.007-.045.009-.044.011-.045.012-.044.013-.044.015-.044.017-.043.018-.044.02-.043.021-.043.023-.043.024-.043.026-.043.027-.042.029-.042.03-.042.032-.042.033-.042.034-.041.036-.041.037-.041.039-.041.04-.041.041-.04.043-.04.044-.04.046-.04.046-.039.049-.039.049-.039.051-.039.052-.038.053-.038.055-.038.056-.038.057-.037.058-.037.06-.037.061-.036.062-.036.063-.036.064-.036.066-.035.067-.035.068-.035.069-.035.07-.034.072-.034.072-.033.074-.033.151-.066.155-.064.159-.063.164-.061.167-.06.172-.059.176-.057.179-.056.184-.054.187-.053.19-.051.195-.05.198-.048.201-.046.204-.045.208-.043.211-.041.214-.04.217-.038.22-.036.223-.034.226-.032.228-.031.231-.028.234-.027.236-.024.238-.023.241-.02.243-.019.245-.016.247-.015.249-.012.251-.01.253-.008.255-.005.256-.004.258-.001.258.001zm-9.258 20.499v.01l.001.021.003.021.004.022.005.021.006.022.007.022.009.023.01.022.011.023.012.023.013.023.015.023.016.024.017.023.018.024.019.024.021.024.022.025.023.024.024.025.052.049.056.05.061.051.066.051.07.051.075.051.079.052.084.052.088.052.092.052.097.052.102.051.105.052.11.052.114.051.119.051.123.051.127.05.131.05.135.05.139.048.144.049.147.047.152.047.155.047.16.045.163.045.167.043.171.043.176.041.178.041.183.039.187.039.19.037.194.035.197.035.202.033.204.031.209.03.212.029.216.027.219.025.222.024.226.021.23.02.233.018.236.016.24.015.243.012.246.01.249.008.253.005.256.004.259.001.26-.001.257-.004.254-.005.25-.008.247-.011.244-.012.241-.014.237-.016.233-.018.231-.021.226-.021.224-.024.22-.026.216-.027.212-.028.21-.031.205-.031.202-.034.198-.034.194-.036.191-.037.187-.039.183-.04.179-.04.175-.042.172-.043.168-.044.163-.045.16-.046.155-.046.152-.047.148-.048.143-.049.139-.049.136-.05.131-.05.126-.05.123-.051.118-.052.114-.051.11-.052.106-.052.101-.052.096-.052.092-.052.088-.053.083-.051.079-.052.074-.052.07-.051.065-.051.06-.051.056-.05.051-.05.023-.024.023-.025.021-.024.02-.024.019-.024.018-.024.017-.024.015-.023.014-.024.013-.023.012-.023.01-.023.01-.022.008-.022.006-.022.006-.022.004-.022.004-.021.001-.021.001-.021v-4.127l-.077.055-.08.053-.083.054-.085.053-.087.052-.09.052-.093.051-.095.05-.097.05-.1.049-.102.049-.105.048-.106.047-.109.047-.111.046-.114.045-.115.045-.118.044-.12.043-.122.042-.124.042-.126.041-.128.04-.13.04-.132.038-.134.038-.135.037-.138.037-.139.035-.142.035-.143.034-.144.033-.147.032-.148.031-.15.03-.151.03-.153.029-.154.027-.156.027-.158.026-.159.025-.161.024-.162.023-.163.022-.165.021-.166.02-.167.019-.169.018-.169.017-.171.016-.173.015-.173.014-.175.013-.175.012-.177.011-.178.01-.179.008-.179.008-.181.006-.182.005-.182.004-.184.003-.184.002h-.37l-.184-.002-.184-.003-.182-.004-.182-.005-.181-.006-.179-.008-.179-.008-.178-.01-.176-.011-.176-.012-.175-.013-.173-.014-.172-.015-.171-.016-.17-.017-.169-.018-.167-.019-.166-.02-.165-.021-.163-.022-.162-.023-.161-.024-.159-.025-.157-.026-.156-.027-.155-.027-.153-.029-.151-.03-.15-.03-.148-.031-.146-.032-.145-.033-.143-.034-.141-.035-.14-.035-.137-.037-.136-.037-.134-.038-.132-.038-.13-.04-.128-.04-.126-.041-.124-.042-.122-.042-.12-.044-.117-.043-.116-.045-.113-.045-.112-.046-.109-.047-.106-.047-.105-.048-.102-.049-.1-.049-.097-.05-.095-.05-.093-.052-.09-.051-.087-.052-.085-.053-.083-.054-.08-.054-.077-.054v4.127zm0-5.654v.011l.001.021.003.021.004.021.005.022.006.022.007.022.009.022.01.022.011.023.012.023.013.023.015.024.016.023.017.024.018.024.019.024.021.024.022.024.023.025.024.024.052.05.056.05.061.05.066.051.07.051.075.052.079.051.084.052.088.052.092.052.097.052.102.052.105.052.11.051.114.051.119.052.123.05.127.051.131.05.135.049.139.049.144.048.147.048.152.047.155.046.16.045.163.045.167.044.171.042.176.042.178.04.183.04.187.038.19.037.194.036.197.034.202.033.204.032.209.03.212.028.216.027.219.025.222.024.226.022.23.02.233.018.236.016.24.014.243.012.246.01.249.008.253.006.256.003.259.001.26-.001.257-.003.254-.006.25-.008.247-.01.244-.012.241-.015.237-.016.233-.018.231-.02.226-.022.224-.024.22-.025.216-.027.212-.029.21-.03.205-.032.202-.033.198-.035.194-.036.191-.037.187-.039.183-.039.179-.041.175-.042.172-.043.168-.044.163-.045.16-.045.155-.047.152-.047.148-.048.143-.048.139-.05.136-.049.131-.05.126-.051.123-.051.118-.051.114-.052.11-.052.106-.052.101-.052.096-.052.092-.052.088-.052.083-.052.079-.052.074-.051.07-.052.065-.051.06-.05.056-.051.051-.049.023-.025.023-.024.021-.025.02-.024.019-.024.018-.024.017-.024.015-.023.014-.023.013-.024.012-.022.01-.023.01-.023.008-.022.006-.022.006-.022.004-.021.004-.022.001-.021.001-.021v-4.139l-.077.054-.08.054-.083.054-.085.052-.087.053-.09.051-.093.051-.095.051-.097.05-.1.049-.102.049-.105.048-.106.047-.109.047-.111.046-.114.045-.115.044-.118.044-.12.044-.122.042-.124.042-.126.041-.128.04-.13.039-.132.039-.134.038-.135.037-.138.036-.139.036-.142.035-.143.033-.144.033-.147.033-.148.031-.15.03-.151.03-.153.028-.154.028-.156.027-.158.026-.159.025-.161.024-.162.023-.163.022-.165.021-.166.02-.167.019-.169.018-.169.017-.171.016-.173.015-.173.014-.175.013-.175.012-.177.011-.178.009-.179.009-.179.007-.181.007-.182.005-.182.004-.184.003-.184.002h-.37l-.184-.002-.184-.003-.182-.004-.182-.005-.181-.007-.179-.007-.179-.009-.178-.009-.176-.011-.176-.012-.175-.013-.173-.014-.172-.015-.171-.016-.17-.017-.169-.018-.167-.019-.166-.02-.165-.021-.163-.022-.162-.023-.161-.024-.159-.025-.157-.026-.156-.027-.155-.028-.153-.028-.151-.03-.15-.03-.148-.031-.146-.033-.145-.033-.143-.033-.141-.035-.14-.036-.137-.036-.136-.037-.134-.038-.132-.039-.13-.039-.128-.04-.126-.041-.124-.042-.122-.043-.12-.043-.117-.044-.116-.044-.113-.046-.112-.046-.109-.046-.106-.047-.105-.048-.102-.049-.1-.049-.097-.05-.095-.051-.093-.051-.09-.051-.087-.053-.085-.052-.083-.054-.08-.054-.077-.054v4.139zm0-5.666v.011l.001.02.003.022.004.021.005.022.006.021.007.022.009.023.01.022.011.023.012.023.013.023.015.023.016.024.017.024.018.023.019.024.021.025.022.024.023.024.024.025.052.05.056.05.061.05.066.051.07.051.075.052.079.051.084.052.088.052.092.052.097.052.102.052.105.051.11.052.114.051.119.051.123.051.127.05.131.05.135.05.139.049.144.048.147.048.152.047.155.046.16.045.163.045.167.043.171.043.176.042.178.04.183.04.187.038.19.037.194.036.197.034.202.033.204.032.209.03.212.028.216.027.219.025.222.024.226.021.23.02.233.018.236.017.24.014.243.012.246.01.249.008.253.006.256.003.259.001.26-.001.257-.003.254-.006.25-.008.247-.01.244-.013.241-.014.237-.016.233-.018.231-.02.226-.022.224-.024.22-.025.216-.027.212-.029.21-.03.205-.032.202-.033.198-.035.194-.036.191-.037.187-.039.183-.039.179-.041.175-.042.172-.043.168-.044.163-.045.16-.045.155-.047.152-.047.148-.048.143-.049.139-.049.136-.049.131-.051.126-.05.123-.051.118-.052.114-.051.11-.052.106-.052.101-.052.096-.052.092-.052.088-.052.083-.052.079-.052.074-.052.07-.051.065-.051.06-.051.056-.05.051-.049.023-.025.023-.025.021-.024.02-.024.019-.024.018-.024.017-.024.015-.023.014-.024.013-.023.012-.023.01-.022.01-.023.008-.022.006-.022.006-.022.004-.022.004-.021.001-.021.001-.021v-4.153l-.077.054-.08.054-.083.053-.085.053-.087.053-.09.051-.093.051-.095.051-.097.05-.1.049-.102.048-.105.048-.106.048-.109.046-.111.046-.114.046-.115.044-.118.044-.12.043-.122.043-.124.042-.126.041-.128.04-.13.039-.132.039-.134.038-.135.037-.138.036-.139.036-.142.034-.143.034-.144.033-.147.032-.148.032-.15.03-.151.03-.153.028-.154.028-.156.027-.158.026-.159.024-.161.024-.162.023-.163.023-.165.021-.166.02-.167.019-.169.018-.169.017-.171.016-.173.015-.173.014-.175.013-.175.012-.177.01-.178.01-.179.009-.179.007-.181.006-.182.006-.182.004-.184.003-.184.001-.185.001-.185-.001-.184-.001-.184-.003-.182-.004-.182-.006-.181-.006-.179-.007-.179-.009-.178-.01-.176-.01-.176-.012-.175-.013-.173-.014-.172-.015-.171-.016-.17-.017-.169-.018-.167-.019-.166-.02-.165-.021-.163-.023-.162-.023-.161-.024-.159-.024-.157-.026-.156-.027-.155-.028-.153-.028-.151-.03-.15-.03-.148-.032-.146-.032-.145-.033-.143-.034-.141-.034-.14-.036-.137-.036-.136-.037-.134-.038-.132-.039-.13-.039-.128-.041-.126-.041-.124-.041-.122-.043-.12-.043-.117-.044-.116-.044-.113-.046-.112-.046-.109-.046-.106-.048-.105-.048-.102-.048-.1-.05-.097-.049-.095-.051-.093-.051-.09-.052-.087-.052-.085-.053-.083-.053-.08-.054-.077-.054v4.153zm8.74-8.179l-.257.004-.254.005-.25.008-.247.011-.244.012-.241.014-.237.016-.233.018-.231.021-.226.022-.224.023-.22.026-.216.027-.212.028-.21.031-.205.032-.202.033-.198.034-.194.036-.191.038-.187.038-.183.04-.179.041-.175.042-.172.043-.168.043-.163.045-.16.046-.155.046-.152.048-.148.048-.143.048-.139.049-.136.05-.131.05-.126.051-.123.051-.118.051-.114.052-.11.052-.106.052-.101.052-.096.052-.092.052-.088.052-.083.052-.079.052-.074.051-.07.052-.065.051-.06.05-.056.05-.051.05-.023.025-.023.024-.021.024-.02.025-.019.024-.018.024-.017.023-.015.024-.014.023-.013.023-.012.023-.01.023-.01.022-.008.022-.006.023-.006.021-.004.022-.004.021-.001.021-.001.021.001.021.001.021.004.021.004.022.006.021.006.023.008.022.01.022.01.023.012.023.013.023.014.023.015.024.017.023.018.024.019.024.02.025.021.024.023.024.023.025.051.05.056.05.06.05.065.051.07.052.074.051.079.052.083.052.088.052.092.052.096.052.101.052.106.052.11.052.114.052.118.051.123.051.126.051.131.05.136.05.139.049.143.048.148.048.152.048.155.046.16.046.163.045.168.043.172.043.175.042.179.041.183.04.187.038.191.038.194.036.198.034.202.033.205.032.21.031.212.028.216.027.22.026.224.023.226.022.231.021.233.018.237.016.241.014.244.012.247.011.25.008.254.005.257.004.26.001.26-.001.257-.004.254-.005.25-.008.247-.011.244-.012.241-.014.237-.016.233-.018.231-.021.226-.022.224-.023.22-.026.216-.027.212-.028.21-.031.205-.032.202-.033.198-.034.194-.036.191-.038.187-.038.183-.04.179-.041.175-.042.172-.043.168-.043.163-.045.16-.046.155-.046.152-.048.148-.048.143-.048.139-.049.136-.05.131-.05.126-.051.123-.051.118-.051.114-.052.11-.052.106-.052.101-.052.096-.052.092-.052.088-.052.083-.052.079-.052.074-.051.07-.052.065-.051.06-.05.056-.05.051-.05.023-.025.023-.024.021-.024.02-.025.019-.024.018-.024.017-.023.015-.024.014-.023.013-.023.012-.023.01-.023.01-.022.008-.022.006-.023.006-.021.004-.022.004-.021.001-.021.001-.021-.001-.021-.001-.021-.004-.021-.004-.022-.006-.021-.006-.023-.008-.022-.01-.022-.01-.023-.012-.023-.013-.023-.014-.023-.015-.024-.017-.023-.018-.024-.019-.024-.02-.025-.021-.024-.023-.024-.023-.025-.051-.05-.056-.05-.06-.05-.065-.051-.07-.052-.074-.051-.079-.052-.083-.052-.088-.052-.092-.052-.096-.052-.101-.052-.106-.052-.11-.052-.114-.052-.118-.051-.123-.051-.126-.051-.131-.05-.136-.05-.139-.049-.143-.048-.148-.048-.152-.048-.155-.046-.16-.046-.163-.045-.168-.043-.172-.043-.175-.042-.179-.041-.183-.04-.187-.038-.191-.038-.194-.036-.198-.034-.202-.033-.205-.032-.21-.031-.212-.028-.216-.027-.22-.026-.224-.023-.226-.022-.231-.021-.233-.018-.237-.016-.241-.014-.244-.012-.247-.011-.25-.008-.254-.005-.257-.004-.26-.001-.26.001z" transform="scale(.5)"></path></symbol></defs><defs><symbol height="24" width="24" id="clock"><path d="M12 2c5.514 0 10 4.486 10 10s-4.486 10-10 10-10-4.486-10-10 4.486-10 10-10zm0-2c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm5.848 12.459c.202.038.202.333.001.372-1.907.361-6.045 1.111-6.547 1.111-.719 0-1.301-.582-1.301-1.301 0-.512.77-5.447 1.125-7.445.034-.192.312-.181.343.014l.985 6.238 5.394 1.011z" transform="scale(.5)"></path></symbol></defs><g><line stroke="#999" stroke-width="0.5px" class="200" y2="289" x2="75" y1="5" x1="75" id="actor0"></line><g id="root-0"><rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="0" x="0"></rect><text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="32.5" x="75"><tspan dy="0" x="75">Alice</tspan></text></g></g><g><line stroke="#999" stroke-width="0.5px" class="200" y2="289" x2="309" y1="5" x1="309" id="actor1"></line><g id="root-1"><rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="0" x="234"></rect><text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="32.5" x="309"><tspan dy="0" x="309">John</tspan></text></g></g><defs><marker orient="auto" markerheight="12" markerwidth="12" markerunits="userSpaceOnUse" refy="5" refx="9" id="arrowhead"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker></defs><defs><marker refy="5" refx="4" orient="auto" markerheight="8" markerwidth="15" id="crosshead"><path style="stroke-dasharray: 0, 0;" d="M 1,2 L 6,7 M 6,2 L 1,7" stroke-width="1pt" stroke="#000000" fill="none"></path></marker></defs><defs><marker orient="auto" markerheight="28" markerwidth="20" refy="7" refx="18" id="filled-head"><path d="M 18,7 L9,13 L14,7 L9,1 Z"></path></marker></defs><defs><marker orient="auto" markerheight="40" markerwidth="60" refy="15" refx="15" id="sequencenumber"><circle r="6" cy="15" cx="15"></circle></marker></defs><g><rect class="activation0" ry="0" rx="0" height="138" width="10" stroke="#666" fill="#EDF2AE" y="111" x="304"></rect></g><g><rect class="activation1" ry="0" rx="0" height="44" width="10" stroke="#666" fill="#EDF2AE" y="159" x="309"></rect></g><text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="80" x="192">Hello John, how are you?</text><line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="111" x2="309" y1="111" x1="75"></line><text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="126" x="190">John, can you hear me?</text><line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="157" x2="304" y1="157" x1="75"></line><text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="172" x="190">Hi Alice, I can hear you!</text><line style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" y2="203" x2="75" y1="203" x1="304"></line><text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="218" x="190">I feel great!</text><line style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" y2="249" x2="75" y1="249" x1="304"></line><g><rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="269" x="0"></rect><text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="301.5" x="75"><tspan dy="0" x="75">Alice</tspan></text></g><g><rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="269" x="234"></rect><text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="301.5" x="309"><tspan dy="0" x="309">John</tspan></text></g></svg></div>
+<div class="mermaid" data-processed="true"><svg aria-roledescription="sequence" role="graphics-document document" viewbox="-50 -10 484 225" style="max-width: 484px;" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" width="100%" id="mermaid-1702146135446"><style>#mermaid-1702146135446{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}#mermaid-1702146135446 .error-icon{fill:#552222;}#mermaid-1702146135446 .error-text{fill:#552222;stroke:#552222;}#mermaid-1702146135446 .edge-thickness-normal{stroke-width:2px;}#mermaid-1702146135446 .edge-thickness-thick{stroke-width:3.5px;}#mermaid-1702146135446 .edge-pattern-solid{stroke-dasharray:0;}#mermaid-1702146135446 .edge-pattern-dashed{stroke-dasharray:3;}#mermaid-1702146135446 .edge-pattern-dotted{stroke-dasharray:2;}#mermaid-1702146135446 .marker{fill:#333333;stroke:#333333;}#mermaid-1702146135446 .marker.cross{stroke:#333333;}#mermaid-1702146135446 svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#mermaid-1702146135446 .actor{stroke:hsl(259.6261682243, 59.7765363128%, 87.9019607843%);fill:#ECECFF;}#mermaid-1702146135446 text.actor&gt;tspan{fill:black;stroke:none;}#mermaid-1702146135446 .actor-line{stroke:grey;}#mermaid-1702146135446 .messageLine0{stroke-width:1.5;stroke-dasharray:none;stroke:#333;}#mermaid-1702146135446 .messageLine1{stroke-width:1.5;stroke-dasharray:2,2;stroke:#333;}#mermaid-1702146135446 #arrowhead path{fill:#333;stroke:#333;}#mermaid-1702146135446 .sequenceNumber{fill:white;}#mermaid-1702146135446 #sequencenumber{fill:#333;}#mermaid-1702146135446 #crosshead path{fill:#333;stroke:#333;}#mermaid-1702146135446 .messageText{fill:#333;stroke:none;}#mermaid-1702146135446 .labelBox{stroke:hsl(259.6261682243, 59.7765363128%, 87.9019607843%);fill:#ECECFF;}#mermaid-1702146135446 .labelText,#mermaid-1702146135446 .labelText&gt;tspan{fill:black;stroke:none;}#mermaid-1702146135446 .loopText,#mermaid-1702146135446 .loopText&gt;tspan{fill:black;stroke:none;}#mermaid-1702146135446 .loopLine{stroke-width:2px;stroke-dasharray:2,2;stroke:hsl(259.6261682243, 59.7765363128%, 87.9019607843%);fill:hsl(259.6261682243, 59.7765363128%, 87.9019607843%);}#mermaid-1702146135446 .note{stroke:#aaaa33;fill:#fff5ad;}#mermaid-1702146135446 .noteText,#mermaid-1702146135446 .noteText&gt;tspan{fill:black;stroke:none;}#mermaid-1702146135446 .activation0{fill:#f4f4f4;stroke:#666;}#mermaid-1702146135446 .activation1{fill:#f4f4f4;stroke:#666;}#mermaid-1702146135446 .activation2{fill:#f4f4f4;stroke:#666;}#mermaid-1702146135446 .actorPopupMenu{position:absolute;}#mermaid-1702146135446 .actorPopupMenuPanel{position:absolute;fill:#ECECFF;box-shadow:0px 8px 16px 0px rgba(0,0,0,0.2);filter:drop-shadow(3px 5px 2px rgb(0 0 0 / 0.4));}#mermaid-1702146135446 .actor-man line{stroke:hsl(259.6261682243, 59.7765363128%, 87.9019607843%);fill:#ECECFF;}#mermaid-1702146135446 .actor-man circle,#mermaid-1702146135446 line{stroke:hsl(259.6261682243, 59.7765363128%, 87.9019607843%);fill:#ECECFF;stroke-width:2px;}#mermaid-1702146135446 :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style><g></g><defs><symbol height="24" width="24" id="computer"><path d="M2 2v13h20v-13h-20zm18 11h-16v-9h16v9zm-10.228 6l.466-1h3.524l.467 1h-4.457zm14.228 3h-24l2-6h2.104l-1.33 4h18.45l-1.297-4h2.073l2 6zm-5-10h-14v-7h14v7z" transform="scale(.5)"></path></symbol></defs><defs><symbol clip-rule="evenodd" fill-rule="evenodd" id="database"><path d="M12.258.001l.256.004.255.005.253.008.251.01.249.012.247.015.246.016.242.019.241.02.239.023.236.024.233.027.231.028.229.031.225.032.223.034.22.036.217.038.214.04.211.041.208.043.205.045.201.046.198.048.194.05.191.051.187.053.183.054.18.056.175.057.172.059.168.06.163.061.16.063.155.064.15.066.074.033.073.033.071.034.07.034.069.035.068.035.067.035.066.035.064.036.064.036.062.036.06.036.06.037.058.037.058.037.055.038.055.038.053.038.052.038.051.039.05.039.048.039.047.039.045.04.044.04.043.04.041.04.04.041.039.041.037.041.036.041.034.041.033.042.032.042.03.042.029.042.027.042.026.043.024.043.023.043.021.043.02.043.018.044.017.043.015.044.013.044.012.044.011.045.009.044.007.045.006.045.004.045.002.045.001.045v17l-.001.045-.002.045-.004.045-.006.045-.007.045-.009.044-.011.045-.012.044-.013.044-.015.044-.017.043-.018.044-.02.043-.021.043-.023.043-.024.043-.026.043-.027.042-.029.042-.03.042-.032.042-.033.042-.034.041-.036.041-.037.041-.039.041-.04.041-.041.04-.043.04-.044.04-.045.04-.047.039-.048.039-.05.039-.051.039-.052.038-.053.038-.055.038-.055.038-.058.037-.058.037-.06.037-.06.036-.062.036-.064.036-.064.036-.066.035-.067.035-.068.035-.069.035-.07.034-.071.034-.073.033-.074.033-.15.066-.155.064-.16.063-.163.061-.168.06-.172.059-.175.057-.18.056-.183.054-.187.053-.191.051-.194.05-.198.048-.201.046-.205.045-.208.043-.211.041-.214.04-.217.038-.22.036-.223.034-.225.032-.229.031-.231.028-.233.027-.236.024-.239.023-.241.02-.242.019-.246.016-.247.015-.249.012-.251.01-.253.008-.255.005-.256.004-.258.001-.258-.001-.256-.004-.255-.005-.253-.008-.251-.01-.249-.012-.247-.015-.245-.016-.243-.019-.241-.02-.238-.023-.236-.024-.234-.027-.231-.028-.228-.031-.226-.032-.223-.034-.22-.036-.217-.038-.214-.04-.211-.041-.208-.043-.204-.045-.201-.046-.198-.048-.195-.05-.19-.051-.187-.053-.184-.054-.179-.056-.176-.057-.172-.059-.167-.06-.164-.061-.159-.063-.155-.064-.151-.066-.074-.033-.072-.033-.072-.034-.07-.034-.069-.035-.068-.035-.067-.035-.066-.035-.064-.036-.063-.036-.062-.036-.061-.036-.06-.037-.058-.037-.057-.037-.056-.038-.055-.038-.053-.038-.052-.038-.051-.039-.049-.039-.049-.039-.046-.039-.046-.04-.044-.04-.043-.04-.041-.04-.04-.041-.039-.041-.037-.041-.036-.041-.034-.041-.033-.042-.032-.042-.03-.042-.029-.042-.027-.042-.026-.043-.024-.043-.023-.043-.021-.043-.02-.043-.018-.044-.017-.043-.015-.044-.013-.044-.012-.044-.011-.045-.009-.044-.007-.045-.006-.045-.004-.045-.002-.045-.001-.045v-17l.001-.045.002-.045.004-.045.006-.045.007-.045.009-.044.011-.045.012-.044.013-.044.015-.044.017-.043.018-.044.02-.043.021-.043.023-.043.024-.043.026-.043.027-.042.029-.042.03-.042.032-.042.033-.042.034-.041.036-.041.037-.041.039-.041.04-.041.041-.04.043-.04.044-.04.046-.04.046-.039.049-.039.049-.039.051-.039.052-.038.053-.038.055-.038.056-.038.057-.037.058-.037.06-.037.061-.036.062-.036.063-.036.064-.036.066-.035.067-.035.068-.035.069-.035.07-.034.072-.034.072-.033.074-.033.151-.066.155-.064.159-.063.164-.061.167-.06.172-.059.176-.057.179-.056.184-.054.187-.053.19-.051.195-.05.198-.048.201-.046.204-.045.208-.043.211-.041.214-.04.217-.038.22-.036.223-.034.226-.032.228-.031.231-.028.234-.027.236-.024.238-.023.241-.02.243-.019.245-.016.247-.015.249-.012.251-.01.253-.008.255-.005.256-.004.258-.001.258.001zm-9.258 20.499v.01l.001.021.003.021.004.022.005.021.006.022.007.022.009.023.01.022.011.023.012.023.013.023.015.023.016.024.017.023.018.024.019.024.021.024.022.025.023.024.024.025.052.049.056.05.061.051.066.051.07.051.075.051.079.052.084.052.088.052.092.052.097.052.102.051.105.052.11.052.114.051.119.051.123.051.127.05.131.05.135.05.139.048.144.049.147.047.152.047.155.047.16.045.163.045.167.043.171.043.176.041.178.041.183.039.187.039.19.037.194.035.197.035.202.033.204.031.209.03.212.029.216.027.219.025.222.024.226.021.23.02.233.018.236.016.24.015.243.012.246.01.249.008.253.005.256.004.259.001.26-.001.257-.004.254-.005.25-.008.247-.011.244-.012.241-.014.237-.016.233-.018.231-.021.226-.021.224-.024.22-.026.216-.027.212-.028.21-.031.205-.031.202-.034.198-.034.194-.036.191-.037.187-.039.183-.04.179-.04.175-.042.172-.043.168-.044.163-.045.16-.046.155-.046.152-.047.148-.048.143-.049.139-.049.136-.05.131-.05.126-.05.123-.051.118-.052.114-.051.11-.052.106-.052.101-.052.096-.052.092-.052.088-.053.083-.051.079-.052.074-.052.07-.051.065-.051.06-.051.056-.05.051-.05.023-.024.023-.025.021-.024.02-.024.019-.024.018-.024.017-.024.015-.023.014-.024.013-.023.012-.023.01-.023.01-.022.008-.022.006-.022.006-.022.004-.022.004-.021.001-.021.001-.021v-4.127l-.077.055-.08.053-.083.054-.085.053-.087.052-.09.052-.093.051-.095.05-.097.05-.1.049-.102.049-.105.048-.106.047-.109.047-.111.046-.114.045-.115.045-.118.044-.12.043-.122.042-.124.042-.126.041-.128.04-.13.04-.132.038-.134.038-.135.037-.138.037-.139.035-.142.035-.143.034-.144.033-.147.032-.148.031-.15.03-.151.03-.153.029-.154.027-.156.027-.158.026-.159.025-.161.024-.162.023-.163.022-.165.021-.166.02-.167.019-.169.018-.169.017-.171.016-.173.015-.173.014-.175.013-.175.012-.177.011-.178.01-.179.008-.179.008-.181.006-.182.005-.182.004-.184.003-.184.002h-.37l-.184-.002-.184-.003-.182-.004-.182-.005-.181-.006-.179-.008-.179-.008-.178-.01-.176-.011-.176-.012-.175-.013-.173-.014-.172-.015-.171-.016-.17-.017-.169-.018-.167-.019-.166-.02-.165-.021-.163-.022-.162-.023-.161-.024-.159-.025-.157-.026-.156-.027-.155-.027-.153-.029-.151-.03-.15-.03-.148-.031-.146-.032-.145-.033-.143-.034-.141-.035-.14-.035-.137-.037-.136-.037-.134-.038-.132-.038-.13-.04-.128-.04-.126-.041-.124-.042-.122-.042-.12-.044-.117-.043-.116-.045-.113-.045-.112-.046-.109-.047-.106-.047-.105-.048-.102-.049-.1-.049-.097-.05-.095-.05-.093-.052-.09-.051-.087-.052-.085-.053-.083-.054-.08-.054-.077-.054v4.127zm0-5.654v.011l.001.021.003.021.004.021.005.022.006.022.007.022.009.022.01.022.011.023.012.023.013.023.015.024.016.023.017.024.018.024.019.024.021.024.022.024.023.025.024.024.052.05.056.05.061.05.066.051.07.051.075.052.079.051.084.052.088.052.092.052.097.052.102.052.105.052.11.051.114.051.119.052.123.05.127.051.131.05.135.049.139.049.144.048.147.048.152.047.155.046.16.045.163.045.167.044.171.042.176.042.178.04.183.04.187.038.19.037.194.036.197.034.202.033.204.032.209.03.212.028.216.027.219.025.222.024.226.022.23.02.233.018.236.016.24.014.243.012.246.01.249.008.253.006.256.003.259.001.26-.001.257-.003.254-.006.25-.008.247-.01.244-.012.241-.015.237-.016.233-.018.231-.02.226-.022.224-.024.22-.025.216-.027.212-.029.21-.03.205-.032.202-.033.198-.035.194-.036.191-.037.187-.039.183-.039.179-.041.175-.042.172-.043.168-.044.163-.045.16-.045.155-.047.152-.047.148-.048.143-.048.139-.05.136-.049.131-.05.126-.051.123-.051.118-.051.114-.052.11-.052.106-.052.101-.052.096-.052.092-.052.088-.052.083-.052.079-.052.074-.051.07-.052.065-.051.06-.05.056-.051.051-.049.023-.025.023-.024.021-.025.02-.024.019-.024.018-.024.017-.024.015-.023.014-.023.013-.024.012-.022.01-.023.01-.023.008-.022.006-.022.006-.022.004-.021.004-.022.001-.021.001-.021v-4.139l-.077.054-.08.054-.083.054-.085.052-.087.053-.09.051-.093.051-.095.051-.097.05-.1.049-.102.049-.105.048-.106.047-.109.047-.111.046-.114.045-.115.044-.118.044-.12.044-.122.042-.124.042-.126.041-.128.04-.13.039-.132.039-.134.038-.135.037-.138.036-.139.036-.142.035-.143.033-.144.033-.147.033-.148.031-.15.03-.151.03-.153.028-.154.028-.156.027-.158.026-.159.025-.161.024-.162.023-.163.022-.165.021-.166.02-.167.019-.169.018-.169.017-.171.016-.173.015-.173.014-.175.013-.175.012-.177.011-.178.009-.179.009-.179.007-.181.007-.182.005-.182.004-.184.003-.184.002h-.37l-.184-.002-.184-.003-.182-.004-.182-.005-.181-.007-.179-.007-.179-.009-.178-.009-.176-.011-.176-.012-.175-.013-.173-.014-.172-.015-.171-.016-.17-.017-.169-.018-.167-.019-.166-.02-.165-.021-.163-.022-.162-.023-.161-.024-.159-.025-.157-.026-.156-.027-.155-.028-.153-.028-.151-.03-.15-.03-.148-.031-.146-.033-.145-.033-.143-.033-.141-.035-.14-.036-.137-.036-.136-.037-.134-.038-.132-.039-.13-.039-.128-.04-.126-.041-.124-.042-.122-.043-.12-.043-.117-.044-.116-.044-.113-.046-.112-.046-.109-.046-.106-.047-.105-.048-.102-.049-.1-.049-.097-.05-.095-.051-.093-.051-.09-.051-.087-.053-.085-.052-.083-.054-.08-.054-.077-.054v4.139zm0-5.666v.011l.001.02.003.022.004.021.005.022.006.021.007.022.009.023.01.022.011.023.012.023.013.023.015.023.016.024.017.024.018.023.019.024.021.025.022.024.023.024.024.025.052.05.056.05.061.05.066.051.07.051.075.052.079.051.084.052.088.052.092.052.097.052.102.052.105.051.11.052.114.051.119.051.123.051.127.05.131.05.135.05.139.049.144.048.147.048.152.047.155.046.16.045.163.045.167.043.171.043.176.042.178.04.183.04.187.038.19.037.194.036.197.034.202.033.204.032.209.03.212.028.216.027.219.025.222.024.226.021.23.02.233.018.236.017.24.014.243.012.246.01.249.008.253.006.256.003.259.001.26-.001.257-.003.254-.006.25-.008.247-.01.244-.013.241-.014.237-.016.233-.018.231-.02.226-.022.224-.024.22-.025.216-.027.212-.029.21-.03.205-.032.202-.033.198-.035.194-.036.191-.037.187-.039.183-.039.179-.041.175-.042.172-.043.168-.044.163-.045.16-.045.155-.047.152-.047.148-.048.143-.049.139-.049.136-.049.131-.051.126-.05.123-.051.118-.052.114-.051.11-.052.106-.052.101-.052.096-.052.092-.052.088-.052.083-.052.079-.052.074-.052.07-.051.065-.051.06-.051.056-.05.051-.049.023-.025.023-.025.021-.024.02-.024.019-.024.018-.024.017-.024.015-.023.014-.024.013-.023.012-.023.01-.022.01-.023.008-.022.006-.022.006-.022.004-.022.004-.021.001-.021.001-.021v-4.153l-.077.054-.08.054-.083.053-.085.053-.087.053-.09.051-.093.051-.095.051-.097.05-.1.049-.102.048-.105.048-.106.048-.109.046-.111.046-.114.046-.115.044-.118.044-.12.043-.122.043-.124.042-.126.041-.128.04-.13.039-.132.039-.134.038-.135.037-.138.036-.139.036-.142.034-.143.034-.144.033-.147.032-.148.032-.15.03-.151.03-.153.028-.154.028-.156.027-.158.026-.159.024-.161.024-.162.023-.163.023-.165.021-.166.02-.167.019-.169.018-.169.017-.171.016-.173.015-.173.014-.175.013-.175.012-.177.01-.178.01-.179.009-.179.007-.181.006-.182.006-.182.004-.184.003-.184.001-.185.001-.185-.001-.184-.001-.184-.003-.182-.004-.182-.006-.181-.006-.179-.007-.179-.009-.178-.01-.176-.01-.176-.012-.175-.013-.173-.014-.172-.015-.171-.016-.17-.017-.169-.018-.167-.019-.166-.02-.165-.021-.163-.023-.162-.023-.161-.024-.159-.024-.157-.026-.156-.027-.155-.028-.153-.028-.151-.03-.15-.03-.148-.032-.146-.032-.145-.033-.143-.034-.141-.034-.14-.036-.137-.036-.136-.037-.134-.038-.132-.039-.13-.039-.128-.041-.126-.041-.124-.041-.122-.043-.12-.043-.117-.044-.116-.044-.113-.046-.112-.046-.109-.046-.106-.048-.105-.048-.102-.048-.1-.05-.097-.049-.095-.051-.093-.051-.09-.052-.087-.052-.085-.053-.083-.053-.08-.054-.077-.054v4.153zm8.74-8.179l-.257.004-.254.005-.25.008-.247.011-.244.012-.241.014-.237.016-.233.018-.231.021-.226.022-.224.023-.22.026-.216.027-.212.028-.21.031-.205.032-.202.033-.198.034-.194.036-.191.038-.187.038-.183.04-.179.041-.175.042-.172.043-.168.043-.163.045-.16.046-.155.046-.152.048-.148.048-.143.048-.139.049-.136.05-.131.05-.126.051-.123.051-.118.051-.114.052-.11.052-.106.052-.101.052-.096.052-.092.052-.088.052-.083.052-.079.052-.074.051-.07.052-.065.051-.06.05-.056.05-.051.05-.023.025-.023.024-.021.024-.02.025-.019.024-.018.024-.017.023-.015.024-.014.023-.013.023-.012.023-.01.023-.01.022-.008.022-.006.023-.006.021-.004.022-.004.021-.001.021-.001.021.001.021.001.021.004.021.004.022.006.021.006.023.008.022.01.022.01.023.012.023.013.023.014.023.015.024.017.023.018.024.019.024.02.025.021.024.023.024.023.025.051.05.056.05.06.05.065.051.07.052.074.051.079.052.083.052.088.052.092.052.096.052.101.052.106.052.11.052.114.052.118.051.123.051.126.051.131.05.136.05.139.049.143.048.148.048.152.048.155.046.16.046.163.045.168.043.172.043.175.042.179.041.183.04.187.038.191.038.194.036.198.034.202.033.205.032.21.031.212.028.216.027.22.026.224.023.226.022.231.021.233.018.237.016.241.014.244.012.247.011.25.008.254.005.257.004.26.001.26-.001.257-.004.254-.005.25-.008.247-.011.244-.012.241-.014.237-.016.233-.018.231-.021.226-.022.224-.023.22-.026.216-.027.212-.028.21-.031.205-.032.202-.033.198-.034.194-.036.191-.038.187-.038.183-.04.179-.041.175-.042.172-.043.168-.043.163-.045.16-.046.155-.046.152-.048.148-.048.143-.048.139-.049.136-.05.131-.05.126-.051.123-.051.118-.051.114-.052.11-.052.106-.052.101-.052.096-.052.092-.052.088-.052.083-.052.079-.052.074-.051.07-.052.065-.051.06-.05.056-.05.051-.05.023-.025.023-.024.021-.024.02-.025.019-.024.018-.024.017-.023.015-.024.014-.023.013-.023.012-.023.01-.023.01-.022.008-.022.006-.023.006-.021.004-.022.004-.021.001-.021.001-.021-.001-.021-.001-.021-.004-.021-.004-.022-.006-.021-.006-.023-.008-.022-.01-.022-.01-.023-.012-.023-.013-.023-.014-.023-.015-.024-.017-.023-.018-.024-.019-.024-.02-.025-.021-.024-.023-.024-.023-.025-.051-.05-.056-.05-.06-.05-.065-.051-.07-.052-.074-.051-.079-.052-.083-.052-.088-.052-.092-.052-.096-.052-.101-.052-.106-.052-.11-.052-.114-.052-.118-.051-.123-.051-.126-.051-.131-.05-.136-.05-.139-.049-.143-.048-.148-.048-.152-.048-.155-.046-.16-.046-.163-.045-.168-.043-.172-.043-.175-.042-.179-.041-.183-.04-.187-.038-.191-.038-.194-.036-.198-.034-.202-.033-.205-.032-.21-.031-.212-.028-.216-.027-.22-.026-.224-.023-.226-.022-.231-.021-.233-.018-.237-.016-.241-.014-.244-.012-.247-.011-.25-.008-.254-.005-.257-.004-.26-.001-.26.001z" transform="scale(.5)"></path></symbol></defs><defs><symbol height="24" width="24" id="clock"><path d="M12 2c5.514 0 10 4.486 10 10s-4.486 10-10 10-10-4.486-10-10 4.486-10 10-10zm0-2c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm5.848 12.459c.202.038.202.333.001.372-1.907.361-6.045 1.111-6.547 1.111-.719 0-1.301-.582-1.301-1.301 0-.512.77-5.447 1.125-7.445.034-.192.312-.181.343.014l.985 6.238 5.394 1.011z" transform="scale(.5)"></path></symbol></defs><g><line stroke="#999" stroke-width="0.5px" class="200" y2="159" x2="75" y1="5" x1="75" id="actor0"></line><g id="root-0"><rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="0" x="0"></rect><text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="32.5" x="75"><tspan dy="0" x="75">Alice</tspan></text></g></g><g><line stroke="#999" stroke-width="0.5px" class="200" y2="159" x2="309" y1="5" x1="309" id="actor1"></line><g id="root-1"><rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="0" x="234"></rect><text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="32.5" x="309"><tspan dy="0" x="309">John</tspan></text></g></g><defs><marker orient="auto" markerheight="12" markerwidth="12" markerunits="userSpaceOnUse" refy="5" refx="9" id="arrowhead"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker></defs><defs><marker refy="5" refx="4" orient="auto" markerheight="8" markerwidth="15" id="crosshead"><path style="stroke-dasharray: 0, 0;" d="M 1,2 L 6,7 M 6,2 L 1,7" stroke-width="1pt" stroke="#000000" fill="none"></path></marker></defs><defs><marker orient="auto" markerheight="28" markerwidth="20" refy="7" refx="18" id="filled-head"><path d="M 18,7 L9,13 L14,7 L9,1 Z"></path></marker></defs><defs><marker orient="auto" markerheight="40" markerwidth="60" refy="15" refx="15" id="sequencenumber"><circle r="6" cy="15" cx="15"></circle></marker></defs><g><rect class="activation0" ry="0" rx="0" height="138" width="10" stroke="#666" fill="#EDF2AE" y="46" x="304"></rect></g><g><rect class="activation1" ry="0" rx="0" height="44" width="10" stroke="#666" fill="#EDF2AE" y="94" x="309"></rect></g><text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="15" x="192">Hello John, how are you?</text><line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="46" x2="309" y1="46" x1="75"></line><text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="61" x="190">John, can you hear me?</text><line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="92" x2="304" y1="92" x1="75"></line><text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="107" x="190">Hi Alice, I can hear you!</text><line style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" y2="138" x2="75" y1="138" x1="304"></line><text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="153" x="190">I feel great!</text><line style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" y2="184" x2="75" y1="184" x1="304"></line><g><rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="204" x="0"></rect><text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="236.5" x="75"><tspan dy="0" x="75">Alice</tspan></text></g><g><rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="204" x="234"></rect><text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="236.5" x="309"><tspan dy="0" x="309">John</tspan></text></g></svg></div>
 <p>using</p>
 <pre>```mermaid
 [MERMAID GRAPH CODE]
@@ -961,7 +1273,7 @@ All utils are available as static method in <code>tech.catheu.jnotebook.Nb</code
                     <span class="hljs-string">"x"</span>, <span class="hljs-title class_">Map</span>.<span class="hljs-title function_">of</span>(<span class="hljs-string">"timeUnit"</span>, <span class="hljs-string">"month"</span>, <span class="hljs-string">"field"</span>, <span class="hljs-string">"date"</span>, <span class="hljs-string">"type"</span>, <span class="hljs-string">"ordinal"</span>),
             <span class="hljs-string">"y"</span>, <span class="hljs-title class_">Map</span>.<span class="hljs-title function_">of</span>(<span class="hljs-string">"aggregate"</span>, <span class="hljs-string">"mean"</span>, <span class="hljs-string">"field"</span>, <span class="hljs-string">"precipitation"</span>)
           )
-        ));</div></div></div></div> <div class="viewer viewer-result w-full max-w-prose px-8"><div class="relative"><div class="overflow-y-hidden"><div><div class="overflow-x-auto"><div class="vega-lite vega-embed has-actions" data-config="{&quot;data&quot;:{&quot;url&quot;:&quot;https://vega.github.io/vega-lite/data/seattle-weather.csv&quot;},&quot;encoding&quot;:{&quot;x&quot;:{&quot;field&quot;:&quot;date&quot;,&quot;type&quot;:&quot;ordinal&quot;,&quot;timeUnit&quot;:&quot;month&quot;},&quot;y&quot;:{&quot;field&quot;:&quot;precipitation&quot;,&quot;aggregate&quot;:&quot;mean&quot;}},&quot;mark&quot;:&quot;bar&quot;}"></div></div></div></div></div></div> <div class="viewer viewer-html- w-full max-w-prose px-8"><div class="viewer-markdown"><h2 id="-images">🏞 Images</h2>
+        ));</div></div></div></div> <div class="viewer viewer-result w-full max-w-prose px-8"><div class="relative"><div class="overflow-y-hidden"><div><div class="overflow-x-auto"><div class="vega-lite vega-embed has-actions" data-config="{&quot;encoding&quot;:{&quot;x&quot;:{&quot;type&quot;:&quot;ordinal&quot;,&quot;field&quot;:&quot;date&quot;,&quot;timeUnit&quot;:&quot;month&quot;},&quot;y&quot;:{&quot;field&quot;:&quot;precipitation&quot;,&quot;aggregate&quot;:&quot;mean&quot;}},&quot;data&quot;:{&quot;url&quot;:&quot;https://vega.github.io/vega-lite/data/seattle-weather.csv&quot;},&quot;mark&quot;:&quot;bar&quot;}"></div></div></div></div></div></div> <div class="viewer viewer-html- w-full max-w-prose px-8"><div class="viewer-markdown"><h2 id="-images">🏞 Images</h2>
 <p><em>coming soon</em></p>
 <h2 id="-grid-layouts">🔠 Grid Layouts</h2>
 <p>Layouts can be composed via rows, columns and grids</p>
@@ -992,7 +1304,7 @@ Values inheriting <code>j2html.tags.DomContent</code> are rendered as html.</p>
                          <span class="hljs-string">"y"</span>, <span class="hljs-title class_">Map</span>.<span class="hljs-title function_">of</span>(<span class="hljs-string">"aggregate"</span>, <span class="hljs-string">"mean"</span>, <span class="hljs-string">"field"</span>, <span class="hljs-string">"precipitation"</span>)
                        )
                      ));
-<span class="hljs-title class_">Nb</span>.<span class="hljs-title function_">row</span>(<span class="hljs-title function_">title</span>(<span class="hljs-string">"My awesome analysis"</span>), <span class="hljs-title class_">Nb</span>.<span class="hljs-title function_">col</span>(graph1, graph2));</div></div></div></div> <div class="viewer viewer-result w-full max-w-prose px-8"><div class="relative"><div class="overflow-y-hidden"><div><div class="grid grid-flow-row"><p style="font-weight:bold; font-size: x-large; display: block;margin-left: auto; margin-right: auto">My awesome analysis</p><div class="grid grid-cols-2"><div class="overflow-x-auto"><div class="vega-lite vega-embed has-actions" data-config="{&quot;data&quot;:{&quot;url&quot;:&quot;https://vega.github.io/vega-lite/data/seattle-weather.csv&quot;},&quot;encoding&quot;:{&quot;x&quot;:{&quot;field&quot;:&quot;date&quot;,&quot;type&quot;:&quot;ordinal&quot;,&quot;timeUnit&quot;:&quot;month&quot;},&quot;y&quot;:{&quot;field&quot;:&quot;precipitation&quot;,&quot;aggregate&quot;:&quot;mean&quot;}},&quot;mark&quot;:&quot;bar&quot;}"></div></div><div class="overflow-x-auto"><div class="vega-lite vega-embed has-actions" data-config="{&quot;data&quot;:{&quot;url&quot;:&quot;https://vega.github.io/vega-lite/data/seattle-weather.csv&quot;},&quot;encoding&quot;:{&quot;x&quot;:{&quot;field&quot;:&quot;date&quot;,&quot;type&quot;:&quot;ordinal&quot;,&quot;timeUnit&quot;:&quot;month&quot;},&quot;y&quot;:{&quot;field&quot;:&quot;precipitation&quot;,&quot;aggregate&quot;:&quot;mean&quot;}},&quot;mark&quot;:&quot;bar&quot;}"></div></div></div></div></div></div></div></div> <div class="viewer viewer-html- w-full max-w-prose px-8"><div class="viewer-markdown"><h2 id="-flamegraphs">🔥 Flamegraphs</h2>
+<span class="hljs-title class_">Nb</span>.<span class="hljs-title function_">row</span>(<span class="hljs-title function_">title</span>(<span class="hljs-string">"My awesome analysis"</span>), <span class="hljs-title class_">Nb</span>.<span class="hljs-title function_">col</span>(graph1, graph2));</div></div></div></div> <div class="viewer viewer-result w-full max-w-prose px-8"><div class="relative"><div class="overflow-y-hidden"><div><div class="grid grid-flow-row"><p style="font-weight:bold; font-size: x-large; display: block;margin-left: auto; margin-right: auto">My awesome analysis</p><div class="grid grid-cols-2"><div class="overflow-x-auto"><div class="vega-lite vega-embed has-actions" data-config="{&quot;encoding&quot;:{&quot;x&quot;:{&quot;type&quot;:&quot;ordinal&quot;,&quot;field&quot;:&quot;date&quot;,&quot;timeUnit&quot;:&quot;month&quot;},&quot;y&quot;:{&quot;field&quot;:&quot;precipitation&quot;,&quot;aggregate&quot;:&quot;mean&quot;}},&quot;data&quot;:{&quot;url&quot;:&quot;https://vega.github.io/vega-lite/data/seattle-weather.csv&quot;},&quot;mark&quot;:&quot;bar&quot;}"></div></div><div class="overflow-x-auto"><div class="vega-lite vega-embed has-actions" data-config="{&quot;encoding&quot;:{&quot;x&quot;:{&quot;type&quot;:&quot;ordinal&quot;,&quot;field&quot;:&quot;date&quot;,&quot;timeUnit&quot;:&quot;month&quot;},&quot;y&quot;:{&quot;field&quot;:&quot;precipitation&quot;,&quot;aggregate&quot;:&quot;mean&quot;}},&quot;data&quot;:{&quot;url&quot;:&quot;https://vega.github.io/vega-lite/data/seattle-weather.csv&quot;},&quot;mark&quot;:&quot;bar&quot;}"></div></div></div></div></div></div></div></div> <div class="viewer viewer-html- w-full max-w-prose px-8"><div class="viewer-markdown"><h2 id="-flamegraphs">🔥 Flamegraphs</h2>
 <p>You can profile methods and generate flamegraphs.</p>
 </div></div> <div class="viewer viewer-code w-full max-w-wide"><div class="cm-editor"><div class="cm-scroller"><div class="cm-content whitespace-pre cm-success hljs language-csharp">Runnable arrayFilling = () -&gt; {
   List&lt;Integer&gt; a = <span class="hljs-keyword">new</span> ArrayList&lt;&gt;();
@@ -1001,10 +1313,11 @@ Values inheriting <code>j2html.tags.DomContent</code> are rendered as html.</p>
   }
 };
 <span class="hljs-keyword">var</span> profilePath = Nb.profile(arrayFilling);
-Nb.flame(profilePath);</div></div></div></div> <div class="viewer viewer-result w-full max-w-prose px-8"><div class="relative"><div class="overflow-y-hidden"><div><div class="overflow-x-auto"><div class="flame" data-profile="{&quot;name&quot;:&quot;ALL&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;java.lang.Thread::run&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jshell.execution.LocalExecutionControl$$Lambda$379+0x00007f120c1f74b0.1915122813::run&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jshell.execution.LocalExecutionControl::lambda$invoke$1&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;java.lang.reflect.Method::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.internal.reflect.DelegatingMethodAccessorImpl::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.internal.reflect.NativeMethodAccessorImpl::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.internal.reflect.NativeMethodAccessorImpl::invoke0&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;::do_it$&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;::do_it$Aux&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;tech.catheu.jnotebook.Nb::profile&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;tech.catheu.jnotebook.Nb::profile&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;tech.catheu.jnotebook.Nb$ProfiledRunnable::run&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;$Lambda$487+0x00007f120c25bc70.1529383625::run&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;::lambda$do_it$$0&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;java.lang.Integer::valueOf&quot;,&quot;value&quot;:3},{&quot;name&quot;:&quot;java.util.ArrayList::add&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;java.util.ArrayList::add&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;java.util.ArrayList::grow&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;java.util.ArrayList::grow&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;java.util.Arrays::copyOf&quot;,&quot;value&quot;:2}],&quot;value&quot;:2}],&quot;value&quot;:2}],&quot;value&quot;:2}],&quot;value&quot;:2}],&quot;value&quot;:6}],&quot;value&quot;:6}],&quot;value&quot;:6},{&quot;name&quot;:&quot;com.microsoft.jfr.Recording::start&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;com.microsoft.jfr.FlightRecorderConnection::startRecording&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;com.sun.jmx.mbeanserver.JmxMBeanServer::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;com.sun.jmx.interceptor.DefaultMBeanServerInterceptor::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;javax.management.StandardMBean::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;com.sun.jmx.mbeanserver.MBeanSupport::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;com.sun.jmx.mbeanserver.PerInterface::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;com.sun.jmx.mbeanserver.MBeanIntrospector::invokeM&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;com.sun.jmx.mbeanserver.MXBeanIntrospector::invokeM2&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;com.sun.jmx.mbeanserver.MXBeanIntrospector::invokeM2&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;com.sun.jmx.mbeanserver.ConvertingMethod::invokeWithOpenReturn&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;com.sun.jmx.mbeanserver.ConvertingMethod::invokeWithOpenReturn&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;sun.reflect.misc.MethodUtil::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;java.lang.reflect.Method::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.internal.reflect.DelegatingMethodAccessorImpl::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.internal.reflect.NativeMethodAccessorImpl::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.internal.reflect.NativeMethodAccessorImpl::invoke0&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;sun.reflect.misc.Trampoline::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;java.lang.reflect.Method::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.internal.reflect.DelegatingMethodAccessorImpl::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.internal.reflect.NativeMethodAccessorImpl::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.internal.reflect.NativeMethodAccessorImpl::invoke0&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.management.jfr.FlightRecorderMXBeanImpl::startRecording&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.Recording::start&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.PlatformRecording::start&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.PlatformRecorder::start&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.PlatformRecorder::updateSettings&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.PlatformRecorder::updateSettingsButIgnoreRecording&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.MetadataRepository::setSettings&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.SettingsManager::setSettings&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.SettingsManager::updateRetransform&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.JVM::retransformClasses&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.JVMUpcalls::onRetransform&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.EventInstrumentation::<init>&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.EventInstrumentation::buildFieldInfos&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.EventInstrumentation::isValidField&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.Type::isValidJavaFieldType&quot;,&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1},{&quot;name&quot;:&quot;jdk.jfr.internal.RequestEngine::doChunkBegin&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.RequestEngine::doChunk&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.RequestEngine$RequestHook::execute&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.instrument.JDKEvents$$Lambda$541+0x00007f120c2a6408.65156003::run&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.instrument.JDKEvents::emitInitialSecurityProperties&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.events.InitialSecurityPropertyEvent::commit&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.handlers.EventHandler5510_1699610778843-3301::write&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.EventWriter::putString&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.EventWriter::putStringValue&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.EventWriter::putUncheckedChar&quot;,&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:2}],&quot;value&quot;:2}],&quot;value&quot;:2}],&quot;value&quot;:2}],&quot;value&quot;:2}],&quot;value&quot;:2}],&quot;value&quot;:2}],&quot;value&quot;:2}],&quot;value&quot;:2}],&quot;value&quot;:2}],&quot;value&quot;:2}],&quot;value&quot;:2}],&quot;value&quot;:2}],&quot;value&quot;:2}],&quot;value&quot;:2}],&quot;value&quot;:2}],&quot;value&quot;:2}],&quot;value&quot;:2}],&quot;value&quot;:2}],&quot;value&quot;:2}],&quot;value&quot;:2}],&quot;value&quot;:2}],&quot;value&quot;:2}],&quot;value&quot;:2}],&quot;value&quot;:2}],&quot;value&quot;:2}],&quot;value&quot;:8}],&quot;value&quot;:8}],&quot;value&quot;:8}],&quot;value&quot;:8}],&quot;value&quot;:8}],&quot;value&quot;:8}],&quot;value&quot;:8}],&quot;value&quot;:8}],&quot;value&quot;:8}],&quot;value&quot;:8}],&quot;value&quot;:8}],&quot;value&quot;:8}"></div></div></div></div></div></div> <div class="viewer viewer-html- w-full max-w-prose px-8"><div class="viewer-markdown"><h2 id="credits">Credits</h2>
+Nb.flame(profilePath);</div></div></div></div> <div class="viewer viewer-result w-full max-w-prose px-8"><div class="relative"><div class="overflow-y-hidden"><div><div class="overflow-x-auto"><div class="flame" data-profile="{&quot;name&quot;:&quot;ALL&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;java.lang.Thread::run&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jshell.execution.LocalExecutionControl$$Lambda$379+0x00007f14d01f74d0.1915122813::run&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jshell.execution.LocalExecutionControl::lambda$invoke$1&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;java.lang.reflect.Method::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.internal.reflect.DelegatingMethodAccessorImpl::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.internal.reflect.NativeMethodAccessorImpl::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.internal.reflect.NativeMethodAccessorImpl::invoke0&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;::do_it$&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;::do_it$Aux&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;tech.catheu.jnotebook.Nb::profile&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;tech.catheu.jnotebook.Nb::profile&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;tech.catheu.jnotebook.Nb$ProfiledRunnable::run&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;$Lambda$487+0x00007f14d025bc70.1875362892::run&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;::lambda$do_it$$0&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;java.lang.Integer::valueOf&quot;,&quot;value&quot;:2},{&quot;name&quot;:&quot;java.util.ArrayList::add&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;java.util.ArrayList::add&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;java.util.ArrayList::grow&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;java.util.ArrayList::grow&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;java.util.Arrays::copyOf&quot;,&quot;value&quot;:3}],&quot;value&quot;:3}],&quot;value&quot;:3}],&quot;value&quot;:3}],&quot;value&quot;:3}],&quot;value&quot;:7}],&quot;value&quot;:7}],&quot;value&quot;:7},{&quot;name&quot;:&quot;com.microsoft.jfr.Recording::start&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;com.microsoft.jfr.FlightRecorderConnection::startRecording&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;com.sun.jmx.mbeanserver.JmxMBeanServer::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;com.sun.jmx.interceptor.DefaultMBeanServerInterceptor::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;javax.management.StandardMBean::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;com.sun.jmx.mbeanserver.MBeanSupport::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;com.sun.jmx.mbeanserver.PerInterface::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;com.sun.jmx.mbeanserver.MBeanIntrospector::invokeM&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;com.sun.jmx.mbeanserver.MXBeanIntrospector::invokeM2&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;com.sun.jmx.mbeanserver.MXBeanIntrospector::invokeM2&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;com.sun.jmx.mbeanserver.ConvertingMethod::invokeWithOpenReturn&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;com.sun.jmx.mbeanserver.ConvertingMethod::invokeWithOpenReturn&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;sun.reflect.misc.MethodUtil::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;java.lang.reflect.Method::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.internal.reflect.DelegatingMethodAccessorImpl::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.internal.reflect.NativeMethodAccessorImpl::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.internal.reflect.NativeMethodAccessorImpl::invoke0&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;sun.reflect.misc.Trampoline::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;java.lang.reflect.Method::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.internal.reflect.DelegatingMethodAccessorImpl::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.internal.reflect.NativeMethodAccessorImpl::invoke&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.internal.reflect.NativeMethodAccessorImpl::invoke0&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.management.jfr.FlightRecorderMXBeanImpl::startRecording&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.Recording::start&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.PlatformRecording::start&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.PlatformRecorder::start&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.PlatformRecorder::updateSettings&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.PlatformRecorder::updateSettingsButIgnoreRecording&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.MetadataRepository::setSettings&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.SettingsManager::setSettings&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.SettingsManager::updateRetransform&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.JVM::retransformClasses&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.JVMUpcalls::onRetransform&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.EventInstrumentation::<init>&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.jfr.internal.EventInstrumentation::createClassNode&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.internal.org.objectweb.asm.ClassReader::accept&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;jdk.internal.org.objectweb.asm.ClassReader::accept&quot;,&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:1}],&quot;value&quot;:8}],&quot;value&quot;:8}],&quot;value&quot;:8}],&quot;value&quot;:8}],&quot;value&quot;:8}],&quot;value&quot;:8}],&quot;value&quot;:8}],&quot;value&quot;:8}],&quot;value&quot;:8}],&quot;value&quot;:8}],&quot;value&quot;:8}],&quot;value&quot;:8}"></div></div></div></div></div></div> <div class="viewer viewer-html- w-full max-w-prose px-8"><div class="viewer-markdown"><h2 id="credits">Credits</h2>
 <p>This documentation is directly copying some content from the <a href="https://book.clerk.vision/#rationale">book of Clerk</a>, a notebook system for Clojure.</p>
-</div></div></div>
-        
+</div></div>
+            
+        </div>
     </div>
     
 </div>
