@@ -1,3 +1,5 @@
+⚠️ I do not work on this project anymore. If you're interested in interactive programming, malleable code and notebooks for Java, I suggest to look at my new project: **[Javelit](https://github.com/javelit/javelit)**
+
 # `jnotebook`
 A modern notebook system for java.
 
